@@ -268,17 +268,6 @@ func aksRotateCerts(w http.ResponseWriter, req *http.Request) {
 	w.Write(bytes)
 }
 
-func aksGetOSoptions(w http.ResponseWriter, req *http.Request) {
-	var input util.EksAPIParameter
-	parser(w, req, &input)
-	response, err := handler.AksGetOSoptions(input)
-	checkErr(err)
-	bytes, err := ioutil.ReadAll(response.Body)
-	checkErr(err)
-	defer response.Body.Close()
-	w.Write(bytes)
-}
-
 func main() {
 	http.HandleFunc("/join", join)
 	http.HandleFunc("/unjoin", unjoin)
@@ -297,6 +286,6 @@ func main() {
 	http.HandleFunc("/aksStart", aksStart)
 	http.HandleFunc("/aksStop", aksStop)
 	http.HandleFunc("/aksRotateCerts", aksRotateCerts)
-	http.HandleFunc("/aksGetOSoptions", aksGetOSoptions)
+
 	http.ListenAndServe(":8080", nil)
 }
