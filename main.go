@@ -282,10 +282,11 @@ func aksGetOSoptions(w http.ResponseWriter, req *http.Request) {
 func main() {
 	http.HandleFunc("/join", join)
 	http.HandleFunc("/unjoin", unjoin)
-	http.HandleFunc("/createAddon", createAddon)
-	http.HandleFunc("/deleteAddon", deleteAddon)
-	http.HandleFunc("/describeAddon", describeAddon)
-	http.HandleFunc("/describeAddonVersions", describeAddonVersions)
+	// http.HandleFunc("/createAddon", createAddon)
+	// http.HandleFunc("/deleteAddon", deleteAddon)
+	// http.HandleFunc("/describeAddon", describeAddon)
+	// http.HandleFunc("/describeAddonVersions", describeAddonVersions)
+
 	http.HandleFunc("/listAddon", listAddon)
 	http.HandleFunc("/updateAddon", updateAddon)
 	http.HandleFunc("/listUpdate", listUpdate)
