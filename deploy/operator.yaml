@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hcp-apiserver
+  namespace: hcp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: hcp-apiserver
+  template:
+    metadata:
+      labels:
+        name: hcp-apiserver
+    spec:
+      serviceAccountName: hcp-apiserver-sa
+      imagePullSecrets:
+        - name: regcred
+      containers:
+        - name: hcp-apiserver
+          image: ketidevit/hcp-apiserver:v0.0.1
+          command:
+          - hcp-apiserver
+          imagePullPolicy: Always
+          volumeMounts:
+          - mountPath: "/tmp/cert"
+            name: cert
+          env:
+            - name: WATCH_NAMESPACE
+              #value: ""
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: API_APP_KEY
+              value: "hcp-apiserver"
+            - name: API_USER_NAME
+              value: "hcp"
+            - name: API_USER_PW
+              value: "keti"
+            - name: INFLUX_IP
+              value: "10.0.6.133"
+            - name: INFLUX_PORT
+              value: "30004"
+            - name: INFLUX_USERNAME
+              value: "root"
+            - name: INFLUX_PASSWORD
+              value: "root"
+            - name: OPERATOR_NAME
+              value: "hcp-apiserver"
+          ports:
+          - containerPort: 8080
+            name: http
+      volumes:
+      - name: cert
+        persistentVolumeClaim:
+          claimName: pvc-api-server-cert
+      tolerations:
+        - key: node.kubernetes.io/not-ready
+          effect: NoExecute
+          tolerationSeconds: 0
+        - key: node.kubernetes.io/unreachable
+          effect: NoExecute
+          tolerationSeconds: 0
+     
