@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 
 	handler "Hybrid_Cluster/hcp-apiserver/handler"
 
@@ -279,6 +280,50 @@ func aksGetOSoptions(w http.ResponseWriter, req *http.Request) {
 	w.Write(bytes)
 }
 
+func maintenanceconfigurationCreateOrUpdate(w http.ResponseWriter, req *http.Request) {
+	var input util.EksAPIParameter
+	parser(w, req, &input)
+	response, err := handler.MaintenanceconfigurationCreateOrUpdate(input)
+	checkErr(err)
+	bytes, err := ioutil.ReadAll(response.Body)
+	checkErr(err)
+	defer response.Body.Close()
+	w.Write(bytes)
+}
+
+func maintenanceconfigurationList(w http.ResponseWriter, req *http.Request) {
+	var input util.EksAPIParameter
+	parser(w, req, &input)
+	response, err := handler.MaintenanceconfigurationList(input)
+	checkErr(err)
+	bytes, err := ioutil.ReadAll(response.Body)
+	checkErr(err)
+	defer response.Body.Close()
+	w.Write(bytes)
+}
+
+func maintenanceconfigurationDelete(w http.ResponseWriter, req *http.Request) {
+	var input util.EksAPIParameter
+	parser(w, req, &input)
+	response, err := handler.MaintenanceconfigurationDelete(input)
+	checkErr(err)
+	bytes, err := ioutil.ReadAll(response.Body)
+	checkErr(err)
+	defer response.Body.Close()
+	w.Write(bytes)
+}
+
+func maintenanceconfigurationShow(w http.ResponseWriter, req *http.Request) {
+	var input util.EksAPIParameter
+	parser(w, req, &input)
+	response, err := handler.MaintenanceconfigurationShow(input)
+	checkErr(err)
+	bytes, err := ioutil.ReadAll(response.Body)
+	checkErr(err)
+	defer response.Body.Close()
+	w.Write(bytes)
+}
+
 func main() {
 	http.HandleFunc("/join", join)
 	http.HandleFunc("/unjoin", unjoin)
@@ -298,5 +343,17 @@ func main() {
 	http.HandleFunc("/aksStop", aksStop)
 	http.HandleFunc("/aksRotateCerts", aksRotateCerts)
 	http.HandleFunc("/aksGetOSoptions", aksGetOSoptions)
+	http.HandleFunc("/maintenanceconfigurationCreateOrUpdate", maintenanceconfigurationCreateOrUpdate)
+	// maintenanceconfiguration add + update
+	http.HandleFunc("/maintenanceconfigurationDelete", maintenanceconfigurationDelete)
+	http.HandleFunc("/maintenanceconfigurationList", maintenanceconfigurationList)
+	http.HandleFunc("/maintenanceconfigurationShow", maintenanceconfigurationShow)
 	http.ListenAndServe(":8080", nil)
+}
+
+func init() {
+	os.Setenv("ClientId", "5a7002e5-86e6-42c8-a844-976f4b95760d")
+	os.Setenv("ClientSecret", "I.E76p.jvKWFJxf3Ufqf1H_c66--ww53J2")
+	os.Setenv("SubscriptionId", "ccfc0c6c-d3c6-4de2-9a6c-c09ca498ff73")
+	os.Setenv("TenantId", "c8ea91b5-6aac-4c5c-ae34-9717a872159f")
 }

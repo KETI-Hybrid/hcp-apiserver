@@ -17,7 +17,7 @@ func AksStart(input util.EksAPIParameter) (*http.Response, error) {
 	api = strings.ReplaceAll(api, "{resourceName}", input.ResourceName)
 	fmt.Println(api)
 	hosturl := api
-	response, err := auth.AuthorizationAndHTTP("POST", hosturl)
+	response, err := auth.AuthorizationAndHTTP("POST", hosturl, nil)
 	return response, err
 }
 
@@ -27,7 +27,7 @@ func AksStop(input util.EksAPIParameter) (*http.Response, error) {
 	api = strings.ReplaceAll(api, "{resourceGroupName}", input.ResourceGroupName)
 	api = strings.ReplaceAll(api, "{resourceName}", input.ResourceName)
 	hosturl := api
-	response, err := auth.AuthorizationAndHTTP("POST", hosturl)
+	response, err := auth.AuthorizationAndHTTP("POST", hosturl, nil)
 	return response, err
 }
 
@@ -38,7 +38,7 @@ func AksRotateCerts(input util.EksAPIParameter) (*http.Response, error) {
 	api = strings.ReplaceAll(api, "{resourceName}", input.ResourceName)
 	fmt.Println(api)
 	hosturl := api
-	response, err := auth.AuthorizationAndHTTP("POST", hosturl)
+	response, err := auth.AuthorizationAndHTTP("POST", hosturl, nil)
 	return response, err
 }
 
@@ -48,7 +48,7 @@ func AksGetOSoptions(input util.EksAPIParameter) (*http.Response, error) {
 	api = strings.ReplaceAll(api, "{location}", input.Location)
 	hosturl := api
 	fmt.Println(api)
-	response, err := auth.AuthorizationAndHTTP("GET", hosturl)
+	response, err := auth.AuthorizationAndHTTP("GET", hosturl, nil)
 	return response, err
 }
 
@@ -60,7 +60,7 @@ func MaintenanceconfigurationCreateOrUpdate(input util.EksAPIParameter) (*http.R
 	api = strings.ReplaceAll(api, "{configName}", input.ConfigName)
 	fmt.Println(api)
 	hosturl := api
-	response, err := auth.AuthorizationAndHTTP("POST", hosturl)
+	response, err := auth.AuthorizationAndHTTP("PUT", hosturl, input.ConfigFile)
 	return response, err
 }
 
@@ -72,29 +72,31 @@ func MaintenanceconfigurationDelete(input util.EksAPIParameter) (*http.Response,
 	api = strings.ReplaceAll(api, "{configName}", input.ConfigName)
 	hosturl := api
 	fmt.Println(api)
-	response, err := auth.AuthorizationAndHTTP("GET", hosturl)
+	response, err := auth.AuthorizationAndHTTP("DELETE", hosturl, nil)
 	return response, err
 }
 
 func MaintenanceconfigurationList(input util.EksAPIParameter) (*http.Response, error) {
 	api := converter.AksAPI["maintenanceconfigurationList"]
+	fmt.Println(input)
 	api = strings.ReplaceAll(api, "{subscriptionId}", os.Getenv("SubscriptionId"))
 	api = strings.ReplaceAll(api, "{resourceGroupName}", input.ResourceGroupName)
 	api = strings.ReplaceAll(api, "{resourceName}", input.ResourceName)
 	fmt.Println(api)
 	hosturl := api
-	response, err := auth.AuthorizationAndHTTP("POST", hosturl)
+	response, err := auth.AuthorizationAndHTTP("GET", hosturl, nil)
 	return response, err
 }
 
-func maintenanceconfigurationShow(input util.EksAPIParameter) (*http.Response, error) {
+func MaintenanceconfigurationShow(input util.EksAPIParameter) (*http.Response, error) {
 	api := converter.AksAPI["maintenanceconfigurationShow"]
+	fmt.Println(input)
 	api = strings.ReplaceAll(api, "{subscriptionId}", os.Getenv("SubscriptionId"))
 	api = strings.ReplaceAll(api, "{resourceGroupName}", input.ResourceGroupName)
 	api = strings.ReplaceAll(api, "{resourceName}", input.ResourceName)
 	api = strings.ReplaceAll(api, "{configName}", input.ConfigName)
 	hosturl := api
-	fmt.Println(api)
-	response, err := auth.AuthorizationAndHTTP("GET", hosturl)
+	// fmt.Println(api)
+	response, err := auth.AuthorizationAndHTTP("GET", hosturl, nil)
 	return response, err
 }

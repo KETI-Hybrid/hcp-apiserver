@@ -1,6 +1,7 @@
 package util
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -68,16 +69,25 @@ func GetBearer() bearerToken {
 	return token
 }
 
-func AuthorizationAndHTTP(method string, hosturl string) (*http.Response, error) {
-	params := url.Values{}
-	params.Add("resource", `https://management.azure.com/`)
+func AuthorizationAndHTTP(method string, hosturl string, input interface{}) (*http.Response, error) {
+
 	var request *http.Request
 	switch method {
 	case "POST":
+		params := url.Values{}
+		params.Add("resource", `https://management.azure.com/`)
 		body := strings.NewReader(params.Encode())
 		request, _ = http.NewRequest(method, hosturl, body)
+		break
 	case "GET":
 		request, _ = http.NewRequest(method, hosturl, nil)
+	case "DELETE":
+		request, _ = http.NewRequest(method, hosturl, nil)
+		break
+	case "PUT":
+		jsonData, _ := json.Marshal(input)
+		request, _ = http.NewRequest(method, hosturl, bytes.NewBuffer(jsonData))
+		break
 	}
 	request.Header.Set("Content-Type", "application/json; charset=UTF-8")
 	request.Header.Add("Authorization", "Bearer "+GetBearer().Access_token)
