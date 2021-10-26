@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 
 	handler "Hybrid_Cluster/hcp-apiserver/handler"
 
@@ -236,7 +237,7 @@ func updateClusterConfig(w http.ResponseWriter, req *http.Request) {
 }
 
 func aksStart(w http.ResponseWriter, req *http.Request) {
-	var input util.EksAPIParameter
+	var input util.EKSAPIParameter
 	parser(w, req, &input)
 	response, err := handler.AksStart(input)
 	checkErr(err)
@@ -248,7 +249,7 @@ func aksStart(w http.ResponseWriter, req *http.Request) {
 }
 
 func aksStop(w http.ResponseWriter, req *http.Request) {
-	var input util.EksAPIParameter
+	var input util.EKSAPIParameter
 	parser(w, req, &input)
 	response, err := handler.AksStop(input)
 	checkErr(err)
@@ -259,7 +260,7 @@ func aksStop(w http.ResponseWriter, req *http.Request) {
 }
 
 func aksRotateCerts(w http.ResponseWriter, req *http.Request) {
-	var input util.EksAPIParameter
+	var input util.EKSAPIParameter
 	parser(w, req, &input)
 	response, err := handler.AksRotateCerts(input)
 	checkErr(err)
@@ -270,7 +271,7 @@ func aksRotateCerts(w http.ResponseWriter, req *http.Request) {
 }
 
 func aksGetOSoptions(w http.ResponseWriter, req *http.Request) {
-	var input util.EksAPIParameter
+	var input util.EKSAPIParameter
 	parser(w, req, &input)
 	response, err := handler.AksGetOSoptions(input)
 	checkErr(err)
@@ -281,7 +282,7 @@ func aksGetOSoptions(w http.ResponseWriter, req *http.Request) {
 }
 
 func maintenanceconfigurationCreateOrUpdate(w http.ResponseWriter, req *http.Request) {
-	var input util.EksAPIParameter
+	var input util.EKSAPIParameter
 	parser(w, req, &input)
 	response, err := handler.MaintenanceconfigurationCreateOrUpdate(input)
 	checkErr(err)
@@ -292,7 +293,7 @@ func maintenanceconfigurationCreateOrUpdate(w http.ResponseWriter, req *http.Req
 }
 
 func maintenanceconfigurationList(w http.ResponseWriter, req *http.Request) {
-	var input util.EksAPIParameter
+	var input util.EKSAPIParameter
 	parser(w, req, &input)
 	response, err := handler.MaintenanceconfigurationList(input)
 	checkErr(err)
@@ -303,7 +304,7 @@ func maintenanceconfigurationList(w http.ResponseWriter, req *http.Request) {
 }
 
 func maintenanceconfigurationDelete(w http.ResponseWriter, req *http.Request) {
-	var input util.EksAPIParameter
+	var input util.EKSAPIParameter
 	parser(w, req, &input)
 	response, err := handler.MaintenanceconfigurationDelete(input)
 	checkErr(err)
@@ -314,7 +315,7 @@ func maintenanceconfigurationDelete(w http.ResponseWriter, req *http.Request) {
 }
 
 func maintenanceconfigurationShow(w http.ResponseWriter, req *http.Request) {
-	var input util.EksAPIParameter
+	var input util.EKSAPIParameter
 	parser(w, req, &input)
 	response, err := handler.MaintenanceconfigurationShow(input)
 	checkErr(err)
@@ -322,6 +323,307 @@ func maintenanceconfigurationShow(w http.ResponseWriter, req *http.Request) {
 	checkErr(err)
 	defer response.Body.Close()
 	w.Write(bytes)
+}
+
+func addonDisable(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSAddon
+	parser(w, req, &input)
+	cmd := exec.Command("az", "aks", "addon", "disable", "--name", input.ClusterName, "--resource-group", input.ResourceGroupName, "--addon", input.Addon)
+
+	output, err := cmd.Output()
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		w.Write(output)
+	}
+}
+
+func addonEnable(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSAddon
+	parser(w, req, &input)
+	cmd := exec.Command("az", "aks", "addon", "enable", "--name", input.ClusterName, "--resource-group", input.ResourceGroupName, "--addon", input.Addon)
+
+	output, err := cmd.Output()
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		w.Write(output)
+	}
+}
+
+func addonList(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSAddon
+	parser(w, req, &input)
+	cmd := exec.Command("az", "aks", "addon", "list", "--name", input.ClusterName, "--resource-group", input.ResourceGroupName)
+
+	output, err := cmd.Output()
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		w.Write(output)
+	}
+}
+
+func addonListAvailable(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSAddon
+	parser(w, req, &input)
+	cmd := exec.Command("az", "aks", "addon", "list-available")
+
+	output, err := cmd.Output()
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		w.Write(output)
+	}
+}
+
+func addonShow(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSAddon
+	parser(w, req, &input)
+	cmd := exec.Command("az", "aks", "addon", "show", "--name", input.ClusterName, "--resource-group", input.ResourceGroupName, "--addon", input.Addon)
+
+	output, err := cmd.Output()
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		w.Write(output)
+	}
+}
+
+func addonUpdate(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSAddon
+	parser(w, req, &input)
+	cmd := exec.Command("az", "aks", "addon", "update", "--name", input.ClusterName, "--resource-group", input.ResourceGroupName, "--addon", input.Addon)
+
+	output, err := cmd.Output()
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		w.Write(output)
+	}
+}
+
+func podIdentityAdd(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSPodIdentity
+	parser(w, req, &input)
+	args := []string{"az", "aks", "pod-identity", "add", "--cluster-name", input.ClusterName, "--identity-resource-id", input.IdentityResourceID, "--namespace", input.Namespace, "--resource-group", input.ResourceGroupName}
+	if input.Name != "" {
+		args = append(args, "--name", input.Name)
+	}
+	cmd := exec.Command("podIdentityAdd", args...)
+
+	output, err := cmd.Output()
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		w.Write(output)
+	}
+}
+
+func podIdentityDelete(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSPodIdentity
+	parser(w, req, &input)
+	cmd := exec.Command("az", "aks", "pod-identity", "delete", "--cluster-name", input.ClusterName, "--name", input.Name, "--namespace", input.Namespace, "--resource-group", input.ResourceGroupName)
+
+	output, err := cmd.Output()
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		w.Write(output)
+	}
+}
+func podIdentityList(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSPodIdentity
+	parser(w, req, &input)
+	cmd := exec.Command("az", "aks", "pod-identity", "list", "--cluster-name", input.ClusterName, "--resource-group", input.ResourceGroupName)
+
+	output, err := cmd.Output()
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(output)
+		w.Write(output)
+	}
+}
+func podIdentityExceptionAdd(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSPodIdentity
+	parser(w, req, &input)
+	cmd := exec.Command("az", "aks", "pod-identity", "add", "--cluster-name", input.ClusterName, "--pod-labels", input.PodLabels, "--namespace", input.Namespace, "--resource-group", input.ResourceGroupName)
+
+	output, err := cmd.Output()
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		w.Write(output)
+	}
+}
+func podIdentityExceptionDelete(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSPodIdentity
+	parser(w, req, &input)
+	cmd := exec.Command("az", "aks", "pod-identity", "exception", "delete", "--cluster-name", input.ClusterName, "--name", input.Name, "--namespace", input.Namespace, "--resource-group", input.ResourceGroupName)
+
+	output, err := cmd.Output()
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		w.Write(output)
+	}
+}
+func podIdentityExceptionList(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSPodIdentity
+	parser(w, req, &input)
+	cmd := exec.Command("az", "aks", "pod-identity", "exception", "list", "--cluster-name", input.ClusterName, "--resource-group", input.ResourceGroupName)
+
+	output, err := cmd.Output()
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		w.Write(output)
+	}
+}
+func podIdentityExceptionUpdate(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSPodIdentity
+	parser(w, req, &input)
+	cmd := exec.Command("az", "aks", "pod-identity", "add", "--cluster-name", input.ClusterName, "--pod-labels", input.PodLabels, "--name", input.Name, "--namespace", input.Namespace, "--resource-group", input.ResourceGroupName)
+
+	output, err := cmd.Output()
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		w.Write(output)
+	}
+}
+func appUp(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSAPIParameter
+	parser(w, req, &input)
+	// args := []string{"az", "aks", "pod-identity", "add", "--cluster-name", input.ClusterName, "--identity-resource-id", input.IdentityResourceID, "--namespace", input.Namespace, "--resource-group", input.ResourceGroupName}
+	// if input.Name != "" {
+	// 	args = append(args, "--name", input.Name)
+	// }
+	// cmd := exec.Command("podIdentityAdd", args...)
+	args := []string{"aks", "app", "up"}
+	if input.Acr != "" {
+		args = append(args, "--acr", input.Acr)
+	}
+	if input.AksCluster != "" {
+		args = append(args, "--aks-cluster", input.AksCluster)
+	}
+	if input.BranchName != "" {
+		args = append(args, "--branch-name", input.BranchName)
+	}
+	if input.DoNotWait != "" {
+		args = append(args, "--do-not-wait", input.DoNotWait)
+	}
+	if input.BranchName != "" {
+		args = append(args, "--port", input.Port)
+	}
+	if input.Repository != "" {
+		args = append(args, "--repository", input.Repository)
+	}
+	fmt.Println(args)
+	cmd := exec.Command("az", args...)
+
+	output, err := cmd.Output()
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		w.Write(output)
+	}
+}
+
+func browse(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSAPIParameter
+	parser(w, req, &input)
+	args := []string{"aks", "browse", "--name", input.Name, "-g", input.ResourceGroup}
+	if input.DisableBrowser {
+		args = append(args, "--disable-browser")
+	}
+	if input.ListenAddress != "" {
+		args = append(args, "--listen-address", input.ListenAddress)
+	}
+	if input.ListenPort != "" {
+		args = append(args, "--listen-port", input.ListenPort)
+	}
+	if input.Subscription != "" {
+		args = append(args, "--subscription", input.Subscription)
+	}
+	fmt.Println(args)
+	cmd := exec.Command("az", args...)
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		w.Write(output)
+	}
+}
+
+func checkAcr(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSAPIParameter
+	parser(w, req, &input)
+	args := []string{"aks", "check-acr", "--name", input.Name, "-g", input.ResourceGroup, "--acr", input.Acr}
+
+	if input.Subscription != "" {
+		args = append(args, "--subscription", input.Subscription)
+	}
+	fmt.Println(args)
+	cmd := exec.Command("az", args...)
+	output, err := cmd.Output()
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		w.Write(output)
+	}
+}
+
+func getUpgrades(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSAPIParameter
+	parser(w, req, &input)
+	args := []string{"aks", "get-upgrades", "--name", input.Name, "-g", input.ResourceGroup}
+
+	if input.Subscription != "" {
+		args = append(args, "--subscription", input.Subscription)
+	}
+	fmt.Println(args)
+	cmd := exec.Command("az", args...)
+	output, err := cmd.Output()
+	fmt.Println(string(output))
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		w.Write(output)
+	}
+}
+
+func getVersions(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSAPIParameter
+	parser(w, req, &input)
+	args := []string{"aks", "get-versions", "-l", input.Location}
+
+	if input.Subscription != "" {
+		args = append(args, "--subscription", input.Subscription)
+	}
+	fmt.Println(args)
+	cmd := exec.Command("az", args...)
+	output, err := cmd.Output()
+	fmt.Println(string(output))
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		w.Write(output)
+	}
+}
+
+func kanalyze(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSAPIParameter
+	parser(w, req, &input)
+	args := []string{"aks", "kanalyze", "--name", input.Name, "-g", input.ResourceGroup}
+	cmd := exec.Command("az", args...)
+	output, err := cmd.Output()
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		w.Write(output)
+	}
 }
 
 func main() {
@@ -348,6 +650,25 @@ func main() {
 	http.HandleFunc("/maintenanceconfigurationDelete", maintenanceconfigurationDelete)
 	http.HandleFunc("/maintenanceconfigurationList", maintenanceconfigurationList)
 	http.HandleFunc("/maintenanceconfigurationShow", maintenanceconfigurationShow)
+	http.HandleFunc("/addonDisable", addonDisable)
+	http.HandleFunc("/addonEnable", addonEnable)
+	http.HandleFunc("/addonList", addonList)
+	http.HandleFunc("/addonListAvailable", addonListAvailable)
+	http.HandleFunc("/addonShow", addonShow)
+	http.HandleFunc("/addonUpdate", addonUpdate)
+	http.HandleFunc("/podIdentityAdd", podIdentityAdd)
+	http.HandleFunc("/podIdentityDelete", podIdentityDelete)
+	http.HandleFunc("/podIdentityList", podIdentityList)
+	http.HandleFunc("/podIdentityExceptionAdd", podIdentityExceptionAdd)
+	http.HandleFunc("/podIdentityExceptionDelete", podIdentityExceptionDelete)
+	http.HandleFunc("/podIdentityExceptionList", podIdentityExceptionList)
+	http.HandleFunc("/podIdentityExceptionUpdate", podIdentityExceptionUpdate)
+	http.HandleFunc("/appUp", appUp)
+	http.HandleFunc("/browse", browse)
+	http.HandleFunc("/checkAcr", checkAcr)
+	http.HandleFunc("/getUpgrades", getUpgrades)
+	http.HandleFunc("/getVersions", getVersions)
+	http.HandleFunc("/kanalyze", kanalyze)
 	http.ListenAndServe(":8080", nil)
 }
 

@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func AksStart(input util.EksAPIParameter) (*http.Response, error) {
+func AksStart(input util.EKSAPIParameter) (*http.Response, error) {
 	api := converter.AksAPI["start"]
 	api = strings.ReplaceAll(api, "{subscriptionId}", os.Getenv("SubscriptionId"))
 	api = strings.ReplaceAll(api, "{resourceGroupName}", input.ResourceGroupName)
@@ -21,7 +21,7 @@ func AksStart(input util.EksAPIParameter) (*http.Response, error) {
 	return response, err
 }
 
-func AksStop(input util.EksAPIParameter) (*http.Response, error) {
+func AksStop(input util.EKSAPIParameter) (*http.Response, error) {
 	api := converter.AksAPI["stop"]
 	api = strings.ReplaceAll(api, "{subscriptionId}", os.Getenv("SubscriptionId"))
 	api = strings.ReplaceAll(api, "{resourceGroupName}", input.ResourceGroupName)
@@ -31,7 +31,7 @@ func AksStop(input util.EksAPIParameter) (*http.Response, error) {
 	return response, err
 }
 
-func AksRotateCerts(input util.EksAPIParameter) (*http.Response, error) {
+func AksRotateCerts(input util.EKSAPIParameter) (*http.Response, error) {
 	api := converter.AksAPI["rotateCerts"]
 	api = strings.ReplaceAll(api, "{subscriptionId}", os.Getenv("SubscriptionId"))
 	api = strings.ReplaceAll(api, "{resourceGroupName}", input.ResourceGroupName)
@@ -42,7 +42,7 @@ func AksRotateCerts(input util.EksAPIParameter) (*http.Response, error) {
 	return response, err
 }
 
-func AksGetOSoptions(input util.EksAPIParameter) (*http.Response, error) {
+func AksGetOSoptions(input util.EKSAPIParameter) (*http.Response, error) {
 	api := converter.AksAPI["getOSoptions"]
 	api = strings.ReplaceAll(api, "{subscriptionId}", os.Getenv("SubscriptionId"))
 	api = strings.ReplaceAll(api, "{location}", input.Location)
@@ -52,7 +52,7 @@ func AksGetOSoptions(input util.EksAPIParameter) (*http.Response, error) {
 	return response, err
 }
 
-func MaintenanceconfigurationCreateOrUpdate(input util.EksAPIParameter) (*http.Response, error) {
+func MaintenanceconfigurationCreateOrUpdate(input util.EKSAPIParameter) (*http.Response, error) {
 	api := converter.AksAPI["maintenanceconfigurationCreate/Update"]
 	api = strings.ReplaceAll(api, "{subscriptionId}", os.Getenv("SubscriptionId"))
 	api = strings.ReplaceAll(api, "{resourceGroupName}", input.ResourceGroupName)
@@ -64,7 +64,7 @@ func MaintenanceconfigurationCreateOrUpdate(input util.EksAPIParameter) (*http.R
 	return response, err
 }
 
-func MaintenanceconfigurationDelete(input util.EksAPIParameter) (*http.Response, error) {
+func MaintenanceconfigurationDelete(input util.EKSAPIParameter) (*http.Response, error) {
 	api := converter.AksAPI["maintenanceconfigurationDelete"]
 	api = strings.ReplaceAll(api, "{subscriptionId}", os.Getenv("SubscriptionId"))
 	api = strings.ReplaceAll(api, "{resourceGroupName}", input.ResourceGroupName)
@@ -76,7 +76,7 @@ func MaintenanceconfigurationDelete(input util.EksAPIParameter) (*http.Response,
 	return response, err
 }
 
-func MaintenanceconfigurationList(input util.EksAPIParameter) (*http.Response, error) {
+func MaintenanceconfigurationList(input util.EKSAPIParameter) (*http.Response, error) {
 	api := converter.AksAPI["maintenanceconfigurationList"]
 	fmt.Println(input)
 	api = strings.ReplaceAll(api, "{subscriptionId}", os.Getenv("SubscriptionId"))
@@ -88,7 +88,7 @@ func MaintenanceconfigurationList(input util.EksAPIParameter) (*http.Response, e
 	return response, err
 }
 
-func MaintenanceconfigurationShow(input util.EksAPIParameter) (*http.Response, error) {
+func MaintenanceconfigurationShow(input util.EKSAPIParameter) (*http.Response, error) {
 	api := converter.AksAPI["maintenanceconfigurationShow"]
 	fmt.Println(input)
 	api = strings.ReplaceAll(api, "{subscriptionId}", os.Getenv("SubscriptionId"))
