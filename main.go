@@ -65,7 +65,6 @@ func createAddon(w http.ResponseWriter, req *http.Request) {
 	out, err := handler.CreateAddon(createAddonInput)
 	var jsonData []byte
 	if err != nil {
-		log.Println(err)
 		jsonData, _ = json.Marshal(&err)
 	} else {
 		jsonData, _ = json.Marshal(&out)
@@ -79,8 +78,12 @@ func deleteAddon(w http.ResponseWriter, req *http.Request) {
 
 	parser(w, req, &deleteAddonInput)
 	out, err := handler.DeleteAddon(deleteAddonInput)
-	checkErr(err)
-	jsonData, _ := json.Marshal(&out)
+	var jsonData []byte
+	if err != nil {
+		jsonData, _ = json.Marshal(&err)
+	} else {
+		jsonData, _ = json.Marshal(&out)
+	}
 	w.Write([]byte(jsonData))
 }
 
@@ -90,15 +93,13 @@ func describeAddon(w http.ResponseWriter, req *http.Request) {
 
 	parser(w, req, &describeAddonInput)
 	out, err := handler.DescribeAddon(describeAddonInput)
-	checkErr(err)
+	var jsonData []byte
 	if err != nil {
-		jsonData, _ := json.Marshal(err)
-		w.Write(jsonData)
+		jsonData, _ = json.Marshal(&err)
 	} else {
-		jsonData, _ := json.Marshal(&out)
-		fmt.Println(jsonData)
-		w.Write(jsonData)
+		jsonData, _ = json.Marshal(&out)
 	}
+	w.Write([]byte(jsonData))
 }
 
 func describeAddonVersions(w http.ResponseWriter, req *http.Request) {
@@ -107,9 +108,13 @@ func describeAddonVersions(w http.ResponseWriter, req *http.Request) {
 
 	parser(w, req, &describeAddonVersionsInput)
 	out, err := handler.DescribeAddonVersions(describeAddonVersionsInput)
-	checkErr(err)
-	jsonData, _ := json.Marshal(&out)
-	w.Write(jsonData)
+	var jsonData []byte
+	if err != nil {
+		jsonData, _ = json.Marshal(&err)
+	} else {
+		jsonData, _ = json.Marshal(&out)
+	}
+	w.Write([]byte(jsonData))
 
 }
 
@@ -626,10 +631,111 @@ func kanalyze(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
+func nodepoolGetUpgrades(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSAPIParameter
+	parser(w, req, &input)
+	args := []string{"aks", "nodepool", "get-upgrades", "--cluster-name", input.Name, "-g", input.ResourceGroup, "--nodepool-name", input.NodepoolName}
+
+	if input.Subscription != "" {
+		args = append(args, "--subscription", input.Subscription)
+	}
+	cmd := exec.Command("az", args...)
+	output, err := cmd.Output()
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		w.Write(output)
+	}
+}
+
+func installCLI(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSInstallCLI
+	parser(w, req, &input)
+	args := []string{"aks", "install-cli"}
+
+	if input.BaseSrcURL != "" {
+		args = append(args, "--base-src-url", input.Subscription)
+	}
+	if input.ClientVersion != "" {
+		args = append(args, "--client-version", input.Subscription)
+	}
+	if input.KubeloginBaseSrcURL != "" {
+		args = append(args, "--kubelogin-base-src-url", input.Subscription)
+	}
+	if input.KubeloginBaseSrcURL != "" {
+		args = append(args, "--kubelogin-install-location", input.Subscription)
+	}
+	if input.KubeloginVersion != "" {
+		args = append(args, "--kubelogin-version", input.Subscription)
+	}
+	if input.Subscription != "" {
+		args = append(args, "--subscription", input.Subscription)
+	}
+	if input.Subscription != "" {
+		args = append(args, "--subscription", input.Subscription)
+	}
+	cmd := exec.Command("az", args...)
+	output, err := cmd.Output()
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		w.Write(output)
+	}
+}
+
+func connectedDisableFeatures(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSAPIParameter
+	parser(w, req, input)
+	args := []string{"connectedk8s", "disable-features", "--name", input.Name, "-g", input.ResourceGroup, "--features"}
+	for _, f := range input.Features {
+		args = append(args, f)
+	}
+	cmd := exec.Command("az", args...)
+	output, err := cmd.Output()
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		w.Write(output)
+	}
+}
+
+func connectedList(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSAPIParameter
+	parser(w, req, input)
+	args := []string{"connectedk8s", "list", "-g", input.ResourceGroup}
+	cmd := exec.Command("az", args...)
+	output, _ := cmd.Output()
+	w.Write(output)
+}
+
+func configurationCreate(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSk8sConfiguration
+	parser(w, req, input)
+	args := []string{"k8sconfiguration", "create", "-g", input.ResourceGroup, "-c", input.ClusterName, "--cluster-type", input.ClusterType, "-n", input.Name, "-u", input.RepositoryURL, "--scope", input.Scope}
+	cmd := exec.Command("az", args...)
+	output, _ := cmd.CombinedOutput()
+	w.Write(output)
+}
+
+func configurationDelete(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSk8sConfiguration
+	parser(w, req, input)
+	fmt.Println(input.ClusterType)
+	// args := []string{"k8sconfiguration", "delete", "-g", input.ResourceGroup, "-c", input.ClusterName, "--cluster-type", "managedClusters", "-n", input.Name}
+	// cmd := exec.Command("az", args...)
+	cmd := exec.Command("az", "k8sconfiguration", "delete", "-g", input.ResourceGroup, "-c", input.ClusterName, "--cluster-type", input.ClusterType, "-n", input.Name)
+	output, _ := cmd.Output()
+	w.Write(output)
+}
+
 func main() {
 	http.HandleFunc("/join", join)
 	http.HandleFunc("/unjoin", unjoin)
+	http.HandleFunc("/createAddon", createAddon)
 	http.HandleFunc("/listAddon", listAddon)
+	http.HandleFunc("/deleteAddon", deleteAddon)
+	http.HandleFunc("/describeAddon", describeAddon)
+	http.HandleFunc("/describeAddonVersions", describeAddonVersions)
 	http.HandleFunc("/updateAddon", updateAddon)
 	http.HandleFunc("/listUpdate", listUpdate)
 	http.HandleFunc("/describeUpdate", describeUpdate)
@@ -669,6 +775,21 @@ func main() {
 	http.HandleFunc("/getUpgrades", getUpgrades)
 	http.HandleFunc("/getVersions", getVersions)
 	http.HandleFunc("/kanalyze", kanalyze)
+	http.HandleFunc("/nodepoolGetUpgrades", nodepoolGetUpgrades)
+	http.HandleFunc("/installCLI", installCLI)
+	// http.HandleFunc("/connectedConnect", connectedConnect)
+	// http.HandleFunc("/connectedk8sDelete", connectedk8sDelete)
+	http.HandleFunc("/connectedDisableFeatures", connectedDisableFeatures)
+	// http.HandleFunc("/connectedEnableFeatures", connectedEnableFeatures)
+	http.HandleFunc("/connectedList", connectedList)
+	// http.HandleFunc("/connectedProxy", connectedProxy)
+	// http.HandleFunc("/connectedShow", connectedShow)
+	// http.HandleFunc("/connectedUpdate", connectedUpdate)
+	// http.HandleFunc("/connectedUpgrade", connectedUpgrade)
+	http.HandleFunc("/configurationCreate", configurationCreate)
+	http.HandleFunc("/configurationDelete", configurationDelete)
+	// http.HandleFunc("/configurationCreate", configurationList)
+	// http.HandleFunc("/configurationCreate", configurationShow)
 	http.ListenAndServe(":8080", nil)
 }
 
