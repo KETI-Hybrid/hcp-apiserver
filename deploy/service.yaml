@@ -3,14 +3,13 @@ kind: Service
 metadata:
   name: hcp-apiserver
   namespace: hcp
-  annotations:
-    metallb.universe.tf/allow-shared-ip: hcp
 spec:
   selector:
     name: hcp-apiserver
   ports:
   - port: 8080
     targetPort: 8080
-    nodePort: 30000
+    nodePort: 31635
+    protocol: TCP
   type: LoadBalancer
 

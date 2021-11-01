@@ -1,7 +1,9 @@
 #!/bin/bash
-#kubectl create ns openmcp
-kubectl create -f deploy
-cd /go/src/Hybrid_Cluster/clientset/clusterRegister/v1alpha1
-kubectl create -f clusterregister.yaml 
-#kubectl create -f deploy/operator.yaml
-
+# kubectl create ns hcp
+kubectl create -f deploy/operator.yaml
+# kubectl create -f deploy/pv.yaml
+# kubectl create -f deploy/pvc.yaml
+kubectl create -f deploy/role_binding.yaml
+kubectl create -f deploy/service_account.yaml
+kubectl create -f deploy/service.yaml
+# kubectl create -f deploy/operator.yaml

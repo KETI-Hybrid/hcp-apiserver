@@ -6,13 +6,11 @@ metadata:
     app: apiserver
 spec:
   capacity:
-    storage: 2Gi
+    storage: 10Gi
   storageClassName: apiserver
   accessModes:
     - ReadWriteMany
-  persistentVolumeReclaimPolicy: Retain
-  nfs:
-    path: /home/nfs/pv/api-server/cert
-    server: "10.0.3.20"
-    readOnly: false
+  hostPath:
+    path: "/mnt/data"
+ 
 
