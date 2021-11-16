@@ -16,17 +16,21 @@ import (
 	"github.com/aws/aws-sdk-go/service/eks"
 )
 
+// type cmdServer struct {
+// 	cmdpb.CmdServer
+// }
+
 func checkErr(err error) {
 	if err != nil {
 		log.Println(err)
 	}
 }
 
-const portNumber = "8080"
+// const portNumber = "8080"
 
 func parser(w http.ResponseWriter, req *http.Request, input interface{}) {
 	jsonDataFromHttp, err := ioutil.ReadAll(req.Body)
-	fmt.Printf(string(jsonDataFromHttp))
+	fmt.Println(string(jsonDataFromHttp))
 	json.Unmarshal(jsonDataFromHttp, input)
 	defer req.Body.Close()
 	if err != nil {
@@ -136,6 +140,33 @@ func listAddon(w http.ResponseWriter, req *http.Request) {
 
 }
 
+// func (c *cmdServer) ListAddon(ctx context.Context, in *cmdpb.ListAddonRequest) (*cmdpb.ListAddonResponse, error) {
+// 	var listAddonInput eks.ListAddonsInput
+// 	// jsonDataFromHttp, err := ioutil.ReadAll(in)
+// 	// fmt.Printf(string(jsonDataFromHttp))
+// 	listAddonInput.ClusterName = &in.AksAddon.ClusterName
+// 	// defer req.Body.Close()
+// 	// if err != nil {
+// 	// 	log.Println(err.Error())
+// 	// }
+// 	fmt.Println(listAddonInput.ClusterName)
+// 	out, err := handler.ListAddon(listAddonInput)
+// 	var jsonData []byte
+// 	if err != nil {
+// 		jsonData, _ = json.Marshal(&err)
+// 	} else {
+// 		jsonData, _ = json.Marshal(&out)
+// 	}
+// 	fmt.Println(string(jsonData))
+// 	var output = string(jsonData)
+// 	return &cmdpb.ListAddonResponse{
+// 		Output: &cmdpb.Output{
+// 			Message: output,
+// 		},
+// 	}, nil
+
+// }
+
 func updateAddon(w http.ResponseWriter, req *http.Request) {
 
 	var updateAddonInput eks.UpdateAddonInput
@@ -156,8 +187,12 @@ func listUpdate(w http.ResponseWriter, req *http.Request) {
 
 	parser(w, req, &listUpdateInput)
 	out, err := handler.ListUpdate(listUpdateInput)
-	checkErr(err)
-	jsonData, _ := json.Marshal(&out)
+	var jsonData []byte
+	if err != nil {
+		jsonData, _ = json.Marshal(&err)
+	} else {
+		jsonData, _ = json.Marshal(&out)
+	}
 	w.Write([]byte(jsonData))
 }
 
@@ -166,8 +201,12 @@ func describeUpdate(w http.ResponseWriter, req *http.Request) {
 
 	parser(w, req, &describeUpdateInput)
 	out, err := handler.DescribeUpdate(describeUpdateInput)
-	checkErr(err)
-	jsonData, _ := json.Marshal(&out)
+	var jsonData []byte
+	if err != nil {
+		jsonData, _ = json.Marshal(&err)
+	} else {
+		jsonData, _ = json.Marshal(&out)
+	}
 	w.Write([]byte(jsonData))
 }
 
@@ -190,6 +229,20 @@ func associateIdentityProviderConfig(w http.ResponseWriter, req *http.Request) {
 
 	parser(w, req, &associateIdentityProviderConfigInput)
 	out, err := handler.AssociateIdentityProviderConfig(associateIdentityProviderConfigInput)
+	var jsonData []byte
+	if err != nil {
+		jsonData, _ = json.Marshal(&err)
+	} else {
+		jsonData, _ = json.Marshal(&out)
+	}
+	w.Write([]byte(jsonData))
+}
+
+func associateEncryptionConfig(w http.ResponseWriter, req *http.Request) {
+	var associateEncryptionConfigInput eks.AssociateEncryptionConfigInput
+
+	parser(w, req, &associateIdentityProviderConfigInput)
+	out, err := handler.AssociateEncryptionConfig(associateIEncryptionConfigInput)
 	var jsonData []byte
 	if err != nil {
 		jsonData, _ = json.Marshal(&err)
@@ -274,8 +327,12 @@ func updateClusterConfig(w http.ResponseWriter, req *http.Request) {
 
 	parser(w, req, &input)
 	out, err := handler.UpdateClusterConfig(input)
-	checkErr(err)
-	jsonData, _ := json.Marshal(&out)
+	var jsonData []byte
+	if err != nil {
+		jsonData, _ = json.Marshal(&err)
+	} else {
+		jsonData, _ = json.Marshal(&out)
+	}
 	w.Write([]byte(jsonData))
 }
 
@@ -725,7 +782,8 @@ func connectedDisableFeatures(w http.ResponseWriter, req *http.Request) {
 	var input util.AKSAPIParameter
 	parser(w, req, input)
 	args := []string{"connectedk8s", "disable-features", "--name", input.Name, "-g", input.ResourceGroup, "--features"}
-	for _, f := range input.Features {
+	for i := range input.Features {
+		f := input.Features[i]
 		args = append(args, f)
 	}
 	cmd := exec.Command("az", args...)
@@ -773,7 +831,7 @@ func main() {
 	// }
 
 	// grpcServer := grpc.NewServer()
-
+	// cmdpb.RegisterCmdServer(grpcServer, &cmdServer{})
 	// log.Printf("Start gRPC server on %s port", portNumber)
 	// if err := grpcServer.Serve(lis); err != nil {
 	// 	log.Fatalf("failed to server: %s", err)

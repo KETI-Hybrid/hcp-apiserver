@@ -4,8 +4,10 @@ import "github.com/aws/aws-sdk-go/service/eks"
 
 func ListUpdate(listUpdateInput eks.ListUpdatesInput) (*eks.ListUpdatesOutput, error) {
 
-	eksSvc := GetEKSClient(listUpdateInput.Name)
-
+	eksSvc, err := GetEKSClient(listUpdateInput.Name)
+	if eksSvc == nil {
+		return nil, err
+	}
 	input := &eks.ListUpdatesInput{
 		AddonName:     listUpdateInput.AddonName,
 		MaxResults:    listUpdateInput.MaxResults,
@@ -20,8 +22,10 @@ func ListUpdate(listUpdateInput eks.ListUpdatesInput) (*eks.ListUpdatesOutput, e
 
 func DescribeUpdate(describeUpdateInput eks.DescribeUpdateInput) (*eks.DescribeUpdateOutput, error) {
 
-	eksSvc := GetEKSClient(describeUpdateInput.Name)
-
+	eksSvc, err := GetEKSClient(describeUpdateInput.Name)
+	if eksSvc == nil {
+		return nil, err
+	}
 	input := &eks.DescribeUpdateInput{
 		AddonName:     describeUpdateInput.AddonName,
 		Name:          describeUpdateInput.Name,
@@ -35,8 +39,10 @@ func DescribeUpdate(describeUpdateInput eks.DescribeUpdateInput) (*eks.DescribeU
 
 func UpdateClusterConfig(input eks.UpdateClusterConfigInput) (*eks.UpdateClusterConfigOutput, error) {
 
-	eksSvc := GetEKSClient(input.Name)
-
+	eksSvc, err := GetEKSClient(input.Name)
+	if eksSvc == nil {
+		return nil, err
+	}
 	input = eks.UpdateClusterConfigInput{
 		ClientRequestToken: input.ClientRequestToken,
 		Logging:            input.Logging,
@@ -50,8 +56,10 @@ func UpdateClusterConfig(input eks.UpdateClusterConfigInput) (*eks.UpdateCluster
 
 func UpdateNodegroupConfig(input eks.UpdateNodegroupConfigInput) (*eks.UpdateNodegroupConfigOutput, error) {
 
-	eksSvc := GetEKSClient(input.ClusterName)
-
+	eksSvc, err := GetEKSClient(input.ClusterName)
+	if eksSvc == nil {
+		return nil, err
+	}
 	input = eks.UpdateNodegroupConfigInput{
 		ClientRequestToken: input.ClientRequestToken,
 		ClusterName:        input.ClusterName,
