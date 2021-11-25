@@ -54,7 +54,7 @@ func UpdateClusterConfig(input eks.UpdateClusterConfigInput) (*eks.UpdateCluster
 	return out, err
 }
 
-func UpdateNodegroupConfig(input eks.UpdateNodegroupConfigInput) (*eks.UpdateNodegroupConfigOutput, error) {
+func UpdateNodeGroupConfig(input eks.UpdateNodegroupConfigInput) (*eks.UpdateNodegroupConfigOutput, error) {
 
 	eksSvc, err := GetEKSClient(input.ClusterName)
 	if eksSvc == nil {

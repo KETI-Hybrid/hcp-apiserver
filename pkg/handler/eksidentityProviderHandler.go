@@ -30,20 +30,6 @@ func AssociateIdentityProviderConfig(input eks.AssociateIdentityProviderConfigIn
 	return out, err
 }
 
-func AssociateEncryptionConfig(input eks.AssociateEncryptionConfigInput) (*eks.AssociateEncryptionConfigOutput, error) {
-	eksSvc, err := GetEKSClient(input.ClusterName)
-	if eksSvc == nil {
-		return nil, err
-	}
-	newInput := &eks.AssociateEncryptionConfigInput{
-		ClientRequestToken: input.ClientRequestToken,
-		ClusterName:        input.ClusterName,
-	}
-	out, err := eksSvc.AssociateIdentityProviderConfig(newInput)
-
-	return out, err
-}
-
 func DisassociateIdentityProviderConfig(input eks.DisassociateIdentityProviderConfigInput) (*eks.DisassociateIdentityProviderConfigOutput, error) {
 
 	// println(*Input.ClusterName)
