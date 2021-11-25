@@ -2,8 +2,8 @@ package handler
 
 import (
 	"Hybrid_Cluster/hcp-apiserver/pkg/converter"
-	auth "Hybrid_Cluster/hcp-apiserver/pkg/util"
-	"Hybrid_Cluster/hybridctl/util"
+	util "Hybrid_Cluster/hcp-apiserver/pkg/util"
+
 	"fmt"
 	"net/http"
 	"os"
@@ -17,7 +17,7 @@ func AksStart(input util.EKSAPIParameter) (*http.Response, error) {
 	api = strings.ReplaceAll(api, "{resourceName}", input.ResourceName)
 	fmt.Println(api)
 	hosturl := api
-	response, err := auth.AuthorizationAndHTTP("POST", hosturl, nil)
+	response, err := util.AuthorizationAndHTTP("POST", hosturl, nil)
 	return response, err
 }
 
@@ -27,7 +27,7 @@ func AksStop(input util.EKSAPIParameter) (*http.Response, error) {
 	api = strings.ReplaceAll(api, "{resourceGroupName}", input.ResourceGroupName)
 	api = strings.ReplaceAll(api, "{resourceName}", input.ResourceName)
 	hosturl := api
-	response, err := auth.AuthorizationAndHTTP("POST", hosturl, nil)
+	response, err := util.AuthorizationAndHTTP("POST", hosturl, nil)
 	return response, err
 }
 
@@ -38,7 +38,7 @@ func AksRotateCerts(input util.EKSAPIParameter) (*http.Response, error) {
 	api = strings.ReplaceAll(api, "{resourceName}", input.ResourceName)
 	fmt.Println(api)
 	hosturl := api
-	response, err := auth.AuthorizationAndHTTP("POST", hosturl, nil)
+	response, err := util.AuthorizationAndHTTP("POST", hosturl, nil)
 	return response, err
 }
 
@@ -48,7 +48,7 @@ func AksGetOSoptions(input util.EKSAPIParameter) (*http.Response, error) {
 	api = strings.ReplaceAll(api, "{location}", input.Location)
 	hosturl := api
 	fmt.Println(api)
-	response, err := auth.AuthorizationAndHTTP("GET", hosturl, nil)
+	response, err := util.AuthorizationAndHTTP("GET", hosturl, nil)
 	return response, err
 }
 
@@ -60,7 +60,7 @@ func MaintenanceconfigurationCreateOrUpdate(input util.EKSAPIParameter) (*http.R
 	api = strings.ReplaceAll(api, "{configName}", input.ConfigName)
 	fmt.Println(api)
 	hosturl := api
-	response, err := auth.AuthorizationAndHTTP("PUT", hosturl, input.ConfigFile)
+	response, err := util.AuthorizationAndHTTP("PUT", hosturl, input.ConfigFile)
 	return response, err
 }
 
@@ -72,7 +72,7 @@ func MaintenanceconfigurationDelete(input util.EKSAPIParameter) (*http.Response,
 	api = strings.ReplaceAll(api, "{configName}", input.ConfigName)
 	hosturl := api
 	fmt.Println(api)
-	response, err := auth.AuthorizationAndHTTP("DELETE", hosturl, nil)
+	response, err := util.AuthorizationAndHTTP("DELETE", hosturl, nil)
 	return response, err
 }
 
@@ -84,7 +84,7 @@ func MaintenanceconfigurationList(input util.EKSAPIParameter) (*http.Response, e
 	api = strings.ReplaceAll(api, "{resourceName}", input.ResourceName)
 	fmt.Println(api)
 	hosturl := api
-	response, err := auth.AuthorizationAndHTTP("GET", hosturl, nil)
+	response, err := util.AuthorizationAndHTTP("GET", hosturl, nil)
 	return response, err
 }
 
@@ -97,6 +97,6 @@ func MaintenanceconfigurationShow(input util.EKSAPIParameter) (*http.Response, e
 	api = strings.ReplaceAll(api, "{configName}", input.ConfigName)
 	hosturl := api
 	// fmt.Println(api)
-	response, err := auth.AuthorizationAndHTTP("GET", hosturl, nil)
+	response, err := util.AuthorizationAndHTTP("GET", hosturl, nil)
 	return response, err
 }
