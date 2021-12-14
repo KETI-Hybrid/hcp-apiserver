@@ -1,15 +1,13 @@
 package main
 
 import (
-	"Hybrid_Cluster/hcp-apiserver/pkg/converter"
+
 	// "Hybrid_Cluster/hybridctl/util"
-	util "Hybrid_Cluster/hcp-apiserver/pkg/util"
-	"fmt"
+
 	"log"
 	"net/http"
 	"os"
 
-	handler "Hybrid_Cluster/hcp-apiserver/pkg/handler"
 	aksFunc "Hybrid_Cluster/hcp-apiserver/pkg/main/aks"
 	eksFunc "Hybrid_Cluster/hcp-apiserver/pkg/main/eks"
 )
@@ -20,33 +18,7 @@ func CheckErr(err error) {
 	}
 }
 
-func join(w http.ResponseWriter, req *http.Request) {
-
-	fmt.Println("---ok---")
-	clusterInfo := converter.ClusterInfo{}
-	util.Parser(w, req, &clusterInfo)
-	var info = converter.ClusterInfo{
-		PlatformName: clusterInfo.PlatformName,
-		ClusterName:  clusterInfo.ClusterName,
-	}
-	handler.Join(info)
-	w.Header().Set("Content-Type", "application/json")
-}
-
-func unjoin(w http.ResponseWriter, req *http.Request) {
-	clusterInfo := converter.ClusterInfo{}
-	util.Parser(w, req, &clusterInfo)
-	var info = converter.ClusterInfo{
-		PlatformName: clusterInfo.PlatformName,
-		ClusterName:  clusterInfo.ClusterName,
-	}
-	handler.Unjoin(info)
-	w.Header().Set("Content-Type", "application/json")
-}
-
 func main() {
-	http.HandleFunc("/join", join)
-	http.HandleFunc("/unjoin", unjoin)
 	http.HandleFunc("/createAddon", eksFunc.CreateAddon)
 	http.HandleFunc("/listAddon", eksFunc.ListAddon)
 	http.HandleFunc("/deleteAddon", eksFunc.DeleteAddon)
