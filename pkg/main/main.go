@@ -4,6 +4,7 @@ import (
 
 	// "Hybrid_Cluster/hybridctl/util"
 
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -19,6 +20,8 @@ func CheckErr(err error) {
 }
 
 func main() {
+
+	fmt.Println("start server")
 	http.HandleFunc("/createAddon", eksFunc.CreateAddon)
 	http.HandleFunc("/listAddon", eksFunc.ListAddon)
 	http.HandleFunc("/deleteAddon", eksFunc.DeleteAddon)
@@ -47,12 +50,16 @@ func main() {
 	http.HandleFunc("/maintenanceconfigurationDelete", aksFunc.MaintenanceconfigurationDelete)
 	http.HandleFunc("/maintenanceconfigurationList", aksFunc.MaintenanceconfigurationList)
 	http.HandleFunc("/maintenanceconfigurationShow", aksFunc.MaintenanceconfigurationShow)
+
+	// addon
 	http.HandleFunc("/addonDisable", aksFunc.AddonDisable)
 	http.HandleFunc("/addonEnable", aksFunc.AddonEnable)
 	http.HandleFunc("/addonList", aksFunc.AddonList)
 	http.HandleFunc("/addonListAvailable", aksFunc.AddonListAvailable)
 	http.HandleFunc("/addonShow", aksFunc.AddonShow)
 	http.HandleFunc("/addonUpdate", aksFunc.AddonUpdate)
+
+	// pod-identity
 	http.HandleFunc("/podIdentityAdd", aksFunc.PodIdentityAdd)
 	http.HandleFunc("/podIdentityDelete", aksFunc.PodIdentityDelete)
 	http.HandleFunc("/podIdentityList", aksFunc.PodIdentityList)
@@ -79,6 +86,8 @@ func main() {
 	// http.HandleFunc("/connectedUpgrade", connectedUpgrade)
 	http.HandleFunc("/configurationCreate", aksFunc.ConfigurationCreate)
 	http.HandleFunc("/configurationDelete", aksFunc.ConfigurationDelete)
+	http.HandleFunc("/configurationList", aksFunc.ConfigurationList)
+	http.HandleFunc("/configurationShow", aksFunc.ConfigurationShow)
 	// http.HandleFunc("/configurationCreate", configurationList)
 	// http.HandleFunc("/configurationCreate", configurationShow)
 	http.ListenAndServe(":8080", nil)

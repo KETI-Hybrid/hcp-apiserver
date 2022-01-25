@@ -13,6 +13,11 @@ type Config struct {
 	} `json:"properties"`
 }
 
+// type Output struct {
+// 	Stderr []byte
+// 	Stdout []byte
+// }
+
 type EKSAPIParameter struct {
 	SubscriptionId    string
 	ResourceGroupName string
@@ -24,27 +29,31 @@ type EKSAPIParameter struct {
 }
 
 type AKSAPIParameter struct {
-	Acr             string
-	AksCluster      string
-	BranchName      string
-	DoNotWait       string
-	Port            string
-	BindingSelector string
-	Repository      string
-	Name            string
-	ResourceGroup   string
-	DisableBrowser  bool
-	ListenAddress   string
-	ListenPort      string
-	Subscription    string
-	Location        string
-	NodepoolName    string
-	Features        []string
+	ResourceGroupName string
+	ClusterName       string
+	Acr               string
+	AksCluster        string
+	BranchName        string
+	DoNotWait         string
+	Port              string
+	BindingSelector   string
+	Repository        string
+	Name              string
+	ResourceGroup     string
+	DisableBrowser    bool
+	ListenAddress     string
+	ListenPort        string
+	Subscription      string
+	Location          string
+	NodepoolName      string
+	Features          []string
+	Addon             AKSAddon            `json:"addon"`
+	PodIdentity       AKSPodIdentity      `json:"podIdentity"`
+	Install           AKSInstallCLI       `json:"install"`
+	K8sConfiguration  AKSk8sConfiguration `json:"k8sConfiguration"`
 }
 
 type AKSAddon struct {
-	ResourceGroupName          string
-	ClusterName                string
 	Addon                      string
 	AppgwID                    string
 	AppgwName                  string
@@ -60,8 +69,6 @@ type AKSAddon struct {
 }
 
 type AKSPodIdentity struct {
-	ResourceGroupName  string
-	ClusterName        string
 	Namespace          string
 	IdentityResourceID string
 	Name               string
@@ -80,10 +87,8 @@ type AKSInstallCLI struct {
 }
 
 type AKSk8sConfiguration struct {
-	ClusterName   string
 	ClusterType   string
 	Name          string
 	RepositoryURL string
-	ResourceGroup string
 	Scope         string
 }
