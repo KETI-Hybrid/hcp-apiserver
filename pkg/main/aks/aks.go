@@ -231,7 +231,7 @@ func MaintenanceconfigurationShow(w http.ResponseWriter, req *http.Request) {
 func ConfigurationCreate(w http.ResponseWriter, req *http.Request) {
 	var input util.AKSAPIParameter
 	util.Parser(w, req, &input)
-	args := []string{"k8sconfiguration", "create", "-g", input.ResourceGroup, "-c", input.ClusterName, "--cluster-type", input.K8sConfiguration.ClusterType, "-n", input.K8sConfiguration.Name, "-u", input.K8sConfiguration.RepositoryURL, "--scope", input.K8sConfiguration.Scope}
+	args := []string{"k8sconfiguration", "create", "-g", input.ResourceGroupName, "-c", input.ClusterName, "--cluster-type", input.K8sConfiguration.ClusterType, "-n", input.K8sConfiguration.Name, "-u", input.K8sConfiguration.RepositoryURL, "--scope", input.K8sConfiguration.Scope}
 	cmd := exec.Command("az", args...)
 	data, err := util.GetOutput(cmd)
 	if err != nil {
@@ -244,7 +244,7 @@ func ConfigurationCreate(w http.ResponseWriter, req *http.Request) {
 func ConfigurationDelete(w http.ResponseWriter, req *http.Request) {
 	var input util.AKSAPIParameter
 	util.Parser(w, req, &input)
-	cmd := exec.Command("az", "k8sconfiguration", "delete", "-g", input.ResourceGroup, "-c", input.ClusterName, "--cluster-type", input.K8sConfiguration.ClusterType, "-n", input.K8sConfiguration.Name, "--yes")
+	cmd := exec.Command("az", "k8sconfiguration", "delete", "-g", input.ResourceGroupName, "-c", input.ClusterName, "--cluster-type", input.K8sConfiguration.ClusterType, "-n", input.K8sConfiguration.Name, "--yes")
 	data, err := util.GetOutput(cmd)
 	if err != nil {
 		log.Println(err)
@@ -255,7 +255,7 @@ func ConfigurationDelete(w http.ResponseWriter, req *http.Request) {
 func ConfigurationShow(w http.ResponseWriter, req *http.Request) {
 	var input util.AKSAPIParameter
 	util.Parser(w, req, &input)
-	cmd := exec.Command("az", "k8sconfiguration", "show", "-g", input.ResourceGroup, "-c", input.ClusterName, "--cluster-type", input.K8sConfiguration.ClusterType, "-n", input.K8sConfiguration.Name)
+	cmd := exec.Command("az", "k8sconfiguration", "show", "-g", input.ResourceGroupName, "-c", input.ClusterName, "--cluster-type", input.K8sConfiguration.ClusterType, "-n", input.K8sConfiguration.Name)
 	data, err := util.GetOutput(cmd)
 	if err != nil {
 		log.Println(err)
@@ -267,7 +267,7 @@ func ConfigurationShow(w http.ResponseWriter, req *http.Request) {
 func ConfigurationList(w http.ResponseWriter, req *http.Request) {
 	var input util.AKSAPIParameter
 	util.Parser(w, req, &input)
-	cmd := exec.Command("az", "k8s-configuration", "list", "-g", input.ResourceGroup, "-c", input.ClusterName, "-t", input.K8sConfiguration.ClusterType)
+	cmd := exec.Command("az", "k8s-configuration", "list", "-g", input.ResourceGroupName, "-c", input.ClusterName, "-t", input.K8sConfiguration.ClusterType)
 	data, err := util.GetOutput(cmd)
 	if err != nil {
 		log.Println(err)
@@ -278,6 +278,134 @@ func ConfigurationList(w http.ResponseWriter, req *http.Request) {
 
 // connectedk8s
 
+func Connectedk8sConnect(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSAPIParameter
+	util.Parser(w, req, input)
+	args := []string{"connectedk8s", "connect", "-n", input.ClusterName, "-g", input.ResourceGroupName}
+	cmd := exec.Command("az", args...)
+	data, err := util.GetOutput(cmd)
+	if err != nil {
+		log.Println(err)
+	} else {
+		w.Write(data)
+	}
+}
+
+func Connectedk8sDelete(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSAPIParameter
+	util.Parser(w, req, input)
+	args := []string{"connectedk8s", "delete", "-n", input.ClusterName, "-g", input.ResourceGroupName}
+	cmd := exec.Command("az", args...)
+	data, err := util.GetOutput(cmd)
+	if err != nil {
+		log.Println(err)
+	} else {
+		w.Write(data)
+	}
+}
+
+func Connectedk8sDisableFeatures(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSAPIParameter
+	util.Parser(w, req, input)
+	args := []string{"connectedk8s", "disable-features", "-n", input.ClusterName, "-g", input.ResourceGroupName, "--features"}
+	for i := range input.Features {
+		f := input.Features[i]
+		args = append(args, f)
+	}
+	cmd := exec.Command("az", args...)
+	data, err := util.GetOutput(cmd)
+	if err != nil {
+		log.Println(err)
+	} else {
+		w.Write(data)
+	}
+}
+
+func Connectedk8sEnableFeatures(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSAPIParameter
+	util.Parser(w, req, input)
+	args := []string{"connectedk8s", "enable-features", "-n", input.ClusterName, "-g", input.ResourceGroupName, "--features"}
+	for i := range input.Features {
+		f := input.Features[i]
+		args = append(args, f)
+	}
+	cmd := exec.Command("az", args...)
+	data, err := util.GetOutput(cmd)
+	if err != nil {
+		log.Println(err)
+	} else {
+		w.Write(data)
+	}
+}
+
+func Connectedk8sList(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSAPIParameter
+	util.Parser(w, req, &input)
+	args := []string{"connectedk8s", "list"}
+	if input.ResourceGroupName != "" {
+		args = append(args, "-g", input.ResourceGroupName)
+	}
+	cmd := exec.Command("az", args...)
+	data, err := util.GetOutput(cmd)
+	if err != nil {
+		log.Println(err)
+	} else {
+		w.Write(data)
+	}
+}
+
+func Connectedk8sProxy(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSAPIParameter
+	util.Parser(w, req, input)
+	args := []string{"connectedk8s", "proxy", "-n", input.ClusterName, "-g", input.ResourceGroupName}
+	cmd := exec.Command("az", args...)
+	data, err := util.GetOutput(cmd)
+	if err != nil {
+		log.Println(err)
+	} else {
+		w.Write(data)
+	}
+}
+
+func Connectedk8sShow(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSAPIParameter
+	util.Parser(w, req, input)
+	args := []string{"connectedk8s", "show", "-n", input.ClusterName, "-g", input.ResourceGroupName}
+	cmd := exec.Command("az", args...)
+	data, err := util.GetOutput(cmd)
+	if err != nil {
+		log.Println(err)
+	} else {
+		w.Write(data)
+	}
+}
+
+func Connectedk8sUpdate(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSAPIParameter
+	util.Parser(w, req, input)
+	args := []string{"connectedk8s", "update", "-n", input.ClusterName, "-g", input.ResourceGroupName}
+	cmd := exec.Command("az", args...)
+	data, err := util.GetOutput(cmd)
+	if err != nil {
+		log.Println(err)
+	} else {
+		w.Write(data)
+	}
+}
+
+func Connectedk8sUpgrade(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSAPIParameter
+	util.Parser(w, req, input)
+	args := []string{"connectedk8s", "upgrade", "-n", input.ClusterName, "-g", input.ResourceGroupName}
+	cmd := exec.Command("az", args...)
+	data, err := util.GetOutput(cmd)
+	if err != nil {
+		log.Println(err)
+	} else {
+		w.Write(data)
+	}
+}
+
 // etc
 func AksStart(w http.ResponseWriter, req *http.Request) {
 	var input util.AKSAPIParameter
@@ -287,7 +415,6 @@ func AksStart(w http.ResponseWriter, req *http.Request) {
 	bytes, err := ioutil.ReadAll(response.Body)
 	CheckErr(err)
 	defer response.Body.Close()
-	fmt.Println(string(bytes))
 	w.Write(bytes)
 }
 
@@ -359,7 +486,7 @@ func AppUp(w http.ResponseWriter, req *http.Request) {
 func Browse(w http.ResponseWriter, req *http.Request) {
 	var input util.AKSAPIParameter
 	util.Parser(w, req, &input)
-	args := []string{"aks", "browse", "--name", input.Name, "-g", input.ResourceGroup}
+	args := []string{"aks", "browse", "--name", input.ClusterName, "-g", input.ResourceGroupName}
 	if input.DisableBrowser {
 		args = append(args, "--disable-browser")
 	}
@@ -385,7 +512,7 @@ func Browse(w http.ResponseWriter, req *http.Request) {
 func CheckAcr(w http.ResponseWriter, req *http.Request) {
 	var input util.AKSAPIParameter
 	util.Parser(w, req, &input)
-	args := []string{"aks", "check-acr", "--name", input.Name, "-g", input.ResourceGroup, "--acr", input.Acr}
+	args := []string{"aks", "check-acr", "--name", input.ClusterName, "-g", input.ResourceGroupName, "--acr", input.Acr}
 
 	if input.Subscription != "" {
 		args = append(args, "--subscription", input.Subscription)
@@ -403,7 +530,7 @@ func CheckAcr(w http.ResponseWriter, req *http.Request) {
 func GetUpgrades(w http.ResponseWriter, req *http.Request) {
 	var input util.AKSAPIParameter
 	util.Parser(w, req, &input)
-	args := []string{"aks", "get-upgrades", "--name", input.Name, "--resource-group", input.ResourceGroup}
+	args := []string{"aks", "get-upgrades", "--name", input.ClusterName, "--resource-group", input.ResourceGroupName}
 
 	if input.Subscription != "" {
 		args = append(args, "--subscription", input.Subscription)
@@ -439,7 +566,7 @@ func GetVersions(w http.ResponseWriter, req *http.Request) {
 func Kanalyze(w http.ResponseWriter, req *http.Request) {
 	var input util.AKSAPIParameter
 	util.Parser(w, req, &input)
-	args := []string{"aks", "kanalyze", "--name", input.Name, "-g", input.ResourceGroup}
+	args := []string{"aks", "kanalyze", "--name", input.ClusterName, "-g", input.ResourceGroupName}
 	cmd := exec.Command("az", args...)
 	data, err := util.GetOutput(cmd)
 	if err != nil {
@@ -452,7 +579,7 @@ func Kanalyze(w http.ResponseWriter, req *http.Request) {
 func NodepoolGetUpgrades(w http.ResponseWriter, req *http.Request) {
 	var input util.AKSAPIParameter
 	util.Parser(w, req, &input)
-	args := []string{"aks", "nodepool", "get-upgrades", "--cluster-name", input.Name, "-g", input.ResourceGroup, "--nodepool-name", input.NodepoolName}
+	args := []string{"aks", "nodepool", "get-upgrades", "--cluster-name", input.ClusterName, "-g", input.ResourceGroupName, "--nodepool-name", input.NodepoolName}
 
 	if input.Subscription != "" {
 		args = append(args, "--subscription", input.Subscription)
@@ -491,39 +618,6 @@ func InstallCLI(w http.ResponseWriter, req *http.Request) {
 	}
 	if input.Subscription != "" {
 		args = append(args, "--subscription", input.Subscription)
-	}
-	cmd := exec.Command("az", args...)
-	data, err := util.GetOutput(cmd)
-	if err != nil {
-		log.Println(err)
-	} else {
-		w.Write(data)
-	}
-}
-
-func ConnectedDisableFeatures(w http.ResponseWriter, req *http.Request) {
-	var input util.AKSAPIParameter
-	util.Parser(w, req, input)
-	args := []string{"connectedk8s", "disable-features", "--name", input.Name, "-g", input.ResourceGroup, "--features"}
-	for i := range input.Features {
-		f := input.Features[i]
-		args = append(args, f)
-	}
-	cmd := exec.Command("az", args...)
-	output, err := cmd.Output()
-	if err != nil {
-		fmt.Println(err)
-	} else {
-		w.Write(output)
-	}
-}
-
-func ConnectedList(w http.ResponseWriter, req *http.Request) {
-	var input util.AKSAPIParameter
-	util.Parser(w, req, &input)
-	args := []string{"connectedk8s", "list"}
-	if input.ResourceGroup != "" {
-		args = append(args, "-g", input.ResourceGroup)
 	}
 	cmd := exec.Command("az", args...)
 	data, err := util.GetOutput(cmd)

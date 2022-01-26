@@ -22,29 +22,39 @@ func CheckErr(err error) {
 func main() {
 
 	fmt.Println("start server")
+	// -----------------------------------------------------------------------------
+	// eks
+
+	// addon
 	http.HandleFunc("/createAddon", eksFunc.CreateAddon)
 	http.HandleFunc("/listAddon", eksFunc.ListAddon)
 	http.HandleFunc("/deleteAddon", eksFunc.DeleteAddon)
 	http.HandleFunc("/describeAddon", eksFunc.DescribeAddon)
-	http.HandleFunc("/updateNodegroupConfig", eksFunc.UpdateNodegroupConfig)
-	http.HandleFunc("/describeAddonVersions", eksFunc.DescribeAddonVersions)
 	http.HandleFunc("/updateAddon", eksFunc.UpdateAddon)
-	http.HandleFunc("/listUpdate", eksFunc.ListUpdate)
-	http.HandleFunc("/describeUpdate", eksFunc.DescribeUpdate)
-	http.HandleFunc("/listTagsForResource", eksFunc.ListTagsForResource)
-	http.HandleFunc("/associateEncryptionConfig", eksFunc.AssociateEncryptionConfig)
+	http.HandleFunc("/describeAddonVersions", eksFunc.DescribeAddonVersions)
+
+	// identity-provider
 	http.HandleFunc("/associateIdentityProviderConfig", eksFunc.AssociateIdentityProviderConfig)
 	http.HandleFunc("/disassociateIdentityProviderConfig", eksFunc.DisassociateIdentityProviderConfig)
 	http.HandleFunc("/describeIdentityProviderConfig", eksFunc.DescribeIdentityProviderConfig)
 	http.HandleFunc("/listIdentityProviderConfigs", eksFunc.ListIdentityProviderConfigs)
+
+	// tag
 	http.HandleFunc("/tagResource", eksFunc.TagResource)
 	http.HandleFunc("/untagResource", eksFunc.UntagResource)
+	http.HandleFunc("/listTagsForResource", eksFunc.ListTagsForResource)
+
+	// update
+	http.HandleFunc("/updateNodegroupConfig", eksFunc.UpdateNodegroupConfig)
 	http.HandleFunc("/updateClusterConfig", eksFunc.UpdateClusterConfig)
 
-	http.HandleFunc("/aksStart", aksFunc.AksStart)
-	http.HandleFunc("/aksStop", aksFunc.AksStop)
-	http.HandleFunc("/aksRotateCerts", aksFunc.AksRotateCerts)
-	http.HandleFunc("/aksGetOSoptions", aksFunc.AksGetOSoptions)
+	// etc
+	http.HandleFunc("/listUpdate", eksFunc.ListUpdate)
+	http.HandleFunc("/describeUpdate", eksFunc.DescribeUpdate)
+	http.HandleFunc("/associateEncryptionConfig", eksFunc.AssociateEncryptionConfig)
+
+	// -----------------------------------------------------------------------------
+	// aks
 
 	// addon
 	http.HandleFunc("/addonDisable", aksFunc.AddonDisable)
@@ -69,6 +79,28 @@ func main() {
 	http.HandleFunc("/maintenanceconfigurationList", aksFunc.MaintenanceconfigurationList)
 	http.HandleFunc("/maintenanceconfigurationShow", aksFunc.MaintenanceconfigurationShow)
 
+	// k8sconfiguration
+	http.HandleFunc("/configurationCreate", aksFunc.ConfigurationCreate)
+	http.HandleFunc("/configurationDelete", aksFunc.ConfigurationDelete)
+	http.HandleFunc("/configurationList", aksFunc.ConfigurationList)
+	http.HandleFunc("/configurationShow", aksFunc.ConfigurationShow)
+
+	// connectedk8s
+	http.HandleFunc("/connectedk8sConnect", aksFunc.Connectedk8sConnect)
+	http.HandleFunc("/connectedk8sDelete", aksFunc.Connectedk8sDelete)
+	http.HandleFunc("/connectedk8sDisableFeatures", aksFunc.Connectedk8sDisableFeatures)
+	http.HandleFunc("/connectedk8sEnableFeatures", aksFunc.Connectedk8sEnableFeatures)
+	http.HandleFunc("/connectedk8sList", aksFunc.Connectedk8sList)
+	http.HandleFunc("/connectedk8sProxy", aksFunc.Connectedk8sProxy)
+	http.HandleFunc("/connectedk8sShow", aksFunc.Connectedk8sShow)
+	http.HandleFunc("/connectedk8sUpdate", aksFunc.Connectedk8sUpdate)
+	http.HandleFunc("/connectedk8sUpgrade", aksFunc.Connectedk8sUpgrade)
+
+	// etc
+	http.HandleFunc("/aksStart", aksFunc.AksStart)
+	http.HandleFunc("/aksStop", aksFunc.AksStop)
+	http.HandleFunc("/aksRotateCerts", aksFunc.AksRotateCerts)
+	http.HandleFunc("/aksGetOSoptions", aksFunc.AksGetOSoptions)
 	http.HandleFunc("/appUp", aksFunc.AppUp)
 	http.HandleFunc("/browse", aksFunc.Browse)
 	http.HandleFunc("/checkAcr", aksFunc.CheckAcr)
@@ -77,21 +109,7 @@ func main() {
 	http.HandleFunc("/kanalyze", aksFunc.Kanalyze)
 	http.HandleFunc("/nodepoolGetUpgrades", aksFunc.NodepoolGetUpgrades)
 	http.HandleFunc("/installCLI", aksFunc.InstallCLI)
-	// http.HandleFunc("/connectedConnect", connectedConnect)
-	// http.HandleFunc("/connectedk8sDelete", connectedk8sDelete)
-	http.HandleFunc("/connectedDisableFeatures", aksFunc.ConnectedDisableFeatures)
-	// http.HandleFunc("/connectedEnableFeatures", connectedEnableFeatures)
-	http.HandleFunc("/connectedList", aksFunc.ConnectedList)
-	// http.HandleFunc("/connectedProxy", connectedProxy)
-	// http.HandleFunc("/connectedShow", connectedShow)
-	// http.HandleFunc("/connectedUpdate", connectedUpdate)
-	// http.HandleFunc("/connectedUpgrade", connectedUpgrade)
-	http.HandleFunc("/configurationCreate", aksFunc.ConfigurationCreate)
-	http.HandleFunc("/configurationDelete", aksFunc.ConfigurationDelete)
-	http.HandleFunc("/configurationList", aksFunc.ConfigurationList)
-	http.HandleFunc("/configurationShow", aksFunc.ConfigurationShow)
-	// http.HandleFunc("/configurationCreate", configurationList)
-	// http.HandleFunc("/configurationCreate", configurationShow)
+	// -----------------------------------------------------------------------------
 	http.ListenAndServe(":8080", nil)
 }
 
