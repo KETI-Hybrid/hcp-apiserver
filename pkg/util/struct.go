@@ -57,6 +57,8 @@ type AKSAPIParameter struct {
 }
 
 type AKSAddon struct {
+	ResourceGroupName          string
+	ClusterName                string
 	Addon                      string
 	AppgwID                    string
 	AppgwName                  string
@@ -72,6 +74,8 @@ type AKSAddon struct {
 }
 
 type AKSPodIdentity struct {
+	ResourceGroupName  string
+	ClusterName        string
 	Namespace          string
 	IdentityResourceID string
 	Name               string

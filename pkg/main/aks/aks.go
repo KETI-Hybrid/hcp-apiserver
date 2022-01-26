@@ -231,7 +231,7 @@ func MaintenanceconfigurationShow(w http.ResponseWriter, req *http.Request) {
 func ConfigurationCreate(w http.ResponseWriter, req *http.Request) {
 	var input util.AKSAPIParameter
 	util.Parser(w, req, &input)
-	args := []string{"k8sconfiguration", "create", "-g", input.ResourceGroup, "-c", input.ClusterName, "--cluster-type", input.K8sConfiguration.ClusterType, "-n", input.Name, "-u", input.K8sConfiguration.RepositoryURL, "--scope", input.K8sConfiguration.Scope}
+	args := []string{"k8sconfiguration", "create", "-g", input.ResourceGroup, "-c", input.ClusterName, "--cluster-type", input.K8sConfiguration.ClusterType, "-n", input.K8sConfiguration.Name, "-u", input.K8sConfiguration.RepositoryURL, "--scope", input.K8sConfiguration.Scope}
 	cmd := exec.Command("az", args...)
 	data, err := util.GetOutput(cmd)
 	if err != nil {
@@ -244,7 +244,7 @@ func ConfigurationCreate(w http.ResponseWriter, req *http.Request) {
 func ConfigurationDelete(w http.ResponseWriter, req *http.Request) {
 	var input util.AKSAPIParameter
 	util.Parser(w, req, &input)
-	cmd := exec.Command("az", "k8sconfiguration", "delete", "-g", input.ResourceGroup, "-c", input.ClusterName, "--cluster-type", input.K8sConfiguration.ClusterType, "-n", input.Name, "--yes")
+	cmd := exec.Command("az", "k8sconfiguration", "delete", "-g", input.ResourceGroup, "-c", input.ClusterName, "--cluster-type", input.K8sConfiguration.ClusterType, "-n", input.K8sConfiguration.Name, "--yes")
 	data, err := util.GetOutput(cmd)
 	if err != nil {
 		log.Println(err)
@@ -255,7 +255,7 @@ func ConfigurationDelete(w http.ResponseWriter, req *http.Request) {
 func ConfigurationShow(w http.ResponseWriter, req *http.Request) {
 	var input util.AKSAPIParameter
 	util.Parser(w, req, &input)
-	cmd := exec.Command("az", "k8sconfiguration", "show", "-g", input.ResourceGroup, "-c", input.ClusterName, "--cluster-type", input.K8sConfiguration.ClusterType, "-n", input.Name)
+	cmd := exec.Command("az", "k8sconfiguration", "show", "-g", input.ResourceGroup, "-c", input.ClusterName, "--cluster-type", input.K8sConfiguration.ClusterType, "-n", input.K8sConfiguration.Name)
 	data, err := util.GetOutput(cmd)
 	if err != nil {
 		log.Println(err)
@@ -267,7 +267,7 @@ func ConfigurationShow(w http.ResponseWriter, req *http.Request) {
 func ConfigurationList(w http.ResponseWriter, req *http.Request) {
 	var input util.AKSAPIParameter
 	util.Parser(w, req, &input)
-	cmd := exec.Command("az", "k8s-configuration", "flux", "list", "-g", input.ResourceGroup, "-c", input.ClusterName, "-t", input.K8sConfiguration.ClusterType)
+	cmd := exec.Command("az", "k8s-configuration", "list", "-g", input.ResourceGroup, "-c", input.ClusterName, "-t", input.K8sConfiguration.ClusterType)
 	data, err := util.GetOutput(cmd)
 	if err != nil {
 		log.Println(err)
@@ -275,6 +275,8 @@ func ConfigurationList(w http.ResponseWriter, req *http.Request) {
 		w.Write(data)
 	}
 }
+
+// connectedk8s
 
 // etc
 func AksStart(w http.ResponseWriter, req *http.Request) {
