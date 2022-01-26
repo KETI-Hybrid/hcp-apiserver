@@ -7,11 +7,6 @@ import (
 	"os/exec"
 )
 
-type Output struct {
-	Stderr []byte
-	Stdout []byte
-}
-
 func CombinedOutput2(cmd *exec.Cmd) ([]byte, []byte) {
 	stdout, err := cmd.StdoutPipe()
 	stderr, err := cmd.StderrPipe()

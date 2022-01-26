@@ -13,10 +13,10 @@ type Config struct {
 	} `json:"properties"`
 }
 
-// type Output struct {
-// 	Stderr []byte
-// 	Stdout []byte
-// }
+type Output struct {
+	Stderr []byte
+	Stdout []byte
+}
 
 type EKSAPIParameter struct {
 	SubscriptionId    string
@@ -30,7 +30,10 @@ type EKSAPIParameter struct {
 
 type AKSAPIParameter struct {
 	ResourceGroupName string
+	ResourceName      string
 	ClusterName       string
+	ConfigName        string
+	ConfigFile        Config
 	Acr               string
 	AksCluster        string
 	BranchName        string
