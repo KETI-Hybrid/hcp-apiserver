@@ -16,95 +16,7 @@ func CheckErr(err error) {
 	}
 }
 
-func AksStart(w http.ResponseWriter, req *http.Request) {
-	var input util.EKSAPIParameter
-	util.Parser(w, req, &input)
-	response, err := handler.AksStart(input)
-	CheckErr(err)
-	bytes, err := ioutil.ReadAll(response.Body)
-	CheckErr(err)
-	defer response.Body.Close()
-	fmt.Println(string(bytes))
-	w.Write(bytes)
-}
-
-func AksStop(w http.ResponseWriter, req *http.Request) {
-	var input util.EKSAPIParameter
-	util.Parser(w, req, &input)
-	response, err := handler.AksStop(input)
-	CheckErr(err)
-	bytes, err := ioutil.ReadAll(response.Body)
-	CheckErr(err)
-	defer response.Body.Close()
-	w.Write(bytes)
-}
-
-func AksRotateCerts(w http.ResponseWriter, req *http.Request) {
-	var input util.EKSAPIParameter
-	util.Parser(w, req, &input)
-	response, err := handler.AksRotateCerts(input)
-	CheckErr(err)
-	bytes, err := ioutil.ReadAll(response.Body)
-	CheckErr(err)
-	defer response.Body.Close()
-	w.Write(bytes)
-}
-
-func AksGetOSoptions(w http.ResponseWriter, req *http.Request) {
-	var input util.EKSAPIParameter
-	util.Parser(w, req, &input)
-	response, err := handler.AksGetOSoptions(input)
-	CheckErr(err)
-	bytes, err := ioutil.ReadAll(response.Body)
-	CheckErr(err)
-	defer response.Body.Close()
-	w.Write(bytes)
-}
-
-func MaintenanceconfigurationCreateOrUpdate(w http.ResponseWriter, req *http.Request) {
-	var input util.EKSAPIParameter
-	util.Parser(w, req, &input)
-	response, err := handler.MaintenanceconfigurationCreateOrUpdate(input)
-	CheckErr(err)
-	bytes, err := ioutil.ReadAll(response.Body)
-	CheckErr(err)
-	defer response.Body.Close()
-	w.Write(bytes)
-}
-
-func MaintenanceconfigurationList(w http.ResponseWriter, req *http.Request) {
-	var input util.EKSAPIParameter
-	util.Parser(w, req, &input)
-	response, err := handler.MaintenanceconfigurationList(input)
-	CheckErr(err)
-	bytes, err := ioutil.ReadAll(response.Body)
-	CheckErr(err)
-	defer response.Body.Close()
-	w.Write(bytes)
-}
-
-func MaintenanceconfigurationDelete(w http.ResponseWriter, req *http.Request) {
-	var input util.EKSAPIParameter
-	util.Parser(w, req, &input)
-	response, err := handler.MaintenanceconfigurationDelete(input)
-	CheckErr(err)
-	// bytes, err := ioutil.ReadAll(response.Body)
-	// CheckErr(err)
-	defer response.Body.Close()
-	w.Write([]byte(response.Status))
-}
-
-func MaintenanceconfigurationShow(w http.ResponseWriter, req *http.Request) {
-	var input util.EKSAPIParameter
-	util.Parser(w, req, &input)
-	response, err := handler.MaintenanceconfigurationShow(input)
-	CheckErr(err)
-	bytes, err := ioutil.ReadAll(response.Body)
-	CheckErr(err)
-	defer response.Body.Close()
-	w.Write(bytes)
-}
-
+// addon
 func AddonDisable(w http.ResponseWriter, req *http.Request) {
 	var input util.AKSAPIParameter
 	util.Parser(w, req, &input)
@@ -271,6 +183,145 @@ func PodIdentityExceptionUpdate(w http.ResponseWriter, req *http.Request) {
 		w.Write(data)
 	}
 }
+
+// maintenanceconfiguration
+func MaintenanceconfigurationCreateOrUpdate(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSAPIParameter
+	util.Parser(w, req, &input)
+	response, err := handler.MaintenanceconfigurationCreateOrUpdate(input)
+	CheckErr(err)
+	bytes, err := ioutil.ReadAll(response.Body)
+	CheckErr(err)
+	defer response.Body.Close()
+	w.Write(bytes)
+}
+
+func MaintenanceconfigurationList(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSAPIParameter
+	util.Parser(w, req, &input)
+	response, err := handler.MaintenanceconfigurationList(input)
+	CheckErr(err)
+	bytes, err := ioutil.ReadAll(response.Body)
+	CheckErr(err)
+	defer response.Body.Close()
+	w.Write(bytes)
+}
+
+func MaintenanceconfigurationDelete(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSAPIParameter
+	util.Parser(w, req, &input)
+	response, err := handler.MaintenanceconfigurationDelete(input)
+	CheckErr(err)
+	defer response.Body.Close()
+	w.Write([]byte(response.Status))
+}
+
+func MaintenanceconfigurationShow(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSAPIParameter
+	util.Parser(w, req, &input)
+	response, err := handler.MaintenanceconfigurationShow(input)
+	CheckErr(err)
+	bytes, err := ioutil.ReadAll(response.Body)
+	CheckErr(err)
+	defer response.Body.Close()
+	w.Write(bytes)
+}
+
+// k8sconfiguration
+func ConfigurationCreate(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSAPIParameter
+	util.Parser(w, req, &input)
+	args := []string{"k8sconfiguration", "create", "-g", input.ResourceGroup, "-c", input.ClusterName, "--cluster-type", input.K8sConfiguration.ClusterType, "-n", input.Name, "-u", input.K8sConfiguration.RepositoryURL, "--scope", input.K8sConfiguration.Scope}
+	cmd := exec.Command("az", args...)
+	data, err := util.GetOutput(cmd)
+	if err != nil {
+		log.Println(err)
+	} else {
+		w.Write(data)
+	}
+}
+
+func ConfigurationDelete(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSAPIParameter
+	util.Parser(w, req, &input)
+	cmd := exec.Command("az", "k8sconfiguration", "delete", "-g", input.ResourceGroup, "-c", input.ClusterName, "--cluster-type", input.K8sConfiguration.ClusterType, "-n", input.Name, "--yes")
+	data, err := util.GetOutput(cmd)
+	if err != nil {
+		log.Println(err)
+	} else {
+		w.Write(data)
+	}
+}
+func ConfigurationShow(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSAPIParameter
+	util.Parser(w, req, &input)
+	cmd := exec.Command("az", "k8sconfiguration", "show", "-g", input.ResourceGroup, "-c", input.ClusterName, "--cluster-type", input.K8sConfiguration.ClusterType, "-n", input.Name)
+	data, err := util.GetOutput(cmd)
+	if err != nil {
+		log.Println(err)
+	} else {
+		w.Write(data)
+	}
+}
+
+func ConfigurationList(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSAPIParameter
+	util.Parser(w, req, &input)
+	cmd := exec.Command("az", "k8s-configuration", "flux", "list", "-g", input.ResourceGroup, "-c", input.ClusterName, "-t", input.K8sConfiguration.ClusterType)
+	data, err := util.GetOutput(cmd)
+	if err != nil {
+		log.Println(err)
+	} else {
+		w.Write(data)
+	}
+}
+
+// etc
+func AksStart(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSAPIParameter
+	util.Parser(w, req, &input)
+	response, err := handler.AksStart(input)
+	CheckErr(err)
+	bytes, err := ioutil.ReadAll(response.Body)
+	CheckErr(err)
+	defer response.Body.Close()
+	fmt.Println(string(bytes))
+	w.Write(bytes)
+}
+
+func AksStop(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSAPIParameter
+	util.Parser(w, req, &input)
+	response, err := handler.AksStop(input)
+	CheckErr(err)
+	bytes, err := ioutil.ReadAll(response.Body)
+	CheckErr(err)
+	defer response.Body.Close()
+	w.Write(bytes)
+}
+
+func AksRotateCerts(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSAPIParameter
+	util.Parser(w, req, &input)
+	response, err := handler.AksRotateCerts(input)
+	CheckErr(err)
+	bytes, err := ioutil.ReadAll(response.Body)
+	CheckErr(err)
+	defer response.Body.Close()
+	w.Write(bytes)
+}
+
+func AksGetOSoptions(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSAPIParameter
+	util.Parser(w, req, &input)
+	response, err := handler.AksGetOSoptions(input)
+	CheckErr(err)
+	bytes, err := ioutil.ReadAll(response.Body)
+	CheckErr(err)
+	defer response.Body.Close()
+	w.Write(bytes)
+}
+
 func AppUp(w http.ResponseWriter, req *http.Request) {
 	var input util.AKSAPIParameter
 	util.Parser(w, req, &input)
@@ -473,54 +524,6 @@ func ConnectedList(w http.ResponseWriter, req *http.Request) {
 		args = append(args, "-g", input.ResourceGroup)
 	}
 	cmd := exec.Command("az", args...)
-	data, err := util.GetOutput(cmd)
-	if err != nil {
-		log.Println(err)
-	} else {
-		w.Write(data)
-	}
-}
-
-func ConfigurationCreate(w http.ResponseWriter, req *http.Request) {
-	var input util.AKSAPIParameter
-	util.Parser(w, req, &input)
-	args := []string{"k8sconfiguration", "create", "-g", input.ResourceGroup, "-c", input.ClusterName, "--cluster-type", input.K8sConfiguration.ClusterType, "-n", input.Name, "-u", input.K8sConfiguration.RepositoryURL, "--scope", input.K8sConfiguration.Scope}
-	cmd := exec.Command("az", args...)
-	data, err := util.GetOutput(cmd)
-	if err != nil {
-		log.Println(err)
-	} else {
-		w.Write(data)
-	}
-}
-
-func ConfigurationDelete(w http.ResponseWriter, req *http.Request) {
-	var input util.AKSAPIParameter
-	util.Parser(w, req, &input)
-	cmd := exec.Command("az", "k8sconfiguration", "delete", "-g", input.ResourceGroup, "-c", input.ClusterName, "--cluster-type", input.K8sConfiguration.ClusterType, "-n", input.Name, "--yes")
-	data, err := util.GetOutput(cmd)
-	if err != nil {
-		log.Println(err)
-	} else {
-		w.Write(data)
-	}
-}
-func ConfigurationShow(w http.ResponseWriter, req *http.Request) {
-	var input util.AKSAPIParameter
-	util.Parser(w, req, &input)
-	cmd := exec.Command("az", "k8sconfiguration", "show", "-g", input.ResourceGroup, "-c", input.ClusterName, "--cluster-type", input.K8sConfiguration.ClusterType, "-n", input.Name)
-	data, err := util.GetOutput(cmd)
-	if err != nil {
-		log.Println(err)
-	} else {
-		w.Write(data)
-	}
-}
-
-func ConfigurationList(w http.ResponseWriter, req *http.Request) {
-	var input util.AKSAPIParameter
-	util.Parser(w, req, &input)
-	cmd := exec.Command("az", "k8s-configuration", "flux", "list", "-g", input.ResourceGroup, "-c", input.ClusterName, "-t", input.K8sConfiguration.ClusterType)
 	data, err := util.GetOutput(cmd)
 	if err != nil {
 		log.Println(err)

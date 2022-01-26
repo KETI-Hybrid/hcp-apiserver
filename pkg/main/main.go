@@ -45,11 +45,6 @@ func main() {
 	http.HandleFunc("/aksStop", aksFunc.AksStop)
 	http.HandleFunc("/aksRotateCerts", aksFunc.AksRotateCerts)
 	http.HandleFunc("/aksGetOSoptions", aksFunc.AksGetOSoptions)
-	http.HandleFunc("/maintenanceconfigurationCreateOrUpdate", aksFunc.MaintenanceconfigurationCreateOrUpdate)
-	// maintenanceconfiguration add + update
-	http.HandleFunc("/maintenanceconfigurationDelete", aksFunc.MaintenanceconfigurationDelete)
-	http.HandleFunc("/maintenanceconfigurationList", aksFunc.MaintenanceconfigurationList)
-	http.HandleFunc("/maintenanceconfigurationShow", aksFunc.MaintenanceconfigurationShow)
 
 	// addon
 	http.HandleFunc("/addonDisable", aksFunc.AddonDisable)
@@ -67,6 +62,13 @@ func main() {
 	http.HandleFunc("/podIdentityExceptionDelete", aksFunc.PodIdentityExceptionDelete)
 	http.HandleFunc("/podIdentityExceptionList", aksFunc.PodIdentityExceptionList)
 	http.HandleFunc("/podIdentityExceptionUpdate", aksFunc.PodIdentityExceptionUpdate)
+
+	// maintenanceconfiguration
+	http.HandleFunc("/maintenanceconfigurationCreateOrUpdate", aksFunc.MaintenanceconfigurationCreateOrUpdate)
+	http.HandleFunc("/maintenanceconfigurationDelete", aksFunc.MaintenanceconfigurationDelete)
+	http.HandleFunc("/maintenanceconfigurationList", aksFunc.MaintenanceconfigurationList)
+	http.HandleFunc("/maintenanceconfigurationShow", aksFunc.MaintenanceconfigurationShow)
+
 	http.HandleFunc("/appUp", aksFunc.AppUp)
 	http.HandleFunc("/browse", aksFunc.Browse)
 	http.HandleFunc("/checkAcr", aksFunc.CheckAcr)
