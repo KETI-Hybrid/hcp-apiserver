@@ -14,7 +14,7 @@ func AksStart(input util.AKSAPIParameter) (*http.Response, error) {
 	api := converter.AksAPI["start"]
 	api = strings.ReplaceAll(api, "{subscriptionId}", os.Getenv("SubscriptionId"))
 	api = strings.ReplaceAll(api, "{resourceGroupName}", input.ResourceGroupName)
-	api = strings.ReplaceAll(api, "{resourceName}", input.ResourceName)
+	api = strings.ReplaceAll(api, "{resourceName}", input.ClusterName)
 	fmt.Println(api)
 	hosturl := api
 	response, err := util.AuthorizationAndHTTP("POST", hosturl, nil)
@@ -25,7 +25,7 @@ func AksStop(input util.AKSAPIParameter) (*http.Response, error) {
 	api := converter.AksAPI["stop"]
 	api = strings.ReplaceAll(api, "{subscriptionId}", os.Getenv("SubscriptionId"))
 	api = strings.ReplaceAll(api, "{resourceGroupName}", input.ResourceGroupName)
-	api = strings.ReplaceAll(api, "{resourceName}", input.ResourceName)
+	api = strings.ReplaceAll(api, "{resourceName}", input.ClusterName)
 	hosturl := api
 	response, err := util.AuthorizationAndHTTP("POST", hosturl, nil)
 	return response, err
@@ -35,7 +35,7 @@ func AksRotateCerts(input util.AKSAPIParameter) (*http.Response, error) {
 	api := converter.AksAPI["rotateCerts"]
 	api = strings.ReplaceAll(api, "{subscriptionId}", os.Getenv("SubscriptionId"))
 	api = strings.ReplaceAll(api, "{resourceGroupName}", input.ResourceGroupName)
-	api = strings.ReplaceAll(api, "{resourceName}", input.ResourceName)
+	api = strings.ReplaceAll(api, "{resourceName}", input.ClusterName)
 	fmt.Println(api)
 	hosturl := api
 	response, err := util.AuthorizationAndHTTP("POST", hosturl, nil)
