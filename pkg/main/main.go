@@ -107,6 +107,7 @@ func main() {
 	http.HandleFunc("/getUpgrades", aksFunc.GetUpgrades)
 	http.HandleFunc("/getVersions", aksFunc.GetVersions)
 	http.HandleFunc("/kanalyze", aksFunc.Kanalyze)
+	http.HandleFunc("/kollect", aksFunc.Kollect)
 	http.HandleFunc("/nodepoolGetUpgrades", aksFunc.NodepoolGetUpgrades)
 	http.HandleFunc("/installCLI", aksFunc.InstallCLI)
 	// -----------------------------------------------------------------------------
