@@ -576,6 +576,19 @@ func Kanalyze(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
+func Kollect(w http.ResponseWriter, req *http.Request) {
+	var input util.AKSAPIParameter
+	util.Parser(w, req, &input)
+	args := []string{"aks", "kollect", "-n", input.ClusterName, "-g", input.ResourceGroupName, "--storage-account", input.StorageAccount}
+	cmd := exec.Command("az", args...)
+	data, err := util.GetOutput(cmd)
+	if err != nil {
+		log.Println(err)
+	} else {
+		w.Write(data)
+	}
+}
+
 func NodepoolGetUpgrades(w http.ResponseWriter, req *http.Request) {
 	var input util.AKSAPIParameter
 	util.Parser(w, req, &input)

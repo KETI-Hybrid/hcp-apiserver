@@ -47,6 +47,7 @@ type AKSAPIParameter struct {
 	Location          string
 	NodepoolName      string
 	Features          []string
+	StorageAccount    string
 	Addon             AKSAddon            `json:"addon"`
 	PodIdentity       AKSPodIdentity      `json:"podIdentity"`
 	Install           AKSInstallCLI       `json:"install"`
