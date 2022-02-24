@@ -4,11 +4,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 )
 
 func Parser(w http.ResponseWriter, req *http.Request, input interface{}) {
 	jsonDataFromHttp, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	fmt.Println(string(jsonDataFromHttp))
 	err = json.Unmarshal(jsonDataFromHttp, input)
 	defer req.Body.Close()

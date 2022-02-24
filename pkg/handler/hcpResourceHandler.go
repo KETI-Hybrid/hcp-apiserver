@@ -10,7 +10,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	policy "Hybrid_Cluster/resource"
+	policy "Hybrid_Cluster/hcp-resource/hcppolicy"
 
 	appsv1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

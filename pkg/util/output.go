@@ -9,6 +9,10 @@ import (
 
 func CombinedOutput2(cmd *exec.Cmd) ([]byte, []byte) {
 	stdout, err := cmd.StdoutPipe()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	stderr, err := cmd.StderrPipe()
 	if err != nil {
 		log.Fatal(err)
