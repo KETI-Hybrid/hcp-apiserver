@@ -9,25 +9,9 @@ import (
 	"net/url"
 	"os"
 	"strings"
+
+	"k8s.io/klog/v2"
 )
-
-// type AzureAuth struct {
-// 	clientId       string
-// 	clientSecret   string
-// 	subscriptionId string
-// 	tenantId       string
-// }
-
-// func GetAzureAuth() AzureAuth {
-// 	auth := AzureAuth{}
-// 	data, err := ioutil.ReadFile("~/.azure/test.auth")
-// 	if err != nil {
-// 		log.Println(err)
-// 	}
-// 	json.Unmarshal(data, &auth)
-
-// 	return auth
-// }
 
 type bearerToken struct {
 	Token_type     string `json:"token_type" protobuf:"bytes,1,opt,name=token_type"`
@@ -41,8 +25,6 @@ type bearerToken struct {
 
 func GetBearer() bearerToken {
 
-	// azureAuth := GetAzureAuth()
-
 	params := url.Values{}
 	params.Add("client_id", os.Getenv("ClientId"))
 	params.Add("grant_type", `client_credentials`)
@@ -52,13 +34,13 @@ func GetBearer() bearerToken {
 
 	req, err := http.NewRequest("POST", "https://login.microsoftonline.com/"+os.Getenv("TenantId")+"/oauth2/token", body)
 	if err != nil {
-		// handle err
+		klog.Error(err)
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	response, err := http.DefaultClient.Do(req)
 	if err != nil {
-		// handle err
+		klog.Error(err)
 	}
 	defer response.Body.Close()
 	bytes, _ := ioutil.ReadAll(response.Body)
