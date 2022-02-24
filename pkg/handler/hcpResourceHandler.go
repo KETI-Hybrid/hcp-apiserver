@@ -1,16 +1,16 @@
 package handler
 
 import (
-	cobrautil "Hybrid_Cluster/hybridctl/util"
-	resourcev1alpha1 "Hybrid_Cluster/pkg/apis/resource/v1alpha1"
-	resourcev1alpha1clientset "Hybrid_Cluster/pkg/client/resource/v1alpha1/clientset/versioned"
+	cobrautil "Hybrid_Cloud/hybridctl/util"
+	resourcev1alpha1 "Hybrid_Cloud/pkg/apis/resource/v1alpha1"
+	resourcev1alpha1clientset "Hybrid_Cloud/pkg/client/resource/v1alpha1/clientset/versioned"
 	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 
-	policy "Hybrid_Cluster/hcp-resource/hcppolicy"
+	policy "Hybrid_Cloud/hcp-resource/hcppolicy"
 
 	appsv1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -39,6 +39,7 @@ func CreateDeploymentHandler(w http.ResponseWriter, r *http.Request) {
 	json.Unmarshal(bytes, &real_resource)
 
 	algorithm, err := policy.GetAlgorithm()
+	fmt.Println(algorithm)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -51,6 +52,7 @@ func CreateDeploymentHandler(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(err)
 			return
 		}
+
 		clienset, err := resourcev1alpha1clientset.NewForConfig(master_config)
 		if err != nil {
 			fmt.Println(err)
@@ -58,6 +60,10 @@ func CreateDeploymentHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		// analytic Engine
 		hcp_resource := resourcev1alpha1.HCPDeployment{
+			TypeMeta: metav1.TypeMeta{
+				Kind:       "HCPDeployment",
+				APIVersion: "hcp.crd.com/v1alpha1",
+			},
 			ObjectMeta: metav1.ObjectMeta{
 				Name: real_resource.Name,
 			},
@@ -75,7 +81,7 @@ func CreateDeploymentHandler(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(err)
 			return
 		} else {
-			fmt.Printf("[1] Request scheduling to scheduler : %s \n", r.Name)
+			fmt.Printf("request scheduling to scheduler : %s \n", r.Name)
 		}
 	} else {
 		config, err := cobrautil.BuildConfigFromFlags(resource.TargetCluster, "/root/.kube/config")

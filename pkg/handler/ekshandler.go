@@ -1,8 +1,8 @@
 package handler
 
 import (
-	cobrautil "Hybrid_Cluster/hybridctl/util"
-	clusterRegister "Hybrid_Cluster/pkg/client/clusterregister/v1alpha1/clientset/versioned/typed/clusterregister/v1alpha1"
+	cobrautil "Hybrid_Cloud/hybridctl/util"
+	clusterRegister "Hybrid_Cloud/pkg/client/clusterregister/v1alpha1/clientset/versioned/typed/clusterregister/v1alpha1"
 	"context"
 	"fmt"
 	"log"

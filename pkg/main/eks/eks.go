@@ -1,8 +1,8 @@
 package eks
 
 import (
-	"Hybrid_Cluster/hcp-apiserver/pkg/handler"
-	"Hybrid_Cluster/hcp-apiserver/pkg/util"
+	"Hybrid_Cloud/hcp-apiserver/pkg/handler"
+	"Hybrid_Cloud/hcp-apiserver/pkg/util"
 	"encoding/json"
 	"net/http"
 

@@ -2,11 +2,11 @@ package main
 
 import (
 
-	// "Hybrid_Cluster/hybridctl/util"
+	// "Hybrid_Cloud/hybridctl/util"
 
-	"Hybrid_Cluster/hcp-apiserver/pkg/handler"
-	aksFunc "Hybrid_Cluster/hcp-apiserver/pkg/main/aks"
-	eksFunc "Hybrid_Cluster/hcp-apiserver/pkg/main/eks"
+	"Hybrid_Cloud/hcp-apiserver/pkg/handler"
+	aksFunc "Hybrid_Cloud/hcp-apiserver/pkg/main/aks"
+	eksFunc "Hybrid_Cloud/hcp-apiserver/pkg/main/eks"
 	"fmt"
 	"log"
 	"net/http"

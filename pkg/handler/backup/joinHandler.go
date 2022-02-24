@@ -1,13 +1,13 @@
 package backup
 
 import (
-	mappingTable "Hybrid_Cluster/hcp-apiserver/pkg/converter"
-	cobrautil "Hybrid_Cluster/hybridctl/util"
+	mappingTable "Hybrid_Cloud/hcp-apiserver/pkg/converter"
+	cobrautil "Hybrid_Cloud/hybridctl/util"
 
-	// KubeFedCluster "Hybrid_Cluster/pkg/apis/kubefedcluster/v1alpha1"
-	// KubeFedCluster "Hybrid_Cluster/pkg/apis/kubefedcluster/v1alpha1"
+	// KubeFedCluster "Hybrid_Cloud/pkg/apis/kubefedcluster/v1alpha1"
+	// KubeFedCluster "Hybrid_Cloud/pkg/apis/kubefedcluster/v1alpha1"
 
-	"Hybrid_Cluster/util/clusterManager"
+	"Hybrid_Cloud/util/clusterManager"
 	"context"
 	"fmt"
 	"log"
@@ -16,7 +16,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 	kubefed "sigs.k8s.io/kubefed/pkg/kubefedctl"
 
-	// clusterRegister "Hybrid_Cluster/pkg/client/clusterregister/v1alpha1/clientset/versioned/typed/clusterregister/v1alpha1"
+	// clusterRegister "Hybrid_Cloud/pkg/client/clusterregister/v1alpha1/clientset/versioned/typed/clusterregister/v1alpha1"
 	// "context"
 	// "flag"
 	// "log"
@@ -31,11 +31,11 @@ import (
 	rbacv1 "k8s.io/api/rbac/v1"
 	"sigs.k8s.io/kubefed/pkg/kubefedctl/options"
 
-	// cobrautil "Hybrid_Cluster/hybridctl/util"
-	// KubeFedCluster "Hybrid_Cluster/pkg/apis/kubefedcluster/v1alpha1"
+	// cobrautil "Hybrid_Cloud/hybridctl/util"
+	// KubeFedCluster "Hybrid_Cloud/pkg/apis/kubefedcluster/v1alpha1"
 	// "fmt"
-	// mappingTable "Hybrid_Cluster/hcp-apiserver/pkg/converter"
-	// util "Hybrid_Cluster/hcp-apiserver/pkg/util"
+	// mappingTable "Hybrid_Cloud/hcp-apiserver/pkg/converter"
+	// util "Hybrid_Cloud/hcp-apiserver/pkg/util"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	// _ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 	// "k8s.io/client-go/tools/clientcmd"
