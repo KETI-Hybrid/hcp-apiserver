@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"Hybrid_Cluster/hcp-apiserver/pkg/converter"
-	util "Hybrid_Cluster/hcp-apiserver/pkg/util"
+	"Hybrid_Cloud/hcp-apiserver/pkg/converter"
+	util "Hybrid_Cloud/hcp-apiserver/pkg/util"
 
 	"fmt"
 	"net/http"
