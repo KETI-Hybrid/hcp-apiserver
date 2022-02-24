@@ -23,7 +23,9 @@ type Resource struct {
 }
 
 func CreateDeploymentHandler(w http.ResponseWriter, r *http.Request) {
+
 	var resource Resource
+
 	jsonDataFromHttp, _ := ioutil.ReadAll(r.Body)
 	err := json.Unmarshal(jsonDataFromHttp, &resource)
 	if err != nil {
@@ -33,11 +35,12 @@ func CreateDeploymentHandler(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json")
 
-	// get real_resource
+	// RealResource 읽어오기
 	var real_resource *appsv1.Deployment
 	bytes, _ := json.Marshal(resource.RealResource)
 	json.Unmarshal(bytes, &real_resource)
 
+	// HCPPolicy 최적 배치 알고리즘 정책 읽어오기
 	algorithm, err := policy.GetAlgorithm()
 	fmt.Println(algorithm)
 	if err != nil {
@@ -45,6 +48,7 @@ func CreateDeploymentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// TargetCluster가 지정되지 않은 경우
 	if resource.TargetCluster == "undefined" {
 
 		master_config, err := cobrautil.BuildConfigFromFlags("kube-master", "/root/.kube/config")
@@ -58,7 +62,8 @@ func CreateDeploymentHandler(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(err)
 			return
 		}
-		// analytic Engine
+
+		// HCPDeployment 생성하기
 		hcp_resource := resourcev1alpha1.HCPDeployment{
 			TypeMeta: metav1.TypeMeta{
 				Kind:       "HCPDeployment",
@@ -71,6 +76,7 @@ func CreateDeploymentHandler(w http.ResponseWriter, r *http.Request) {
 				RealDeploymentSpec:     real_resource.Spec,
 				RealDeploymentMetadata: real_resource.ObjectMeta,
 
+				// SchedulingStatus "Requested"
 				SchedulingStatus: "Requested",
 				SchedulingType:   algorithm,
 			},
@@ -84,6 +90,7 @@ func CreateDeploymentHandler(w http.ResponseWriter, r *http.Request) {
 			fmt.Printf("request scheduling to scheduler : %s \n", r.Name)
 		}
 	} else {
+		// TargetCluster가 지정된 경우
 		config, err := cobrautil.BuildConfigFromFlags(resource.TargetCluster, "/root/.kube/config")
 		if err != nil {
 			fmt.Println(err)
@@ -96,7 +103,7 @@ func CreateDeploymentHandler(w http.ResponseWriter, r *http.Request) {
 			namespace = "default"
 		}
 
-		// create resource
+		// Kubernetes Deployment 생성
 		r, err := clientset.AppsV1().Deployments(namespace).Create(context.TODO(), real_resource, metav1.CreateOptions{})
 
 		if err != nil {
