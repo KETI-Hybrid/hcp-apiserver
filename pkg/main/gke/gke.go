@@ -8,6 +8,7 @@ import (
 	"os/exec"
 )
 
+// gke container images
 type Images struct {
 	SRC_IMAGE  string
 	DEST_IMAGE string
@@ -17,7 +18,7 @@ type Images struct {
 func (i *Images) AddTag(w http.ResponseWriter, req *http.Request) {
 	util.Parser(w, req, i)
 	cmd := exec.Command("gcloud", "container", "images", "add-tag", i.SRC_IMAGE, i.DEST_IMAGE)
-	data, err := util.GetOutput(cmd)
+	data, err := util.GetOutputReplaceStr(cmd, "Do you want to continue (Y/n)?", "")
 	if err != nil {
 		log.Println(err)
 	} else {
@@ -76,7 +77,7 @@ func (i *Images) ListTags(w http.ResponseWriter, req *http.Request) {
 func (i *Images) UnTags(w http.ResponseWriter, req *http.Request) {
 	util.Parser(w, req, i)
 	cmd := exec.Command("gcloud", "container", "images", "untag", i.IMAGE_NAME)
-	data, err := util.GetOutput(cmd)
+	data, err := util.GetOutputReplaceStr(cmd, "Do you want to continue (Y/n)?", "")
 	if err != nil {
 		log.Println(err)
 	} else {
