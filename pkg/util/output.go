@@ -5,6 +5,8 @@ import (
 	"io"
 	"log"
 	"os/exec"
+	"regexp"
+	"strings"
 )
 
 func CombinedOutput2(cmd *exec.Cmd) ([]byte, []byte) {
@@ -34,6 +36,27 @@ func GetOutput(cmd *exec.Cmd) ([]byte, error) {
 		Stderr: errb,
 		Stdout: outb,
 	}
+	data, err := json.Marshal(output)
+	return data, err
+}
+
+func GetOutputReplaceStr(cmd *exec.Cmd, old string, new string) ([]byte, error) {
+	errb, outb := CombinedOutput2(cmd)
+	output := Output{
+		Stderr: errb,
+		Stdout: outb,
+	}
+
+	// replace old string to new string
+	temp := strings.ReplaceAll(string(output.Stderr), old, new)
+	regex, err := regexp.Compile("\n\n")
+	if err != nil {
+		return nil, err
+	}
+
+	// remove a blank line from a multi-line string
+	temp = regex.ReplaceAllString(temp, "\n")
+	output.Stderr = []byte(temp)
 	data, err := json.Marshal(output)
 	return data, err
 }
