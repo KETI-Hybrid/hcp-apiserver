@@ -1,11 +1,11 @@
 package main
 
 import (
+	"Hybrid_Cloud/hcp-apiserver/pkg/util"
 	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 
 	container "cloud.google.com/go/container/apiv1"
@@ -45,6 +45,7 @@ func SetOperationRequest(req *http.Request, op *Operations) {
 	}
 }
 
+// https://pkg.go.dev/cloud.google.com/go/container/apiv1
 func (op *Operations) GetOperation(w http.ResponseWriter, r *http.Request) {
 	c, err := NewClusterManagerClient()
 	if err != nil {
@@ -59,32 +60,20 @@ func (op *Operations) GetOperation(w http.ResponseWriter, r *http.Request) {
 		Name:        (*op).Name,
 	}
 
-	/*
-		req := &containerpb.GetOperationRequest{
-			ProjectId:   "keti-container",
-			Zone:        "us-central1-a",
-			OperationId: "operation-1648309236003-34160983",
-			Name:        "operation-1648309236003-34160983",
-		}
-	*/
-
 	resp, err := c.GetOperation(context.TODO(), req)
 	defer c.Close()
 
+	var output util.Output
 	if err != nil {
-		log.Println(err)
-		bytes, err2 := json.Marshal(err)
-		if err2 != nil {
-			log.Println(err2)
-		}
-		w.Write(bytes)
+		bytes, _ := json.Marshal(err.Error())
+		output.Stderr = bytes
 	} else {
-		bytes, err := json.Marshal(&resp)
-		if err != nil {
-			log.Println(err)
-		}
-		w.Write(bytes)
+		bytes, _ := json.Marshal(&resp)
+		output.Stdout = bytes
 	}
+
+	bytes, _ := json.Marshal(output)
+	w.Write(bytes)
 }
 
 func (op *Operations) ListOperations(w http.ResponseWriter, r *http.Request) {
@@ -102,21 +91,17 @@ func (op *Operations) ListOperations(w http.ResponseWriter, r *http.Request) {
 	resp, err := c.ListOperations(context.TODO(), req)
 	defer c.Close()
 
-	fmt.Println(resp)
+	var output util.Output
 	if err != nil {
-		log.Println(err)
-		bytes, err2 := json.Marshal(err)
-		if err2 != nil {
-			log.Println(err2)
-		}
-		w.Write(bytes)
+		bytes, _ := json.Marshal(err.Error())
+		output.Stderr = bytes
 	} else {
-		bytes, err := json.Marshal(&resp)
-		if err != nil {
-			log.Println(err)
-		}
-		w.Write(bytes)
+		bytes, _ := json.Marshal(&resp)
+		output.Stdout = bytes
 	}
+
+	bytes, _ := json.Marshal(output)
+	w.Write(bytes)
 }
 
 func main() {
