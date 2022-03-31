@@ -154,6 +154,7 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 // https://pkg.go.dev/cloud.google.com/go/container/apiv1
 func (op *Operations) GetOperation(w http.ResponseWriter, r *http.Request) {
 	c, err := NewClusterManagerClient()
+
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -260,7 +261,9 @@ func ConfigureDocker(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-type Auth struct{}
+type Auth struct {
+	CRED_FILE string
+}
 
 func (a *Auth) List(w http.ResponseWriter, r *http.Request) {
 	cmd := exec.Command("gcloud", "auth", "list")
@@ -276,6 +279,28 @@ func (a *Auth) List(w http.ResponseWriter, r *http.Request) {
 func (a *Auth) Revoke(w http.ResponseWriter, r *http.Request) {
 	cmd := exec.Command("gcloud", "auth", "revoke")
 	data, err := util.GetOutput(cmd)
+	if err != nil {
+		log.Println(err)
+	} else {
+		fmt.Println(string(data))
+		w.Write(data)
+	}
+}
+
+func (a *Auth) Login(w http.ResponseWriter, r *http.Request) {
+	util.Parser(w, r, a)
+
+	var data []byte
+	var err error
+	var str string = "You are already authenticated with 'hybridcloudplatform@keti-container.iam.gserviceaccount.com'.\nDo you wish to proceed and overwrite existing credentials?\n\nDo you want to continue (Y/n)?"
+	if a.CRED_FILE == "" {
+		str := "ERROR: Input path to the external account configuration file "
+		data, err = json.Marshal(str)
+	} else {
+		cmd := exec.Command("gcloud", "auth", "login", "--cred-file", a.CRED_FILE)
+		data, err = util.GetOutputReplaceStr(cmd, str, "")
+	}
+
 	if err != nil {
 		log.Println(err)
 	} else {
@@ -337,6 +362,7 @@ func main() {
 	http.HandleFunc("/gke/auth/configureDocker", ConfigureDocker)
 	http.HandleFunc("/gke/auth/list", auth.List)
 	http.HandleFunc("/gke/auth/revoke", auth.Revoke)
+	http.HandleFunc("/gke/auth/login", auth.Login)
 
 	var d Docker
 	http.HandleFunc("/gke/docker", d.Docker)
