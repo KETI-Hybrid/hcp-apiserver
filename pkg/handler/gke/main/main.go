@@ -12,6 +12,7 @@ import (
 
 	container "cloud.google.com/go/container/apiv1"
 	"google.golang.org/api/option"
+	"google.golang.org/api/sourcerepo/v1"
 	containerpb "google.golang.org/genproto/googleapis/container/v1"
 )
 
@@ -113,7 +114,7 @@ func NewClusterManagerClient() (*container.ClusterManagerClient, error) {
 }
 
 // unmarshalling request to Operation struct
-func SetOperationRequest(r *http.Request, input interface{}) {
+func SetGKERequest(r *http.Request, input interface{}) {
 	jsonDataFromHttp, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		fmt.Println(err)
@@ -132,7 +133,7 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req containerpb.GetServerConfigRequest
-	SetOperationRequest(r, &req)
+	SetGKERequest(r, &req)
 	fmt.Println(req)
 
 	resp, err := c.GetServerConfig(context.TODO(), &req)
@@ -159,7 +160,7 @@ func (op *Operations) GetOperation(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 	}
 
-	SetOperationRequest(r, op)
+	SetGKERequest(r, op)
 	req := &containerpb.GetOperationRequest{
 		ProjectId:   (*op).PROJECT_ID,
 		Zone:        (*op).ZONE,
@@ -189,7 +190,7 @@ func (op *Operations) ListOperations(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 	}
 
-	SetOperationRequest(r, op)
+	SetGKERequest(r, op)
 	req := &containerpb.ListOperationsRequest{
 		ProjectId: (*op).PROJECT_ID,
 		Zone:      (*op).ZONE,
@@ -218,7 +219,7 @@ func RollbackNodePoolUpgrade(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req *containerpb.RollbackNodePoolUpgradeRequest
-	SetOperationRequest(r, &req)
+	SetGKERequest(r, &req)
 
 	resp, err := c.RollbackNodePoolUpgrade(context.TODO(), req)
 	defer c.Close()
@@ -237,7 +238,7 @@ func RollbackNodePoolUpgrade(w http.ResponseWriter, r *http.Request) {
 }
 
 func (op *Operations) Wait(w http.ResponseWriter, r *http.Request) {
-	SetOperationRequest(r, op)
+	SetGKERequest(r, op)
 	fmt.Println((*op).OPERATION_ID)
 	cmd := exec.Command("gcloud", "container", "operations", "wait", (*op).OPERATION_ID)
 	data, err := util.GetOutput(cmd)
@@ -341,6 +342,102 @@ func (d *Docker) Docker(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
+func UpdateProjectConfig(w http.ResponseWriter, r *http.Request) {
+
+	ctx := context.Background()
+	sourcerepoService, err := sourcerepo.NewService(ctx)
+	if err != nil {
+		fmt.Println(err)
+	}
+	projectsService := sourcerepo.NewProjectsService(sourcerepoService)
+	var req *sourcerepo.UpdateProjectConfigRequest
+	SetGKERequest(r, &req)
+
+	call := projectsService.UpdateConfig("", req)
+	resp, err := call.Do()
+
+	var output util.Output
+	if err != nil {
+		bytes, _ := json.Marshal(err.Error())
+		output.Stderr = bytes
+	} else {
+		bytes, _ := json.Marshal(&resp)
+		output.Stdout = bytes
+	}
+
+	bytes, _ := json.Marshal(output)
+	w.Write(bytes)
+}
+
+func GetProjectConfig(w http.ResponseWriter, r *http.Request) {
+
+	ctx := context.Background()
+	sourcerepoService, err := sourcerepo.NewService(ctx)
+	if err != nil {
+		fmt.Println(err)
+	}
+	projectsService := sourcerepo.NewProjectsService(sourcerepoService)
+	var req *sourcerepo.UpdateProjectConfigRequest
+	SetGKERequest(r, &req)
+
+	call := projectsService.GetConfig("keti-container")
+	resp, err := call.Do()
+
+	var output util.Output
+	if err != nil {
+		bytes, _ := json.Marshal(err.Error())
+		output.Stderr = bytes
+	} else {
+		bytes, _ := json.Marshal(&resp)
+		output.Stdout = bytes
+	}
+
+	bytes, _ := json.Marshal(output)
+	w.Write(bytes)
+}
+
+type SetProperty struct {
+	SECTION  string
+	PROPERTY string
+	VALUE    string
+}
+
+func (s *SetProperty) ConfigSet(w http.ResponseWriter, r *http.Request) {
+	util.Parser(w, r, s)
+
+	args := []string{"config", "set"}
+
+	// SECTION/ is optional while referring to properties in the core section
+	if s.SECTION != "" {
+		if s.PROPERTY != "" {
+			// gcloud config set SECTION/PROPERTY VALUE
+			str := s.SECTION + "/" + s.PROPERTY
+			args = append(args, str)
+			if s.VALUE != "" {
+				args = append(args, s.VALUE)
+			}
+		}
+	} else {
+		// gcloud config set SECTION/PROPERTY VALUE
+		if s.PROPERTY != "" {
+			args = append(args, s.PROPERTY)
+			if s.VALUE != "" {
+				args = append(args, s.VALUE)
+			}
+		}
+	}
+	fmt.Println(args)
+
+	cmd := exec.Command("gcloud", args...)
+	data, err := util.GetOutput(cmd)
+	if err != nil {
+		log.Println(err)
+	} else {
+		fmt.Println(string(data))
+		w.Write(data)
+	}
+}
+
 func main() {
 
 	var i Images
@@ -366,6 +463,9 @@ func main() {
 
 	var d Docker
 	http.HandleFunc("/gke/docker", d.Docker)
+
+	var config SetProperty
+	http.HandleFunc("/gke/config/set", config.ConfigSet)
 
 	http.ListenAndServe(":3080", nil)
 }
