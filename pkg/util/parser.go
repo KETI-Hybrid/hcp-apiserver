@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func Parser(w http.ResponseWriter, req *http.Request, input interface{}) {
+func Parser(req *http.Request, input interface{}) {
 	jsonDataFromHttp, err := ioutil.ReadAll(req.Body)
 	if err != nil {
 		log.Fatal(err)
@@ -20,5 +20,4 @@ func Parser(w http.ResponseWriter, req *http.Request, input interface{}) {
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-	w.Header().Set("Content-Type", "application/json")
 }

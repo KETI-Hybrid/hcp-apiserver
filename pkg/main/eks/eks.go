@@ -13,7 +13,7 @@ func CreateAddon(w http.ResponseWriter, req *http.Request) {
 
 	var createAddonInput eks.CreateAddonInput
 
-	util.Parser(w, req, &createAddonInput)
+	util.Parser(req, &createAddonInput)
 	out, err := handler.CreateAddon(createAddonInput)
 	var jsonData []byte
 	if err != nil {
@@ -21,6 +21,7 @@ func CreateAddon(w http.ResponseWriter, req *http.Request) {
 	} else {
 		jsonData, _ = json.Marshal(&out)
 	}
+	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(jsonData))
 }
 
@@ -28,7 +29,7 @@ func DeleteAddon(w http.ResponseWriter, req *http.Request) {
 
 	var deleteAddonInput eks.DeleteAddonInput
 
-	util.Parser(w, req, &deleteAddonInput)
+	util.Parser(req, &deleteAddonInput)
 	out, err := handler.DeleteAddon(deleteAddonInput)
 	var jsonData []byte
 	if err != nil {
@@ -36,6 +37,7 @@ func DeleteAddon(w http.ResponseWriter, req *http.Request) {
 	} else {
 		jsonData, _ = json.Marshal(&out)
 	}
+	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(jsonData))
 }
 
@@ -43,7 +45,7 @@ func DescribeAddon(w http.ResponseWriter, req *http.Request) {
 
 	var describeAddonInput eks.DescribeAddonInput
 
-	util.Parser(w, req, &describeAddonInput)
+	util.Parser(req, &describeAddonInput)
 	out, err := handler.DescribeAddon(describeAddonInput)
 	var jsonData []byte
 	if err != nil {
@@ -51,6 +53,7 @@ func DescribeAddon(w http.ResponseWriter, req *http.Request) {
 	} else {
 		jsonData, _ = json.Marshal(&out)
 	}
+	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(jsonData))
 }
 
@@ -58,7 +61,7 @@ func DescribeAddonVersions(w http.ResponseWriter, req *http.Request) {
 
 	var describeAddonVersionsInput eks.DescribeAddonVersionsInput
 
-	util.Parser(w, req, &describeAddonVersionsInput)
+	util.Parser(req, &describeAddonVersionsInput)
 	out, err := handler.DescribeAddonVersions(describeAddonVersionsInput)
 	var jsonData []byte
 	if err != nil {
@@ -66,6 +69,7 @@ func DescribeAddonVersions(w http.ResponseWriter, req *http.Request) {
 	} else {
 		jsonData, _ = json.Marshal(&out)
 	}
+	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(jsonData))
 
 }
@@ -74,7 +78,7 @@ func ListAddon(w http.ResponseWriter, req *http.Request) {
 
 	var listAddonInput eks.ListAddonsInput
 
-	util.Parser(w, req, &listAddonInput)
+	util.Parser(req, &listAddonInput)
 	out, err := handler.ListAddon(listAddonInput)
 	var jsonData []byte
 	if err != nil {
@@ -82,6 +86,7 @@ func ListAddon(w http.ResponseWriter, req *http.Request) {
 	} else {
 		jsonData, _ = json.Marshal(&out)
 	}
+	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(jsonData))
 
 }
@@ -90,7 +95,7 @@ func UpdateAddon(w http.ResponseWriter, req *http.Request) {
 
 	var updateAddonInput eks.UpdateAddonInput
 
-	util.Parser(w, req, &updateAddonInput)
+	util.Parser(req, &updateAddonInput)
 	out, err := handler.UpdateAddon(updateAddonInput)
 	var jsonData []byte
 	if err != nil {
@@ -98,13 +103,14 @@ func UpdateAddon(w http.ResponseWriter, req *http.Request) {
 	} else {
 		jsonData, _ = json.Marshal(&out)
 	}
+	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(jsonData))
 }
 
 func ListUpdate(w http.ResponseWriter, req *http.Request) {
 	var listUpdateInput eks.ListUpdatesInput
 
-	util.Parser(w, req, &listUpdateInput)
+	util.Parser(req, &listUpdateInput)
 	out, err := handler.ListUpdate(listUpdateInput)
 	var jsonData []byte
 	if err != nil {
@@ -112,13 +118,14 @@ func ListUpdate(w http.ResponseWriter, req *http.Request) {
 	} else {
 		jsonData, _ = json.Marshal(&out)
 	}
+	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(jsonData))
 }
 
 func DescribeUpdate(w http.ResponseWriter, req *http.Request) {
 	var describeUpdateInput eks.DescribeUpdateInput
 
-	util.Parser(w, req, &describeUpdateInput)
+	util.Parser(req, &describeUpdateInput)
 	out, err := handler.DescribeUpdate(describeUpdateInput)
 	var jsonData []byte
 	if err != nil {
@@ -126,13 +133,14 @@ func DescribeUpdate(w http.ResponseWriter, req *http.Request) {
 	} else {
 		jsonData, _ = json.Marshal(&out)
 	}
+	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(jsonData))
 }
 
 func ListTagsForResource(w http.ResponseWriter, req *http.Request) {
 	var listTagsForResourceInput eks.ListTagsForResourceInput
 
-	util.Parser(w, req, &listTagsForResourceInput)
+	util.Parser(req, &listTagsForResourceInput)
 	out, err := handler.ListTagsForResource(listTagsForResourceInput)
 	var jsonData []byte
 	if err != nil {
@@ -140,13 +148,14 @@ func ListTagsForResource(w http.ResponseWriter, req *http.Request) {
 	} else {
 		jsonData, _ = json.Marshal(&out)
 	}
+	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(jsonData))
 }
 
 func AssociateIdentityProviderConfig(w http.ResponseWriter, req *http.Request) {
 	var associateIdentityProviderConfigInput eks.AssociateIdentityProviderConfigInput
 
-	util.Parser(w, req, &associateIdentityProviderConfigInput)
+	util.Parser(req, &associateIdentityProviderConfigInput)
 	out, err := handler.AssociateIdentityProviderConfig(associateIdentityProviderConfigInput)
 	var jsonData []byte
 	if err != nil {
@@ -154,13 +163,14 @@ func AssociateIdentityProviderConfig(w http.ResponseWriter, req *http.Request) {
 	} else {
 		jsonData, _ = json.Marshal(&out)
 	}
+	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(jsonData))
 }
 
 func AssociateEncryptionConfig(w http.ResponseWriter, req *http.Request) {
 	var associateEncryptionConfigInput eks.AssociateEncryptionConfigInput
 
-	util.Parser(w, req, &associateEncryptionConfigInput)
+	util.Parser(req, &associateEncryptionConfigInput)
 	out, err := handler.AssociateEncryptionConfig(associateEncryptionConfigInput)
 	var jsonData []byte
 	if err != nil {
@@ -168,13 +178,14 @@ func AssociateEncryptionConfig(w http.ResponseWriter, req *http.Request) {
 	} else {
 		jsonData, _ = json.Marshal(&out)
 	}
+	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(jsonData))
 }
 
 func DisassociateIdentityProviderConfig(w http.ResponseWriter, req *http.Request) {
 	var disassociateIdentityProviderConfigInput eks.DisassociateIdentityProviderConfigInput
 
-	util.Parser(w, req, &disassociateIdentityProviderConfigInput)
+	util.Parser(req, &disassociateIdentityProviderConfigInput)
 	out, err := handler.DisassociateIdentityProviderConfig(disassociateIdentityProviderConfigInput)
 	var jsonData []byte
 	if err != nil {
@@ -182,13 +193,14 @@ func DisassociateIdentityProviderConfig(w http.ResponseWriter, req *http.Request
 	} else {
 		jsonData, _ = json.Marshal(&out)
 	}
+	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(jsonData))
 }
 
 func DescribeIdentityProviderConfig(w http.ResponseWriter, req *http.Request) {
 	var input eks.DescribeIdentityProviderConfigInput
 
-	util.Parser(w, req, &input)
+	util.Parser(req, &input)
 	out, err := handler.DescribeIdentityProviderConfig(input)
 	var jsonData []byte
 	if err != nil {
@@ -196,13 +208,14 @@ func DescribeIdentityProviderConfig(w http.ResponseWriter, req *http.Request) {
 	} else {
 		jsonData, _ = json.Marshal(&out)
 	}
+	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(jsonData))
 }
 
 func ListIdentityProviderConfigs(w http.ResponseWriter, req *http.Request) {
 	var input eks.ListIdentityProviderConfigsInput
 
-	util.Parser(w, req, &input)
+	util.Parser(req, &input)
 	out, err := handler.ListIdentityProviderConfigs(input)
 	var jsonData []byte
 	if err != nil {
@@ -210,13 +223,14 @@ func ListIdentityProviderConfigs(w http.ResponseWriter, req *http.Request) {
 	} else {
 		jsonData, _ = json.Marshal(&out)
 	}
+	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(jsonData))
 }
 
 func TagResource(w http.ResponseWriter, req *http.Request) {
 	var input eks.TagResourceInput
 
-	util.Parser(w, req, &input)
+	util.Parser(req, &input)
 	out, err := handler.TagResource(input)
 	var jsonData []byte
 	if err != nil {
@@ -224,13 +238,14 @@ func TagResource(w http.ResponseWriter, req *http.Request) {
 	} else {
 		jsonData, _ = json.Marshal(&out)
 	}
+	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(jsonData))
 }
 
 func UntagResource(w http.ResponseWriter, req *http.Request) {
 	var input eks.UntagResourceInput
 
-	util.Parser(w, req, &input)
+	util.Parser(req, &input)
 	out, err := handler.UntagResource(input)
 	var jsonData []byte
 	if err != nil {
@@ -238,13 +253,14 @@ func UntagResource(w http.ResponseWriter, req *http.Request) {
 	} else {
 		jsonData, _ = json.Marshal(&out)
 	}
+	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(jsonData))
 }
 
 func UpdateClusterConfig(w http.ResponseWriter, req *http.Request) {
 	var input eks.UpdateClusterConfigInput
 
-	util.Parser(w, req, &input)
+	util.Parser(req, &input)
 	out, err := handler.UpdateClusterConfig(input)
 	var jsonData []byte
 	if err != nil {
@@ -252,13 +268,14 @@ func UpdateClusterConfig(w http.ResponseWriter, req *http.Request) {
 	} else {
 		jsonData, _ = json.Marshal(&out)
 	}
+	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(jsonData))
 }
 
 func UpdateNodegroupConfig(w http.ResponseWriter, req *http.Request) {
 	var input eks.UpdateNodegroupConfigInput
 
-	util.Parser(w, req, &input)
+	util.Parser(req, &input)
 	out, err := handler.UpdateNodeGroupConfig(input)
 	var jsonData []byte
 	if err != nil {
@@ -266,5 +283,6 @@ func UpdateNodegroupConfig(w http.ResponseWriter, req *http.Request) {
 	} else {
 		jsonData, _ = json.Marshal(&out)
 	}
+	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(jsonData))
 }
