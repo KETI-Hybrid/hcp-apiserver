@@ -6,6 +6,7 @@ import (
 	"Hybrid_Cloud/hcp-apiserver/pkg/handler"
 	aksFunc "Hybrid_Cloud/hcp-apiserver/pkg/main/aks"
 	eksFunc "Hybrid_Cloud/hcp-apiserver/pkg/main/eks"
+	gkeFunc "Hybrid_Cloud/hcp-apiserver/pkg/main/gke"
 	"fmt"
 	"log"
 	"net/http"
@@ -29,7 +30,7 @@ func handlerRequests() http.Handler {
 	mux.HandleFunc("/aks/addon/enable", aksFunc.AddonEnable)
 	mux.HandleFunc("/aks/addon/list", aksFunc.AddonList)
 	mux.HandleFunc("/aks/addon/list-available", aksFunc.AddonListAvailable)
-	mux.HandleFunc("/aks/addon/addon-show", aksFunc.AddonShow)
+	mux.HandleFunc("/aks/addon/show", aksFunc.AddonShow)
 	mux.HandleFunc("/aks/addon/update", aksFunc.AddonUpdate)
 
 	// pod-identity
@@ -108,6 +109,30 @@ func handlerRequests() http.Handler {
 	mux.HandleFunc("/eks/list/update", eksFunc.ListUpdate)
 	mux.HandleFunc("/eks/describe/update", eksFunc.DescribeUpdate)
 	mux.HandleFunc("/eks/encryption-config/associate", eksFunc.AssociateEncryptionConfig)
+
+	// gke
+
+	mux.HandleFunc("/gke/container/images/tag/add", gkeFunc.ImagesAddTag)
+	mux.HandleFunc("/gke/container/images/delete", gkeFunc.ImagesDelete)
+	mux.HandleFunc("/gke/container/images/describe", gkeFunc.ImagesDescribe)
+	mux.HandleFunc("/gke/container/images/list", gkeFunc.ImagesList)
+	mux.HandleFunc("/gke/container/images/tag/list", gkeFunc.ImagesListTags)
+	mux.HandleFunc("/gke/container/images/untags", gkeFunc.ImagesUnTags)
+
+	mux.HandleFunc("/gke/container/operations/describe", gkeFunc.GetOperation)
+	mux.HandleFunc("/gke/container/operations/list", gkeFunc.ListOperations)
+	mux.HandleFunc("/gke/container/operations/wait", gkeFunc.WaitOperations)
+	mux.HandleFunc("/gke/container/server-config/get", gkeFunc.GetServerConfig)
+	mux.HandleFunc("/gke/container/nodepool-upgrade/rollback", gkeFunc.RollbackNodePoolUpgrade)
+
+	mux.HandleFunc("/gke/auth/configure-docker", gkeFunc.ConfigureDocker)
+	mux.HandleFunc("/gke/auth/list", gkeFunc.AuthList)
+	mux.HandleFunc("/gke/auth/revoke", gkeFunc.AuthRevoke)
+	mux.HandleFunc("/gke/auth/login", gkeFunc.AuthLogin)
+
+	mux.HandleFunc("/gke/docker", gkeFunc.GDocker)
+
+	mux.HandleFunc("/gke/config/set", gkeFunc.ConfigSet)
 
 	// HCPResource
 	mux.HandleFunc("/resources/deployment", handler.CreateDeploymentHandler).Methods("POST")
