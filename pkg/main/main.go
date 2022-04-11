@@ -125,7 +125,7 @@ func handlerRequests() http.Handler {
 	mux.HandleFunc("/gke/container/server-config/get", gkeFunc.GetServerConfig)
 	mux.HandleFunc("/gke/container/nodepool-upgrade/rollback", gkeFunc.RollbackNodePoolUpgrade)
 
-	mux.HandleFunc("/gke/auth/configure-docker", gkeFunc.ConfigureDocker)
+	mux.HandleFunc("/gke/auth/configure-docker", gkeFunc.AuthConfigureDocker)
 	mux.HandleFunc("/gke/auth/list", gkeFunc.AuthList)
 	mux.HandleFunc("/gke/auth/revoke", gkeFunc.AuthRevoke)
 	mux.HandleFunc("/gke/auth/login", gkeFunc.AuthLogin)
@@ -133,6 +133,9 @@ func handlerRequests() http.Handler {
 	mux.HandleFunc("/gke/docker", gkeFunc.GDocker)
 
 	mux.HandleFunc("/gke/config/set", gkeFunc.ConfigSet)
+
+	mux.HandleFunc("/gke/source/project-configs/update", gkeFunc.UpdateProjectConfigs)
+	mux.HandleFunc("/gke/source/project-configs/describe", gkeFunc.DescribeProjectConfigs)
 
 	// HCPResource
 	mux.HandleFunc("/resources/deployment", handler.CreateDeploymentHandler).Methods("POST")

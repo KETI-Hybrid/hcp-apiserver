@@ -2,7 +2,7 @@ package gke
 
 import (
 	"Hybrid_Cloud/hcp-apiserver/pkg/util"
-	hybridctlutil "Hybrid_Cloud/hybridctl/util"
+	cobrautil "Hybrid_Cloud/hybridctl/util"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -13,14 +13,13 @@ import (
 
 	container "cloud.google.com/go/container/apiv1"
 	"google.golang.org/api/option"
-	"google.golang.org/api/sourcerepo/v1"
 	containerpb "google.golang.org/genproto/googleapis/container/v1"
 )
 
 // gke container images
 
 func ImagesAddTag(w http.ResponseWriter, req *http.Request) {
-	var i hybridctlutil.GKEImages
+	var i cobrautil.GKEImages
 	util.Parser(req, &i)
 
 	args := []string{"container", "images", "add-tag", i.SRC_IMAGE}
@@ -38,11 +37,12 @@ func ImagesAddTag(w http.ResponseWriter, req *http.Request) {
 }
 
 func ImagesDelete(w http.ResponseWriter, req *http.Request) {
-	var i hybridctlutil.GKEImages
+	var i cobrautil.GKEImages
 	util.Parser(req, &i)
 
 	args := []string{"container", "images", "delete"}
 	args = append(args, i.IMAGE_NAME...)
+
 	if i.FORCE_DELETE_TAGS {
 		args = append(args, "--force-delete-tags")
 	}
@@ -59,7 +59,7 @@ func ImagesDelete(w http.ResponseWriter, req *http.Request) {
 }
 
 func ImagesDescribe(w http.ResponseWriter, req *http.Request) {
-	var i hybridctlutil.GKEImages
+	var i cobrautil.GKEImages
 	util.Parser(req, &i)
 
 	cmd := exec.Command("gcloud", "container", "images", "describe", i.IMAGE_NAME[0])
@@ -74,7 +74,7 @@ func ImagesDescribe(w http.ResponseWriter, req *http.Request) {
 }
 
 func ImagesList(w http.ResponseWriter, req *http.Request) {
-	var i hybridctlutil.GKEImages
+	var i cobrautil.GKEImages
 	util.Parser(req, &i)
 
 	args := []string{"container", "images", "list"}
@@ -114,7 +114,7 @@ func ImagesList(w http.ResponseWriter, req *http.Request) {
 }
 
 func ImagesListTags(w http.ResponseWriter, req *http.Request) {
-	var i *hybridctlutil.GKEImages
+	var i *cobrautil.GKEImages
 	util.Parser(req, &i)
 
 	args := []string{"container", "images", "list-tags", i.IMAGE_NAME[0]}
@@ -146,7 +146,7 @@ func ImagesListTags(w http.ResponseWriter, req *http.Request) {
 }
 
 func ImagesUnTags(w http.ResponseWriter, req *http.Request) {
-	var i *hybridctlutil.GKEImages
+	var i *cobrautil.GKEImages
 	util.Parser(req, &i)
 
 	args := []string{"container", "images", "untag"}
@@ -248,6 +248,7 @@ func ListOperations(w http.ResponseWriter, r *http.Request) {
 
 	var req *containerpb.ListOperationsRequest
 	SetGKERequest(r, &req)
+
 	resp, err := c.ListOperations(context.TODO(), req)
 	defer c.Close()
 
@@ -290,9 +291,15 @@ func RollbackNodePoolUpgrade(w http.ResponseWriter, r *http.Request) {
 }
 
 func WaitOperations(w http.ResponseWriter, r *http.Request) {
-	var op *hybridctlutil.GKEOperations
-	SetGKERequest(r, &op)
-	cmd := exec.Command("gcloud", "container", "operations", "wait", op.OPERATION_ID)
+	var input cobrautil.GKEOperations
+	SetGKERequest(r, &input)
+
+	args := []string{"container", "operations", "wait", input.OPERATION_ID}
+	if input.ZONE != "" {
+		args = append(args, "-z", input.ZONE)
+	}
+
+	cmd := exec.Command("gcloud", args...)
 	data, err := util.GetOutput(cmd)
 	if err != nil {
 		log.Println(err)
@@ -303,8 +310,18 @@ func WaitOperations(w http.ResponseWriter, r *http.Request) {
 }
 
 // gcloud auth configure-docker
-func ConfigureDocker(w http.ResponseWriter, r *http.Request) {
-	cmd := exec.Command("gcloud", "auth", "configure-docker")
+func AuthConfigureDocker(w http.ResponseWriter, r *http.Request) {
+	var input cobrautil.GKEAuth
+	SetGKERequest(r, &input)
+
+	fmt.Println(input.REGISTRIES)
+	args := []string{"auth", "configure-docker", input.REGISTRIES}
+
+	/*
+		args = append(args, input.REGISTRIES...)
+	*/
+
+	cmd := exec.Command("gcloud", args...)
 	data, err := util.GetOutput(cmd)
 	if err != nil {
 		log.Println(err)
@@ -315,7 +332,31 @@ func ConfigureDocker(w http.ResponseWriter, r *http.Request) {
 }
 
 func AuthList(w http.ResponseWriter, r *http.Request) {
-	cmd := exec.Command("gcloud", "auth", "list")
+	var input cobrautil.GKEAuth
+	SetGKERequest(r, &input)
+
+	args := []string{"auth", "list"}
+	if input.FILTER_ACCOUNT != "" {
+		args = append(args, "--filter-account", input.FILTER_ACCOUNT)
+	}
+
+	if input.FILTER != "" {
+		args = append(args, "--filter", input.FILTER)
+	}
+
+	if input.LIMIT != "" {
+		args = append(args, "--limit", input.LIMIT)
+	}
+
+	if input.PAGE_SIZE != "" {
+		args = append(args, "--page-size", input.PAGE_SIZE)
+	}
+
+	if input.SORT_BY != "" {
+		args = append(args, "--sort-by", input.SORT_BY)
+	}
+
+	cmd := exec.Command("gcloud", args...)
 	data, err := util.GetOutput(cmd)
 	if err != nil {
 		log.Println(err)
@@ -326,7 +367,19 @@ func AuthList(w http.ResponseWriter, r *http.Request) {
 }
 
 func AuthRevoke(w http.ResponseWriter, r *http.Request) {
-	cmd := exec.Command("gcloud", "auth", "revoke")
+	var input cobrautil.GKEAuth
+	SetGKERequest(r, &input)
+
+	args := []string{"auth", "revoke"}
+	if input.ACCOUNTS != "" {
+		args = append(args, input.ACCOUNTS)
+	}
+
+	if input.ALL {
+		args = append(args, "--all")
+	}
+
+	cmd := exec.Command("gcloud", args...)
 	data, err := util.GetOutput(cmd)
 	if err != nil {
 		log.Println(err)
@@ -337,24 +390,24 @@ func AuthRevoke(w http.ResponseWriter, r *http.Request) {
 }
 
 func AuthLogin(w http.ResponseWriter, r *http.Request) {
-	var a *hybridctlutil.GKEAuth
-	util.Parser(r, a)
-	w.Header().Set("Content-Type", "application/json")
-	var data []byte
-	var err error
-	var str string = "You are already authenticated with 'hybridcloudplatform@keti-container.iam.gserviceaccount.com'.\nDo you wish to proceed and overwrite existing credentials?\n\nDo you want to continue (Y/n)?"
-	if a.CRED_FILE == "" {
-		str := "ERROR: Input path to the external account configuration file "
-		data, err = json.Marshal(str)
-	} else {
-		cmd := exec.Command("gcloud", "auth", "login", "--cred-file", a.CRED_FILE)
-		data, err = util.GetOutputReplaceStr(cmd, str, "")
+	var input cobrautil.GKEAuth
+	util.Parser(r, &input)
+
+	args := []string{"auth", "login"}
+	if input.ACCOUNTS != "" {
+		args = append(args, input.ACCOUNTS)
 	}
+
+	args = append(args, "--cred-file", input.CRED_FILE)
+	var str string = "Do you wish to proceed and overwrite existing credentials?\n\nDo you want to continue (Y/n)?"
+	cmd := exec.Command("gcloud", args...)
+	data, err := util.GetOutputReplaceStr(cmd, str, "")
 
 	if err != nil {
 		log.Println(err)
 	} else {
 		fmt.Println(string(data))
+		w.Header().Set("Content-Type", "application/json")
 		w.Write(data)
 	}
 }
@@ -393,63 +446,76 @@ func GDocker(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func UpdateProjectConfig(w http.ResponseWriter, r *http.Request) {
+func UpdateProjectConfigs(w http.ResponseWriter, r *http.Request) {
+	var input cobrautil.GKESource
+	util.Parser(r, &input)
 
-	ctx := context.Background()
-	sourcerepoService, err := sourcerepo.NewService(ctx)
-	if err != nil {
-		fmt.Println(err)
+	args := []string{"source", "project-configs", "update"}
+	if input.PUSHBLOCK == 0 {
+		args = append(args, "--disable-pushblock")
+	} else if input.PUSHBLOCK == 1 {
+		args = append(args, "--enable-pushblock")
 	}
-	projectsService := sourcerepo.NewProjectsService(sourcerepoService)
-	var req *sourcerepo.UpdateProjectConfigRequest
-	SetGKERequest(r, &req)
 
-	call := projectsService.UpdateConfig("", req)
-	resp, err := call.Do()
+	if input.MESSAGE_FORMAT != "" {
+		args = append(args, "--message-format", input.MESSAGE_FORMAT)
+	}
 
-	var output util.Output
+	if input.SERVICE_ACCOUNT != "" {
+		args = append(args, "--service-account", input.SERVICE_ACCOUNT)
+	}
+
+	if input.TOPIC_PROJECT != "" {
+		args = append(args, "--topic-project", input.TOPIC_PROJECT)
+	}
+
+	if input.ADD_TOPIC != "" {
+		args = append(args, "--add-topic", input.ADD_TOPIC)
+	}
+
+	if input.REMOVE_TOPIC != "" {
+		args = append(args, "--remove-topic", input.REMOVE_TOPIC)
+	}
+
+	if input.UPDATE_TOPIC != "" {
+		args = append(args, "--update-topic", input.UPDATE_TOPIC)
+	}
+
+	cmd := exec.Command("gcloud", args...)
+	fmt.Println(cmd.Args)
+	data, err := util.GetOutput(cmd)
 	if err != nil {
-		bytes, _ := json.Marshal(err.Error())
-		output.Stderr = bytes
+		log.Println(err)
 	} else {
-		bytes, _ := json.Marshal(&resp)
-		output.Stdout = bytes
+		fmt.Println(string(data))
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(data)
 	}
 
-	bytes, _ := json.Marshal(output)
-	w.Write(bytes)
 }
 
-func GetProjectConfig(w http.ResponseWriter, r *http.Request) {
+func DescribeProjectConfigs(w http.ResponseWriter, r *http.Request) {
+	var input cobrautil.GKESource
+	util.Parser(r, &input)
 
-	ctx := context.Background()
-	sourcerepoService, err := sourcerepo.NewService(ctx)
+	args := []string{"source", "project-configs", "describe"}
+
+	cmd := exec.Command("gcloud", args...)
+	fmt.Println(cmd.Args)
+	data, err := util.GetOutput(cmd)
 	if err != nil {
-		fmt.Println(err)
-	}
-	projectsService := sourcerepo.NewProjectsService(sourcerepoService)
-	var req *sourcerepo.UpdateProjectConfigRequest
-	SetGKERequest(r, &req)
-
-	call := projectsService.GetConfig("keti-container")
-	resp, err := call.Do()
-
-	var output util.Output
-	if err != nil {
-		bytes, _ := json.Marshal(err.Error())
-		output.Stderr = bytes
+		log.Println(err)
 	} else {
-		bytes, _ := json.Marshal(&resp)
-		output.Stdout = bytes
+		fmt.Println(string(data))
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(data)
 	}
 
-	bytes, _ := json.Marshal(output)
-	w.Write(bytes)
 }
 
 func ConfigSet(w http.ResponseWriter, r *http.Request) {
-	var s *hybridctlutil.GKESetProperty
-	util.Parser(r, s)
+	var s cobrautil.GKESetProperty
+	util.Parser(r, &s)
 	w.Header().Set("Content-Type", "application/json")
 	args := []string{"config", "set"}
 
@@ -471,6 +537,10 @@ func ConfigSet(w http.ResponseWriter, r *http.Request) {
 				args = append(args, s.VALUE)
 			}
 		}
+	}
+
+	if s.INSTALLATION {
+		args = append(args, "--installation")
 	}
 	fmt.Println(args)
 
