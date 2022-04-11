@@ -412,28 +412,26 @@ func AuthLogin(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// gcloud docker
-type Docker struct {
-	AUTHORIZE_ONLY bool
-	DOCKER_HOST    string
-	SERVER         string
-}
-
 func GDocker(w http.ResponseWriter, req *http.Request) {
-	var d *Docker
-	util.Parser(req, d)
-	w.Header().Set("Content-Type", "application/json")
+	var input cobrautil.GKEDocker
+	util.Parser(req, &input)
+
 	args := []string{"docker"}
-	if d.AUTHORIZE_ONLY {
+	if input.AUTHORIZE_ONLY {
 		args = append(args, "-a")
 	}
 
-	if d.DOCKER_HOST != "" {
-		args = append(args, "--docker-host", d.DOCKER_HOST)
+	if input.DOCKER_HOST != "" {
+		args = append(args, "--docker-host", input.DOCKER_HOST)
 	}
 
-	if d.SERVER != "" {
-		args = append(args, "-s", d.SERVER)
+	if input.SERVER != "" {
+		args = append(args, "-s", input.SERVER)
+	}
+
+	if len(input.DOCKER_ARGS) != 0 {
+		args = append(args, "--")
+		args = append(args, input.DOCKER_ARGS...)
 	}
 
 	cmd := exec.Command("gcloud", args...)
@@ -442,6 +440,7 @@ func GDocker(w http.ResponseWriter, req *http.Request) {
 		log.Println(err)
 	} else {
 		fmt.Println(string(data))
+		w.Header().Set("Content-Type", "application/json")
 		w.Write(data)
 	}
 }
