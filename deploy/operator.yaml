@@ -13,12 +13,12 @@ spec:
       labels:
         name: hcp-apiserver
     spec:
-      serviceAccountName: hcp-apiserver-sa
+      serviceAccountName: hcp-apiserver
       imagePullSecrets:
         - name: regcred
       containers:
         - name: hcp-apiserver
-          image: ketidevit/hcp-apiserver:v0.0.1
+          image: ketidevit2/hcp-apiserver:v0.0.2
           command:
           - hcp-apiserver
           imagePullPolicy: Always
@@ -42,9 +42,26 @@ spec:
               value: "root"
             - name: OPERATOR_NAME
               value: "hcp-apiserver"
+          volumeMounts:
+          - name: awsconfig 
+            mountPath: /root/.aws          
+          - name: aksconfig 
+            mountPath: /root/.azure 
+          - name: gkeconfig 
+            mountPath: /root/.google
           ports:
           - containerPort: 8080
             name: http
+      volumes:
+      - name: awsconfig
+        persistentVolumeClaim:
+          claimName: pvc-aws-config
+      - name: aksconfig
+        persistentVolumeClaim:
+          claimName: pvc-aks-config
+      - name: gkeconfig
+        persistentVolumeClaim:
+          claimName: pvc-gke-config
       tolerations:
         - key: node.kubernetes.io/not-ready
           effect: NoExecute

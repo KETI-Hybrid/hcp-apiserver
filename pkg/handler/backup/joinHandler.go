@@ -1,7 +1,7 @@
 package backup
 
+/*
 import (
-	mappingTable "Hybrid_Cloud/hcp-apiserver/pkg/converter"
 	cobrautil "Hybrid_Cloud/hybridctl/util"
 
 	// KubeFedCluster "Hybrid_Cloud/pkg/apis/kubefedcluster/v1alpha1"
@@ -34,17 +34,17 @@ import (
 	// cobrautil "Hybrid_Cloud/hybridctl/util"
 	// KubeFedCluster "Hybrid_Cloud/pkg/apis/kubefedcluster/v1alpha1"
 	// "fmt"
-	// mappingTable "Hybrid_Cloud/hcp-apiserver/pkg/converter"
-	// util "Hybrid_Cloud/hcp-apiserver/pkg/util"
+	// mappingTable "github.com/KETI-Hybrid/hcp-apiserver-v1/pkg/converter"
+	// util "github.com/KETI-Hybrid/hcp-apiserver-v1/pkg/util"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	// _ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 	// "k8s.io/client-go/tools/clientcmd"
 )
 
-/*
+
 func Join(info mappingTable.ClusterInfo) bool {
 
-	master_config, _ := cobrautil.BuildConfigFromFlags("kube-master", "/root/.kube/config")
+	master_config, _ := cobrautil.BuildConfigFromFlags("master", "/root/.kube/config")
 	clusterRegisterClientSet, err := clusterRegister.NewForConfig(master_config)
 	if err != nil {
 		log.Println(err)
@@ -135,11 +135,11 @@ func Join(info mappingTable.ClusterInfo) bool {
 	fmt.Println("---joinHandler end---")
 	return true
 }
-*/
 
-func JoinCluster(info mappingTable.ClusterInfo, join_cluster_client *kubernetes.Clientset, APIEndPoint string) bool {
 
-	master_config, _ := cobrautil.BuildConfigFromFlags("kube-master", "/root/.kube/config")
+func JoinCluster(info ClusterInfo, join_cluster_client *kubernetes.Clientset, APIEndPoint string) bool {
+
+	master_config, _ := cobrautil.BuildConfigFromFlags("master", "/root/.kube/config")
 	master_client := kubernetes.NewForConfigOrDie(master_config)
 
 	// 1. CREATE namespace "kube-federation-system"
@@ -284,7 +284,10 @@ func JoinCluster(info mappingTable.ClusterInfo, join_cluster_client *kubernetes.
 		fmt.Println("< Step 5-2 > Create Secret Resource [" + cluster_secret.Name + "] in " + "master")
 	}
 
-	cm := clusterManager.NewClusterManager()
+	cm, err := clusterManager.NewClusterManager()
+	if err != nil {
+		return false
+	}
 	scope, err := options.GetScopeFromKubeFedConfig(master_config, ns.Name)
 	if err != nil {
 		return false
@@ -296,7 +299,7 @@ func JoinCluster(info mappingTable.ClusterInfo, join_cluster_client *kubernetes.
 	} else {
 		fmt.Println("< Step 6 > Create KubefedCluster Resource [" + newkubefedcluster.Name + "] in hcp")
 	}
-	/*
+
 		kubefedcluster := &fedv1b1.KubeFedCluster{
 			TypeMeta: metav1.TypeMeta{
 				Kind:       "kubefedcluster",
@@ -329,6 +332,7 @@ func JoinCluster(info mappingTable.ClusterInfo, join_cluster_client *kubernetes.
 		} else {
 			fmt.Println("< Step 6 > Create KubefedCluster Resource [" + newkubefedcluster.Name + "] in hcp")
 		}
-	*/
+
 	return true
 }
+*/

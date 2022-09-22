@@ -5,7 +5,7 @@ metadata:
   namespace: hcp
 subjects:
 - kind: ServiceAccount
-  name: hcp-apiserver-sa
+  name: hcp-apiserver
   namespace: hcp
 roleRef:
   kind: ClusterRole

@@ -1,8 +1,8 @@
 package backup
 
+/*
 import (
-	mappingTable "Hybrid_Cloud/hcp-apiserver/pkg/converter"
-	util "Hybrid_Cloud/hcp-apiserver/pkg/util"
+	util "github.com/KETI-Hybrid/hcp-apiserver-v1/pkg/util"
 	cobrautil "Hybrid_Cloud/hybridctl/util"
 	clusterRegister "Hybrid_Cloud/pkg/client/clusterregister/v1alpha1/clientset/versioned/typed/clusterregister/v1alpha1"
 	KubeFedCluster "Hybrid_Cloud/pkg/client/kubefedcluster/v1alpha1/clientset/versioned/typed/kubefedcluster/v1alpha1"
@@ -21,9 +21,9 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 )
 
-func Unjoin(info mappingTable.ClusterInfo) {
+func Unjoin(info ClusterInfo) {
 
-	master_config, _ := cobrautil.BuildConfigFromFlags("kube-master", "/root/.kube/config")
+	master_config, _ := cobrautil.BuildConfigFromFlags("master", "/root/.kube/config")
 	clusterRegisterClientSet, err := clusterRegister.NewForConfig(master_config)
 	if err != nil {
 		log.Println(err)
@@ -91,9 +91,9 @@ func Unjoin(info mappingTable.ClusterInfo) {
 	}
 }
 
-func unjoinCluster(info mappingTable.ClusterInfo, cluster_client *kubernetes.Clientset) bool {
+func unjoinCluster(info ClusterInfo, cluster_client *kubernetes.Clientset) bool {
 
-	master_config, _ := cobrautil.BuildConfigFromFlags("kube-master", "/root/.kube/config")
+	master_config, _ := cobrautil.BuildConfigFromFlags("master", "/root/.kube/config")
 	apiextensionsClientSet, err := KubeFedCluster.NewForConfig(master_config)
 	if err != nil {
 		log.Println(err)
@@ -170,3 +170,4 @@ func unjoinCluster(info mappingTable.ClusterInfo, cluster_client *kubernetes.Cli
 	}
 	return true
 }
+*/

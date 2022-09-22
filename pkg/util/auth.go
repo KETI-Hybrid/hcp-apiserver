@@ -30,12 +30,15 @@ func GetBearer() bearerToken {
 	params.Add("grant_type", `client_credentials`)
 	params.Add("resource", `https://management.azure.com/`)
 	params.Add("client_secret", os.Getenv("ClientSecret"))
+	fmt.Println(os.Getenv("ClientSecret"))
 	body := strings.NewReader(params.Encode())
 
 	req, err := http.NewRequest("POST", "https://login.microsoftonline.com/"+os.Getenv("TenantId")+"/oauth2/token", body)
 	if err != nil {
 		klog.Error(err)
 	}
+
+	fmt.Println(os.Getenv("TenantId"))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	response, err := http.DefaultClient.Do(req)
@@ -44,7 +47,6 @@ func GetBearer() bearerToken {
 	}
 	defer response.Body.Close()
 	bytes, _ := ioutil.ReadAll(response.Body)
-	fmt.Println(string(bytes))
 	token := bearerToken{}
 	json.Unmarshal(bytes, &token)
 
@@ -54,6 +56,8 @@ func GetBearer() bearerToken {
 func AuthorizationAndHTTP(method string, hosturl string, input interface{}) (*http.Response, error) {
 
 	var request *http.Request
+	var err error
+	fmt.Println("Bearer :", GetBearer().Access_token)
 	switch method {
 	case "POST":
 		params := url.Values{}
@@ -62,7 +66,10 @@ func AuthorizationAndHTTP(method string, hosturl string, input interface{}) (*ht
 		request, _ = http.NewRequest(method, hosturl, body)
 		break
 	case "GET":
+		params := url.Values{}
+		params.Add("resource", `https://management.azure.com/`)
 		request, _ = http.NewRequest(method, hosturl, nil)
+		break
 	case "DELETE":
 		request, _ = http.NewRequest(method, hosturl, nil)
 		break

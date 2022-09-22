@@ -1,48 +1,178 @@
 package handler
 
 import (
-	cobrautil "Hybrid_Cloud/hybridctl/util"
-	clusterRegister "Hybrid_Cloud/pkg/client/clusterregister/v1alpha1/clientset/versioned/typed/clusterregister/v1alpha1"
 	"context"
 	"fmt"
-	"log"
+
+	"github.com/KETI-Hybrid/hybridctl-v1/util"
+
+	"github.com/KETI-Hybrid/hcp-pkg/util/clusterManager"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/eks"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/klog"
 )
 
 // addon
-
-func checkErr(err error) {
-	if err != nil {
-		log.Println(err)
-	}
-}
+var cm, _ = clusterManager.NewClusterManager()
 
 func GetEKSClient(clusterName *string) (*eks.EKS, error) {
-	master_config, _ := cobrautil.BuildConfigFromFlags("kube-master", "/root/.kube/config")
-	clusterRegisterClientSet, err := clusterRegister.NewForConfig(master_config)
-	checkErr(err)
-	clusterRegisters, err := clusterRegisterClientSet.ClusterRegisters("eks").Get(context.TODO(), *clusterName, v1.GetOptions{})
+	cluster, err := cm.HCPCluster_Client.HcpV1alpha1().HCPClusters("hcp").Get(context.TODO(), *clusterName, metav1.GetOptions{})
 	if err != nil {
 		return nil, err
 	}
+
+	klog.Info("[1] ", cluster.Spec.Region)
 	sess := session.Must(session.NewSession(&aws.Config{
-		Region: aws.String(clusterRegisters.Spec.Region),
+		Region: aws.String(cluster.Spec.Region),
 	}))
+
 	eksSvc := eks.New(sess)
 	return eksSvc, nil
 }
 
-func CreateAddon(addonInput eks.CreateAddonInput) (*eks.CreateAddonOutput, error) {
+func InitializeEKSClient(region string) *eks.EKS {
 
-	// println(*addonInput.ClusterName)
+	sess := session.Must(session.NewSessionWithOptions(session.Options{
+		SharedConfigState: session.SharedConfigEnable,
+		Config: aws.Config{
+			Credentials: credentials.NewSharedCredentials("/root/.aws/credentials", "default"),
+			Region:      aws.String(region),
+		},
+	}))
+	eksSvc := eks.New(sess, aws.NewConfig().WithRegion(region))
+	return eksSvc
+}
+
+func EKSCreateCluster(Input util.HCPCreateClusterInput) (*eks.CreateClusterOutput, error) {
+	klog.Info("Called EKSCreateCluster")
+
+	eksSvc := InitializeEKSClient(Input.Region)
+	if eksSvc == nil {
+		return nil, nil
+	}
+
+	fmt.Println(Input.EKSCreateClusterInput)
+
+	out, err := eksSvc.CreateCluster(&Input.EKSCreateClusterInput)
+	return out, err
+}
+
+func EKSDeleteCluster(Input util.HCPDeleteClusterInput) (*eks.DeleteClusterOutput, error) {
+	klog.Info("Called EKSDeleteCluster")
+
+	eksSvc := InitializeEKSClient(Input.Region)
+	if eksSvc == nil {
+		return nil, nil
+	}
+
+	out, err := eksSvc.DeleteCluster(&Input.EKSDeleteClusterInput)
+	return out, err
+}
+
+func EKSDescribeCluster(Input util.HCPDescribeClusterInput) (*eks.DescribeClusterOutput, error) {
+	klog.Infoln("Called EksDescribeCluster")
+
+	eksSvc := InitializeEKSClient(Input.Region)
+	if eksSvc == nil {
+		return nil, nil
+	}
+
+	fmt.Println(Input.EKSDescribeClusterInput)
+
+	out, err := eksSvc.DescribeCluster(&Input.EKSDescribeClusterInput)
+	return out, err
+}
+
+func EKSListCluster(Input util.HCPListClusterInput) (*eks.ListClustersOutput, error) {
+	klog.Infoln("Called EKSListCluster")
+
+	eksSvc := InitializeEKSClient(Input.Region)
+	if eksSvc == nil {
+		return nil, nil
+	}
+
+	input := &eks.ListClustersInput{}
+	result, err := eksSvc.ListClusters(input)
+	if err != nil {
+		klog.Infoln(err)
+	}
+	klog.Infoln(result)
+
+	// out, err := eksSvc.ListClusters(&Input.EKSListClusterInput)
+	return result, err
+}
+
+func EKSUpgradeCluster(Input util.HCPUpdateClusterVersionInput) (*eks.UpdateClusterVersionOutput, error) {
+	klog.Infoln("Called EKS Cluster Version Upgrade")
+
+	eksSvc := InitializeEKSClient(Input.Region)
+	if eksSvc == nil {
+		return nil, nil
+	}
+
+	fmt.Println(Input.EKSUpdateClusterVersionInput)
+	out, err := eksSvc.UpdateClusterVersion(&Input.EKSUpdateClusterVersionInput)
+	return out, err
+}
+
+func EKSCreateNodegroup(Input util.HCPCreateNodegroupInput) (*eks.CreateNodegroupOutput, error) {
+	klog.Info("Called EKSCreateNodegroup")
+
+	eksSvc := InitializeEKSClient(Input.Region)
+	if eksSvc == nil {
+		return nil, nil
+	}
+
+	out, err := eksSvc.CreateNodegroup(&Input.EKSCreateNodegroupInput)
+	return out, err
+}
+
+func EKSDeleteNodegroup(Input util.HCPDeleteNodegroupInput) (*eks.DeleteNodegroupOutput, error) {
+	klog.Info("Called EKSCreateNodegroup")
+
+	eksSvc := InitializeEKSClient(Input.Region)
+	if eksSvc == nil {
+		return nil, nil
+	}
+
+	out, err := eksSvc.DeleteNodegroup(&Input.EKSDeleteNodegroupInput)
+	return out, err
+}
+
+func EKSDescribeNodegroup(Input util.HCPDescribeNodegroupInput) (*eks.DescribeNodegroupOutput, error) {
+	klog.Infoln("Called EKSDescribeNodegroup")
+
+	eksSvc := InitializeEKSClient(Input.Region)
+	if eksSvc == nil {
+		return nil, nil
+	}
+	out, err := eksSvc.DescribeNodegroup(&Input.EKSDescribeNodegroupInput)
+	return out, err
+}
+
+func EKSListNodegroup(Input util.HCPListNodegroupInput) (*eks.ListNodegroupsOutput, error) {
+	klog.Infoln("Called EKSListNodegroup")
+
+	eksSvc := InitializeEKSClient(Input.Region)
+	if eksSvc == nil {
+		return nil, nil
+	}
+	out, err := eksSvc.ListNodegroups(&Input.EKSListNodegroupInput)
+	return out, err
+}
+
+func EKSCreateAddon(addonInput eks.CreateAddonInput) (*eks.CreateAddonOutput, error) {
+
+	klog.Info("Called EKSCreateAddon")
 	eksSvc, err := GetEKSClient(addonInput.ClusterName)
 	if eksSvc == nil {
 		return nil, err
 	}
+
 	newAddonInput := &eks.CreateAddonInput{
 		AddonName:             addonInput.AddonName,
 		AddonVersion:          addonInput.AddonVersion,
@@ -52,13 +182,15 @@ func CreateAddon(addonInput eks.CreateAddonInput) (*eks.CreateAddonOutput, error
 		ServiceAccountRoleArn: addonInput.ServiceAccountRoleArn,
 		Tags:                  addonInput.Tags,
 	}
+
 	out, err := eksSvc.CreateAddon(newAddonInput)
 
 	return out, err
 }
 
-func DeleteAddon(addonInput eks.DeleteAddonInput) (*eks.DeleteAddonOutput, error) {
+func EKSDeleteAddon(addonInput eks.DeleteAddonInput) (*eks.DeleteAddonOutput, error) {
 
+	klog.Info("Called EKSDeleteAddon")
 	eksSvc, err := GetEKSClient(addonInput.ClusterName)
 	if eksSvc == nil {
 		return nil, err
@@ -72,8 +204,9 @@ func DeleteAddon(addonInput eks.DeleteAddonInput) (*eks.DeleteAddonOutput, error
 	return out, err
 }
 
-func DescribeAddon(addonInput eks.DescribeAddonInput) (*eks.DescribeAddonOutput, error) {
+func EKSDescribeAddon(addonInput eks.DescribeAddonInput) (*eks.DescribeAddonOutput, error) {
 
+	klog.Info("Called EKSDescribeAddon")
 	eksSvc, err := GetEKSClient(addonInput.ClusterName)
 	if eksSvc == nil {
 		return nil, err
@@ -87,51 +220,67 @@ func DescribeAddon(addonInput eks.DescribeAddonInput) (*eks.DescribeAddonOutput,
 	return out, err
 }
 
-func DescribeAddonVersions(addonInput eks.DescribeAddonVersionsInput) (*eks.DescribeAddonVersionsOutput, error) {
+func EKSDescribeAddonVersions(addonInput eks.DescribeAddonVersionsInput) (*eks.DescribeAddonVersionsOutput, error) {
 
+	klog.Info("Called EKSDescribeAddonVersions")
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
 	}))
 	eksSvc := eks.New(sess)
 
 	newAddonInput := &eks.DescribeAddonVersionsInput{
-		AddonName: addonInput.AddonName,
+		AddonName:         addonInput.AddonName,
+		KubernetesVersion: addonInput.KubernetesVersion,
+		MaxResults:        addonInput.MaxResults,
+		NextToken:         addonInput.NextToken,
 	}
+	klog.Info(&newAddonInput.MaxResults)
 	out, err := eksSvc.DescribeAddonVersions(newAddonInput)
 
 	return out, err
 }
 
-func ListAddon(addonInput eks.ListAddonsInput) (*eks.ListAddonsOutput, error) {
+func EKSListAddon(addonInput eks.ListAddonsInput) (*eks.ListAddonsOutput, error) {
 
+	klog.Info("Called EKSListAddon")
 	eksSvc, err := GetEKSClient(addonInput.ClusterName)
 	if eksSvc == nil {
 		return nil, err
 	}
+
 	newAddonInput := &eks.ListAddonsInput{
 		ClusterName: addonInput.ClusterName,
+		MaxResults:  addonInput.MaxResults,
+		NextToken:   addonInput.NextToken,
 	}
 	out, err := eksSvc.ListAddons(newAddonInput)
 
 	return out, err
 }
 
-func UpdateAddon(addonInput eks.UpdateAddonInput) (*eks.UpdateAddonOutput, error) {
+func EKSUpdateAddon(addonInput eks.UpdateAddonInput) (*eks.UpdateAddonOutput, error) {
 
+	klog.Info("Called EKSUpdateAddon")
 	eksSvc, err := GetEKSClient(addonInput.ClusterName)
 	if eksSvc == nil {
 		return nil, err
 	}
 	newAddonInput := &eks.UpdateAddonInput{
-		ClusterName: addonInput.ClusterName,
-		AddonName:   addonInput.AddonName,
+		ClusterName:           addonInput.ClusterName,
+		AddonName:             addonInput.AddonName,
+		AddonVersion:          addonInput.AddonVersion,
+		ServiceAccountRoleArn: addonInput.ServiceAccountRoleArn,
+		ResolveConflicts:      addonInput.ResolveConflicts,
+		ClientRequestToken:    addonInput.ClientRequestToken,
 	}
 	out, err := eksSvc.UpdateAddon(newAddonInput)
 
 	return out, err
 }
 
-func AssociateEncryptionConfig(input eks.AssociateEncryptionConfigInput) (*eks.AssociateEncryptionConfigOutput, error) {
+func EKSAssociateEncryptionConfig(input eks.AssociateEncryptionConfigInput) (*eks.AssociateEncryptionConfigOutput, error) {
+
+	klog.Info("Called EKSAssociateEncryptionConfig")
 	eksSvc, err := GetEKSClient(input.ClusterName)
 	if eksSvc == nil {
 		return nil, err
@@ -148,9 +297,9 @@ func AssociateEncryptionConfig(input eks.AssociateEncryptionConfigInput) (*eks.A
 
 // identity provider
 
-func AssociateIdentityProviderConfig(input eks.AssociateIdentityProviderConfigInput) (*eks.AssociateIdentityProviderConfigOutput, error) {
+func EKSAssociateIdentityProviderConfig(input eks.AssociateIdentityProviderConfigInput) (*eks.AssociateIdentityProviderConfigOutput, error) {
 
-	// println(*Input.ClusterName)
+	klog.Info("Called EKSAssociateIdentityProviderConfig")
 	eksSvc, err := GetEKSClient(input.ClusterName)
 	if eksSvc == nil {
 		return nil, err
@@ -166,9 +315,9 @@ func AssociateIdentityProviderConfig(input eks.AssociateIdentityProviderConfigIn
 	return out, err
 }
 
-func DisassociateIdentityProviderConfig(input eks.DisassociateIdentityProviderConfigInput) (*eks.DisassociateIdentityProviderConfigOutput, error) {
+func EKSDisassociateIdentityProviderConfig(input eks.DisassociateIdentityProviderConfigInput) (*eks.DisassociateIdentityProviderConfigOutput, error) {
 
-	// println(*Input.ClusterName)
+	klog.Info("Called EKSDisassociateIdentityProviderConfig")
 	eksSvc, err := GetEKSClient(input.ClusterName)
 	if eksSvc == nil {
 		return nil, err
@@ -183,9 +332,9 @@ func DisassociateIdentityProviderConfig(input eks.DisassociateIdentityProviderCo
 	return out, err
 }
 
-func DescribeIdentityProviderConfig(input eks.DescribeIdentityProviderConfigInput) (*eks.DescribeIdentityProviderConfigOutput, error) {
+func EKSDescribeIdentityProviderConfig(input eks.DescribeIdentityProviderConfigInput) (*eks.DescribeIdentityProviderConfigOutput, error) {
 
-	// println(*Input.ClusterName)
+	klog.Info("Called EKSDescribeIdentityProviderConfig")
 	eksSvc, err := GetEKSClient(input.ClusterName)
 	if eksSvc == nil {
 		return nil, err
@@ -199,9 +348,9 @@ func DescribeIdentityProviderConfig(input eks.DescribeIdentityProviderConfigInpu
 	return out, err
 }
 
-func ListIdentityProviderConfigs(input eks.ListIdentityProviderConfigsInput) (*eks.ListIdentityProviderConfigsOutput, error) {
+func EKSListIdentityProviderConfigs(input eks.ListIdentityProviderConfigsInput) (*eks.ListIdentityProviderConfigsOutput, error) {
 
-	// println(*Input.ClusterName)
+	klog.Info("Called EKSListIdentityProviderConfigs")
 	eksSvc, err := GetEKSClient(input.ClusterName)
 	if eksSvc == nil {
 		return nil, err
@@ -218,8 +367,9 @@ func ListIdentityProviderConfigs(input eks.ListIdentityProviderConfigsInput) (*e
 
 // tag
 
-func ListTagsForResource(listTagsForResourceInput eks.ListTagsForResourceInput) (*eks.ListTagsForResourceOutput, error) {
+func EKSListTagsForResource(listTagsForResourceInput eks.ListTagsForResourceInput) (*eks.ListTagsForResourceOutput, error) {
 
+	klog.Info("Called EKSListTagsForResource")
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
 	}))
@@ -233,8 +383,9 @@ func ListTagsForResource(listTagsForResourceInput eks.ListTagsForResourceInput) 
 	return out, err
 }
 
-func TagResource(input eks.TagResourceInput) (*eks.TagResourceOutput, error) {
+func EKSTagResource(input eks.TagResourceInput) (*eks.TagResourceOutput, error) {
 
+	klog.Info("Called EKSTagResource")
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
 	}))
@@ -249,14 +400,13 @@ func TagResource(input eks.TagResourceInput) (*eks.TagResourceOutput, error) {
 	return out, err
 }
 
-func UntagResource(input eks.UntagResourceInput) (*eks.UntagResourceOutput, error) {
+func EKSUntagResource(input eks.UntagResourceInput) (*eks.UntagResourceOutput, error) {
 
+	klog.Info("Called EKSUntagResource")
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
 	}))
 	eksSvc := eks.New(sess)
-
-	fmt.Println(input.TagKeys)
 	input = eks.UntagResourceInput{
 		ResourceArn: input.ResourceArn,
 		TagKeys:     input.TagKeys,
@@ -268,8 +418,9 @@ func UntagResource(input eks.UntagResourceInput) (*eks.UntagResourceOutput, erro
 
 // update
 
-func ListUpdate(listUpdateInput eks.ListUpdatesInput) (*eks.ListUpdatesOutput, error) {
+func EKSListUpdate(listUpdateInput eks.ListUpdatesInput) (*eks.ListUpdatesOutput, error) {
 
+	klog.Info("Called EKSListUpdate")
 	eksSvc, err := GetEKSClient(listUpdateInput.Name)
 	if eksSvc == nil {
 		return nil, err
@@ -286,8 +437,9 @@ func ListUpdate(listUpdateInput eks.ListUpdatesInput) (*eks.ListUpdatesOutput, e
 	return out, err
 }
 
-func DescribeUpdate(describeUpdateInput eks.DescribeUpdateInput) (*eks.DescribeUpdateOutput, error) {
+func EKSDescribeUpdate(describeUpdateInput eks.DescribeUpdateInput) (*eks.DescribeUpdateOutput, error) {
 
+	klog.Info("Called EKSDescribeUpdate")
 	eksSvc, err := GetEKSClient(describeUpdateInput.Name)
 	if eksSvc == nil {
 		return nil, err
@@ -303,8 +455,9 @@ func DescribeUpdate(describeUpdateInput eks.DescribeUpdateInput) (*eks.DescribeU
 	return out, err
 }
 
-func UpdateClusterConfig(input eks.UpdateClusterConfigInput) (*eks.UpdateClusterConfigOutput, error) {
+func EKSUpdateClusterConfig(input eks.UpdateClusterConfigInput) (*eks.UpdateClusterConfigOutput, error) {
 
+	klog.Info("Called EKSUpdateClusterConfig")
 	eksSvc, err := GetEKSClient(input.Name)
 	if eksSvc == nil {
 		return nil, err
@@ -320,8 +473,9 @@ func UpdateClusterConfig(input eks.UpdateClusterConfigInput) (*eks.UpdateCluster
 	return out, err
 }
 
-func UpdateNodeGroupConfig(input eks.UpdateNodegroupConfigInput) (*eks.UpdateNodegroupConfigOutput, error) {
+func EKSUpdateNodeGroupConfig(input eks.UpdateNodegroupConfigInput) (*eks.UpdateNodegroupConfigOutput, error) {
 
+	klog.Info("Called EKSUpdateNodeGroupConfig")
 	eksSvc, err := GetEKSClient(input.ClusterName)
 	if eksSvc == nil {
 		return nil, err
