@@ -1,19 +1,20 @@
 package gke
 
 import (
-	"Hybrid_Cloud/hcp-apiserver/pkg/util"
-	cobrautil "Hybrid_Cloud/hybridctl/util"
 	"context"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os/exec"
+
+	cobrautil "github.com/KETI-Hybrid/hybridctl-v1/util"
+
+	"github.com/KETI-Hybrid/hcp-apiserver-v1/pkg/util"
 
 	container "cloud.google.com/go/container/apiv1"
 	"google.golang.org/api/option"
 	containerpb "google.golang.org/genproto/googleapis/container/v1"
+	"k8s.io/klog"
 )
 
 // gke container images
@@ -29,7 +30,7 @@ func ImagesAddTag(w http.ResponseWriter, req *http.Request) {
 	data, err := util.GetOutputReplaceStr(cmd, "Do you want to continue (Y/n)?", "")
 
 	if err != nil {
-		log.Println(err)
+		klog.Error(err)
 	} else {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(data)
@@ -51,7 +52,7 @@ func ImagesDelete(w http.ResponseWriter, req *http.Request) {
 	data, err := util.GetOutputReplaceStr(cmd, "Do you want to continue (Y/n)?", "")
 
 	if err != nil {
-		log.Println(err)
+		klog.Errorln(err)
 	} else {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(data)
@@ -66,7 +67,7 @@ func ImagesDescribe(w http.ResponseWriter, req *http.Request) {
 	data, err := util.GetOutput(cmd)
 
 	if err != nil {
-		log.Println(err)
+		klog.Errorln(err)
 	} else {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(data)
@@ -106,7 +107,7 @@ func ImagesList(w http.ResponseWriter, req *http.Request) {
 	data, err := util.GetOutput(cmd)
 
 	if err != nil {
-		log.Println(err)
+		klog.Errorln(err)
 	} else {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(data)
@@ -138,7 +139,7 @@ func ImagesListTags(w http.ResponseWriter, req *http.Request) {
 	data, err := util.GetOutput(cmd)
 
 	if err != nil {
-		log.Println(err)
+		klog.Errorln(err)
 	} else {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(data)
@@ -155,7 +156,7 @@ func ImagesUnTags(w http.ResponseWriter, req *http.Request) {
 	data, err := util.GetOutputReplaceStr(cmd, "Do you want to continue (Y/n)?", "")
 
 	if err != nil {
-		log.Println(err)
+		klog.Errorln(err)
 	} else {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(data)
@@ -167,7 +168,7 @@ func NewClusterManagerClient() (*container.ClusterManagerClient, error) {
 	ctx := context.TODO()
 	c, err := container.NewClusterManagerClient(ctx, option.WithCredentialsFile("/root/hcp-key.json"))
 	if err != nil {
-		fmt.Println(err)
+		klog.Errorln(err)
 		return nil, err
 	}
 	//defer c.Close()
@@ -178,24 +179,23 @@ func NewClusterManagerClient() (*container.ClusterManagerClient, error) {
 func SetGKERequest(r *http.Request, input interface{}) {
 	jsonDataFromHttp, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		fmt.Println(err)
+		klog.Errorln(err)
 	}
 	if err = json.Unmarshal(jsonDataFromHttp, &input); err != nil {
-		fmt.Println(err)
+		klog.Errorln(err)
 	} else {
-		fmt.Println(input)
+		klog.Infoln(input)
 	}
 }
 
 func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 	c, err := NewClusterManagerClient()
 	if err != nil {
-		fmt.Println(err)
+		klog.Errorln(err)
 	}
 
 	var req containerpb.GetServerConfigRequest
 	SetGKERequest(r, &req)
-	fmt.Println(req)
 
 	resp, err := c.GetServerConfig(context.TODO(), &req)
 	defer c.Close()
@@ -218,7 +218,7 @@ func GetOperation(w http.ResponseWriter, r *http.Request) {
 	c, err := NewClusterManagerClient()
 
 	if err != nil {
-		fmt.Println(err)
+		klog.Errorln(err)
 	}
 
 	var req *containerpb.GetOperationRequest
@@ -243,7 +243,7 @@ func GetOperation(w http.ResponseWriter, r *http.Request) {
 func ListOperations(w http.ResponseWriter, r *http.Request) {
 	c, err := NewClusterManagerClient()
 	if err != nil {
-		fmt.Println(err)
+		klog.Errorln(err)
 	}
 
 	var req *containerpb.ListOperationsRequest
@@ -268,7 +268,7 @@ func ListOperations(w http.ResponseWriter, r *http.Request) {
 func RollbackNodePoolUpgrade(w http.ResponseWriter, r *http.Request) {
 	c, err := NewClusterManagerClient()
 	if err != nil {
-		fmt.Println(err)
+		klog.Errorln(err)
 	}
 
 	var req *containerpb.RollbackNodePoolUpgradeRequest
@@ -302,9 +302,8 @@ func WaitOperations(w http.ResponseWriter, r *http.Request) {
 	cmd := exec.Command("gcloud", args...)
 	data, err := util.GetOutput(cmd)
 	if err != nil {
-		log.Println(err)
+		klog.Errorln(err)
 	} else {
-		fmt.Println(string(data))
 		w.Write(data)
 	}
 }
@@ -314,7 +313,6 @@ func AuthConfigureDocker(w http.ResponseWriter, r *http.Request) {
 	var input cobrautil.GKEAuth
 	SetGKERequest(r, &input)
 
-	fmt.Println(input.REGISTRIES)
 	args := []string{"auth", "configure-docker", input.REGISTRIES}
 
 	/*
@@ -324,9 +322,8 @@ func AuthConfigureDocker(w http.ResponseWriter, r *http.Request) {
 	cmd := exec.Command("gcloud", args...)
 	data, err := util.GetOutput(cmd)
 	if err != nil {
-		log.Println(err)
+		klog.Errorln(err)
 	} else {
-		fmt.Println(string(data))
 		w.Write(data)
 	}
 }
@@ -359,9 +356,8 @@ func AuthList(w http.ResponseWriter, r *http.Request) {
 	cmd := exec.Command("gcloud", args...)
 	data, err := util.GetOutput(cmd)
 	if err != nil {
-		log.Println(err)
+		klog.Errorln(err)
 	} else {
-		fmt.Println(string(data))
 		w.Write(data)
 	}
 }
@@ -382,9 +378,8 @@ func AuthRevoke(w http.ResponseWriter, r *http.Request) {
 	cmd := exec.Command("gcloud", args...)
 	data, err := util.GetOutput(cmd)
 	if err != nil {
-		log.Println(err)
+		klog.Errorln(err)
 	} else {
-		fmt.Println(string(data))
 		w.Write(data)
 	}
 }
@@ -404,9 +399,8 @@ func AuthLogin(w http.ResponseWriter, r *http.Request) {
 	data, err := util.GetOutputReplaceStr(cmd, str, "")
 
 	if err != nil {
-		log.Println(err)
+		klog.Errorln(err)
 	} else {
-		fmt.Println(string(data))
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(data)
 	}
@@ -437,9 +431,8 @@ func GDocker(w http.ResponseWriter, req *http.Request) {
 	cmd := exec.Command("gcloud", args...)
 	data, err := util.GetOutput(cmd)
 	if err != nil {
-		log.Println(err)
+		klog.Errorln(err)
 	} else {
-		fmt.Println(string(data))
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(data)
 	}
@@ -481,12 +474,10 @@ func UpdateProjectConfigs(w http.ResponseWriter, r *http.Request) {
 	}
 
 	cmd := exec.Command("gcloud", args...)
-	fmt.Println(cmd.Args)
 	data, err := util.GetOutput(cmd)
 	if err != nil {
-		log.Println(err)
+		klog.Errorln(err)
 	} else {
-		fmt.Println(string(data))
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(data)
 	}
@@ -500,12 +491,10 @@ func DescribeProjectConfigs(w http.ResponseWriter, r *http.Request) {
 	args := []string{"source", "project-configs", "describe"}
 
 	cmd := exec.Command("gcloud", args...)
-	fmt.Println(cmd.Args)
 	data, err := util.GetOutput(cmd)
 	if err != nil {
-		log.Println(err)
+		klog.Errorln(err)
 	} else {
-		fmt.Println(string(data))
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(data)
 	}
@@ -541,14 +530,12 @@ func ConfigSet(w http.ResponseWriter, r *http.Request) {
 	if s.INSTALLATION {
 		args = append(args, "--installation")
 	}
-	fmt.Println(args)
 
 	cmd := exec.Command("gcloud", args...)
 	data, err := util.GetOutput(cmd)
 	if err != nil {
-		log.Println(err)
+		klog.Errorln(err)
 	} else {
-		fmt.Println(string(data))
 		w.Write(data)
 	}
 }

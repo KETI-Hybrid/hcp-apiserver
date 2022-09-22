@@ -3,22 +3,18 @@ package main
 import (
 
 	// "Hybrid_Cloud/hybridctl/util"
-	"Hybrid_Cloud/hcp-apiserver/pkg/handler"
-	aksFunc "Hybrid_Cloud/hcp-apiserver/pkg/main/aks"
-	eksFunc "Hybrid_Cloud/hcp-apiserver/pkg/main/eks"
-	gkeFunc "Hybrid_Cloud/hcp-apiserver/pkg/main/gke"
+	// "github.com/KETI-Hybrid/hcp-apiserver-v1/pkg/handler"
+	"github.com/KETI-Hybrid/hcp-apiserver-v1/pkg/handler"
+	// akstestfunc "github.com/KETI-Hybrid/hcp-apiserver-v1/pkg/handler"
+	aksFunc "github.com/KETI-Hybrid/hcp-apiserver-v1/pkg/main/aks"
+	eksFunc "github.com/KETI-Hybrid/hcp-apiserver-v1/pkg/main/eks"
+	gkeFunc "github.com/KETI-Hybrid/hcp-apiserver-v1/pkg/main/gke"
+
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
 )
-
-func CheckErr(err error) {
-	if err != nil {
-		log.Println(err)
-	}
-}
 
 func handlerRequests() http.Handler {
 
@@ -66,10 +62,10 @@ func handlerRequests() http.Handler {
 	mux.HandleFunc("/aks/connectedk8s/upgrade", aksFunc.Connectedk8sUpgrade)
 
 	// etc
-	mux.HandleFunc("/aks/start", aksFunc.AksStart)
-	mux.HandleFunc("/aks/stop", aksFunc.AksStop)
-	mux.HandleFunc("/aks/rotate-certs", aksFunc.AksRotateCerts)
-	mux.HandleFunc("/aks/get-os-options", aksFunc.AksGetOSoptions)
+	mux.HandleFunc("/aks/start", aksFunc.AKSStart)
+	mux.HandleFunc("/aks/stop", aksFunc.AKSStop)
+	mux.HandleFunc("/aks/rotate-certs", aksFunc.AKSRotateCerts)
+	mux.HandleFunc("/aks/get-os-options", aksFunc.AKSGetOSoptions)
 	mux.HandleFunc("/aks/app-up", aksFunc.AppUp)
 	mux.HandleFunc("/aks/browse", aksFunc.Browse)
 	mux.HandleFunc("/aks/check-acr", aksFunc.CheckAcr)
@@ -82,8 +78,22 @@ func handlerRequests() http.Handler {
 
 	// eks
 
+	// cluster
+	mux.HandleFunc("/eks/cluster/create", eksFunc.CreateCluster)
+	mux.HandleFunc("/eks/cluster/delete", eksFunc.DeleteCluster)
+	mux.HandleFunc("/eks/cluster/describe", eksFunc.DescribeCluster)
+	mux.HandleFunc("/eks/cluster/list", eksFunc.ListCluster)
+	mux.HandleFunc("/eks/cluster/upgrade", eksFunc.UpgradeCluster)
+
+	// nodegroup
+	mux.HandleFunc("/eks/nodegroup/create", eksFunc.CreateNodegroup)
+	mux.HandleFunc("/eks/nodegroup/delete", eksFunc.DeleteNodegroup)
+	mux.HandleFunc("/eks/nodegroup/describe", eksFunc.DescribeNodegroup)
+	mux.HandleFunc("/eks/nodegroup/list", eksFunc.ListNodegroup)
+
 	// addon
 	mux.HandleFunc("/eks/addon/create", eksFunc.CreateAddon)
+
 	mux.HandleFunc("/eks/addon/list", eksFunc.ListAddon)
 	mux.HandleFunc("/eks/addon/delete", eksFunc.DeleteAddon)
 	mux.HandleFunc("/eks/addon/describe", eksFunc.DescribeAddon)
@@ -138,14 +148,24 @@ func handlerRequests() http.Handler {
 	mux.HandleFunc("/gke/source/project-configs/describe", gkeFunc.DescribeProjectConfigs)
 
 	// HCPResource
-	mux.HandleFunc("/resources/deployment", handler.CreateDeploymentHandler).Methods("POST")
+	mux.HandleFunc("/resources/namespaces/{namespace}/deployments", handler.CreateDeploymentHandler).Methods("POST")
+	mux.HandleFunc("/resources/namespaces/{namespace}/deployments/{name}", handler.DeleteDeploymentHandler).Methods("DELETE")
+	mux.HandleFunc("/resources/namespaces/{namespace}/hcphybridautoscalers", handler.CreateHCPHASHandler).Methods("POST")
+	mux.HandleFunc("/resources/namespaces/{namespace}/hcphybridautoscalers/{name}", handler.DeleteHCPHASHandler).Methods("DELETE")
 	mux.HandleFunc("/resources/pod", handler.CreatePodHandler).Methods("POST")
+
+	// metric
+	//mux.HandleFunc("/metrics/clusters/{clustername}/nodes/{nodename}", handler.GetNodeMetric).Methods("GET")
 
 	return mux
 }
 
 func main() {
-
+	// klog.Infoln("aks test")
+	// akstestfunc.AksDescribeCluster()
+	// akstestfunc.AksTestCreateCluster()
+	// akstestfunc.Akstest()
 	fmt.Println("start server")
 	http.ListenAndServe(":8080", handlerRequests())
+
 }
