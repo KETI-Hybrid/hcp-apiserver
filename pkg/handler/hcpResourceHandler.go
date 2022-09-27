@@ -56,18 +56,22 @@ func CreateDeploymentHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 		// TargetCluster가 지정된 경우
-		target_clientset := cm.Cluster_kubeClients[resource.TargetCluster]
+		//target_clientset := cm.Cluster_kubeClients[resource.TargetCluster]
 		// namespace
 		namespace := real_resource.ObjectMeta.Namespace
 		if namespace == "" {
 			namespace = "default"
 		}
 
+		// HCPDeployment 생성하기
 		hcp_resource := deploymentToHCPDeployment(real_resource)
 		hcp_resource.Spec.SchedulingResult.Targets = append(hcp_resource.Spec.SchedulingResult.Targets, v1alpha1.Target{
 			Cluster:  resource.TargetCluster,
 			Replicas: real_resource.Spec.Replicas,
 		})
+
+		hcp_resource.Spec.SchedulingNeed = false
+		hcp_resource.Spec.SchedulingComplete = false
 		_, err = cm.HCPResource_Client.HcpV1alpha1().HCPDeployments("hcp").Create(context.TODO(), &hcp_resource, metav1.CreateOptions{})
 		if err != nil {
 			klog.Error(err)
@@ -75,15 +79,17 @@ func CreateDeploymentHandler(w http.ResponseWriter, r *http.Request) {
 		} else {
 			klog.Info("Succeed to create hcpdeployment: %s \n", hcp_resource.Name)
 		}
-		// Kubernetes Deployment 생성
-		r, err := target_clientset.AppsV1().Deployments(namespace).Create(context.TODO(), real_resource, metav1.CreateOptions{})
+		/*
+			// Kubernetes Deployment 생성
+			r, err := target_clientset.AppsV1().Deployments(namespace).Create(context.TODO(), real_resource, metav1.CreateOptions{})
 
-		if err != nil {
-			klog.Error(err)
-			return
-		} else {
-			klog.Info("Succeed to create deployment %s \n", r.Name)
-		}
+			if err != nil {
+				klog.Error(err)
+				return
+			} else {
+				klog.Info("Succeed to create deployment %s \n", r.Name)
+			}
+		*/
 	}
 }
 
