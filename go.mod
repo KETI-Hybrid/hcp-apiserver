@@ -38,9 +38,12 @@ require github.com/pkg/errors v0.9.1 // indirect
 require (
 	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.1.0
 	github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/containerservice/armcontainerservice v1.0.0
-	github.com/KETI-Hybrid/hcp-analytic-engine-v1 v0.0.0-20220921073820-117360d3335d
-	github.com/KETI-Hybrid/hcp-pkg v0.0.0-20220922014831-7cf951d8a20b
-	github.com/KETI-Hybrid/hybridctl-v1 v0.0.0-20220921091710-d35ecc504062
+	github.com/KETI-Hybrid/hcp-analytic-engine-v1 v0.0.0-20220922072539-5538902ffb0e
+	github.com/KETI-Hybrid/hcp-pkg v0.0.0-20220927050401-689dcbb840df
+	github.com/KETI-Hybrid/hybridctl-v1 v0.0.0-20220927013413-ac2ba417be13
+// github.com/KETI-Hybrid/hcp-analytic-engine-v1 v0.0.0-20220921073820-117360d3335d
+// github.com/KETI-Hybrid/hcp-pkg v0.0.0-20220922014831-7cf951d8a20b
+// github.com/KETI-Hybrid/hybridctl-v1 v0.0.0-20220921091710-d35ecc504062
 )
 
 require (
