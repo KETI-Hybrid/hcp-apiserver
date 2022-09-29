@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"net/http"
 
-	cobrautil "github.com/KETI-Hybrid/hybridctl-v1/util"
+	cobrautil "hybridctl/util"
 
-	"github.com/KETI-Hybrid/hcp-apiserver-v1/pkg/handler"
-	"github.com/KETI-Hybrid/hcp-apiserver-v1/pkg/util"
+	"hcp-apiserver/pkg/handler"
+	"hcp-apiserver/pkg/util"
 
 	"github.com/aws/aws-sdk-go/service/eks"
 )

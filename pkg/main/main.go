@@ -3,12 +3,12 @@ package main
 import (
 
 	// "Hybrid_Cloud/hybridctl/util"
-	// "github.com/KETI-Hybrid/hcp-apiserver-v1/pkg/handler"
-	"github.com/KETI-Hybrid/hcp-apiserver-v1/pkg/handler"
-	// akstestfunc "github.com/KETI-Hybrid/hcp-apiserver-v1/pkg/handler"
-	aksFunc "github.com/KETI-Hybrid/hcp-apiserver-v1/pkg/main/aks"
-	eksFunc "github.com/KETI-Hybrid/hcp-apiserver-v1/pkg/main/eks"
-	gkeFunc "github.com/KETI-Hybrid/hcp-apiserver-v1/pkg/main/gke"
+	// "hcp-apiserver/pkg/handler"
+	"hcp-apiserver/pkg/handler"
+	// akstestfunc "hcp-apiserver/pkg/handler"
+	aksFunc "hcp-apiserver/pkg/main/aks"
+	eksFunc "hcp-apiserver/pkg/main/eks"
+	gkeFunc "hcp-apiserver/pkg/main/gke"
 
 	"fmt"
 	"net/http"
