@@ -4,8 +4,8 @@ import (
 	"context"
 	"io/ioutil"
 
-	"github.com/KETI-Hybrid/hcp-apiserver-v1/pkg/converter"
-	util "github.com/KETI-Hybrid/hcp-apiserver-v1/pkg/util"
+	"hcp-apiserver/pkg/converter"
+	util "hcp-apiserver/pkg/util"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/to"
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"

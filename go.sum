@@ -82,12 +82,8 @@ github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
 github.com/Jeffail/gabs v1.4.0 h1://5fYRRTq1edjfIrQGvdkcd22pkYUrHZ5YC/H2GJVAo=
 github.com/Jeffail/gabs v1.4.0/go.mod h1:6xMvQMK4k33lb7GUUpaAPh6nKMmemQeg5d4gn7/bOXc=
-github.com/KETI-Hybrid/hcp-analytic-engine-v1 v1.0.0 h1:o/X0cAkiIxRrHuzugYL0kT7joAWqf+z6Rt+YpmItB8o=
-github.com/KETI-Hybrid/hcp-analytic-engine-v1 v1.0.0/go.mod h1:iu9ezJbPdiuyctKrM1DKev8wH0zv6Abs4tKIIiL8/gc=
-github.com/KETI-Hybrid/hcp-pkg v1.0.0 h1:coAykveXQ4LHo3jr4Qlkc3SyVnSxUYts08GzM3RlYYY=
-github.com/KETI-Hybrid/hcp-pkg v1.0.0/go.mod h1:byWWICGr7YF+aoHLyQUTJjTbJXmfSXJfjeSyF4neD7A=
-github.com/KETI-Hybrid/hybridctl-v1 v1.0.0 h1:8UJmckTwtu599mEgw7+uy4WJq6xTkMIijZ7csAj1fV0=
-github.com/KETI-Hybrid/hybridctl-v1 v1.0.0/go.mod h1:X4BmMm1yQLMMPlwW+fyE9r8SocuqXfj5L+/CgEzbjWU=
+github.com/KETI-Hybrid/hcp-apiserver-v1 v0.0.0-20220921080754-59bf5a1498e9 h1:3wRb54V3VSnHILW/PWBvckE0wDrN7TsWtbvk/mGvR+I=
+github.com/KETI-Hybrid/hcp-apiserver-v1 v0.0.0-20220921080754-59bf5a1498e9/go.mod h1:RYwiio1efzxdr+zKGBlFXrb0c3RN/KF8AutwsxOEdZM=
 github.com/MakeNowJust/heredoc v0.0.0-20170808103936-bb23615498cd/go.mod h1:64YHyfSL2R96J44Nlwm39UHepQbyR5q10x7iYa1ks2E=
 github.com/NYTimes/gziphandler v0.0.0-20170623195520-56545f4a5d46/go.mod h1:3wb06e3pkSAbeQ52E9H9iFoQsEEwGN64994WTCIhntQ=
 github.com/NYTimes/gziphandler v1.1.1/go.mod h1:n/CVRwUEOgIxrgPvAQhUUr9oeUtvrhMomdKFjzJNB0c=

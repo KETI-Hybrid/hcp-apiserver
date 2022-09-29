@@ -2,7 +2,7 @@ package main
 
 /*
 import (
-	"github.com/KETI-Hybrid/hcp-apiserver-v1/pkg/util"
+	"hcp-apiserver/pkg/util"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"

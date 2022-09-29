@@ -62,27 +62,9 @@ github.com/AzureAD/microsoft-authentication-library-for-go/apps/public
 # github.com/Jeffail/gabs v1.4.0
 ## explicit
 github.com/Jeffail/gabs
-# github.com/KETI-Hybrid/hcp-analytic-engine-v1 v1.0.0
+# github.com/KETI-Hybrid/hcp-apiserver-v1 v0.0.0-20220921080754-59bf5a1498e9
 ## explicit; go 1.18
-github.com/KETI-Hybrid/hcp-analytic-engine-v1/influx
-# github.com/KETI-Hybrid/hcp-pkg v1.0.0
-## explicit; go 1.18
-github.com/KETI-Hybrid/hcp-pkg/apis/hcpcluster/v1alpha1
-github.com/KETI-Hybrid/hcp-pkg/apis/hcppolicy/v1alpha1
-github.com/KETI-Hybrid/hcp-pkg/apis/resource/v1alpha1
-github.com/KETI-Hybrid/hcp-pkg/client/hcpcluster/v1alpha1/clientset/versioned
-github.com/KETI-Hybrid/hcp-pkg/client/hcpcluster/v1alpha1/clientset/versioned/scheme
-github.com/KETI-Hybrid/hcp-pkg/client/hcpcluster/v1alpha1/clientset/versioned/typed/hcpcluster/v1alpha1
-github.com/KETI-Hybrid/hcp-pkg/client/hcppolicy/v1alpha1/clientset/versioned
-github.com/KETI-Hybrid/hcp-pkg/client/hcppolicy/v1alpha1/clientset/versioned/scheme
-github.com/KETI-Hybrid/hcp-pkg/client/hcppolicy/v1alpha1/clientset/versioned/typed/hcppolicy/v1alpha1
-github.com/KETI-Hybrid/hcp-pkg/client/resource/v1alpha1/clientset/versioned
-github.com/KETI-Hybrid/hcp-pkg/client/resource/v1alpha1/clientset/versioned/scheme
-github.com/KETI-Hybrid/hcp-pkg/client/resource/v1alpha1/clientset/versioned/typed/resource/v1alpha1
-github.com/KETI-Hybrid/hcp-pkg/util/clusterManager
-# github.com/KETI-Hybrid/hybridctl-v1 v1.0.0
-## explicit; go 1.18
-github.com/KETI-Hybrid/hybridctl-v1/util
+github.com/KETI-Hybrid/hcp-apiserver-v1/pkg/util
 # github.com/aws/aws-sdk-go v1.44.102
 ## explicit; go 1.11
 github.com/aws/aws-sdk-go/aws
@@ -461,6 +443,27 @@ gopkg.in/yaml.v2
 # gopkg.in/yaml.v3 v3.0.1
 ## explicit
 gopkg.in/yaml.v3
+# hcp-analytic-engine v0.0.0 => ../hcp-analytic-engine
+## explicit; go 1.18
+hcp-analytic-engine/influx
+# hcp-pkg v0.0.0 => ../hcp-pkg
+## explicit; go 1.18
+hcp-pkg/apis/hcpcluster/v1alpha1
+hcp-pkg/apis/hcppolicy/v1alpha1
+hcp-pkg/apis/resource/v1alpha1
+hcp-pkg/client/hcpcluster/v1alpha1/clientset/versioned
+hcp-pkg/client/hcpcluster/v1alpha1/clientset/versioned/scheme
+hcp-pkg/client/hcpcluster/v1alpha1/clientset/versioned/typed/hcpcluster/v1alpha1
+hcp-pkg/client/hcppolicy/v1alpha1/clientset/versioned
+hcp-pkg/client/hcppolicy/v1alpha1/clientset/versioned/scheme
+hcp-pkg/client/hcppolicy/v1alpha1/clientset/versioned/typed/hcppolicy/v1alpha1
+hcp-pkg/client/resource/v1alpha1/clientset/versioned
+hcp-pkg/client/resource/v1alpha1/clientset/versioned/scheme
+hcp-pkg/client/resource/v1alpha1/clientset/versioned/typed/resource/v1alpha1
+hcp-pkg/util/clusterManager
+# hybridctl v0.0.0-00010101000000-000000000000 => ../hybridctl
+## explicit; go 1.18
+hybridctl/util
 # k8s.io/api v0.25.1
 ## explicit; go 1.19
 k8s.io/api/admissionregistration/v1
@@ -741,6 +744,9 @@ sigs.k8s.io/structured-merge-diff/v4/value
 # sigs.k8s.io/yaml v1.3.0
 ## explicit; go 1.12
 sigs.k8s.io/yaml
+# hcp-analytic-engine => ../hcp-analytic-engine
+# hcp-pkg => ../hcp-pkg
+# hybridctl => ../hybridctl
 # k8s.io/apimachinery => k8s.io/apimachinery v0.22.8
 # k8s.io/client-go => k8s.io/client-go v0.22.8
 # k8s.io/kube-openapi => k8s.io/kube-openapi v0.0.0-20211115234752-e816edb12b65

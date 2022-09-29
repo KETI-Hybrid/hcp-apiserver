@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/KETI-Hybrid/hybridctl-v1/util"
+	"hybridctl/util"
 
-	"github.com/KETI-Hybrid/hcp-pkg/util/clusterManager"
+	"hcp-pkg/util/clusterManager"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"

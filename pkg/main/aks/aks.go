@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"os/exec"
 
-	"github.com/KETI-Hybrid/hcp-apiserver-v1/pkg/handler"
-	"github.com/KETI-Hybrid/hcp-apiserver-v1/pkg/util"
+	"hcp-apiserver/pkg/handler"
+	"hcp-apiserver/pkg/util"
 
 	"k8s.io/klog"
 )

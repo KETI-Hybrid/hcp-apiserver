@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"os/exec"
 
-	cobrautil "github.com/KETI-Hybrid/hybridctl-v1/util"
+	cobrautil "hybridctl/util"
 
-	"github.com/KETI-Hybrid/hcp-apiserver-v1/pkg/util"
+	"hcp-apiserver/pkg/util"
 
 	container "cloud.google.com/go/container/apiv1"
 	"google.golang.org/api/option"
