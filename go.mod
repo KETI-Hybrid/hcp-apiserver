@@ -9,7 +9,7 @@ require (
 	github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/containerservice/armcontainerservice v1.0.0
 	github.com/KETI-Hybrid/hcp-analytic-engine-v1 v1.0.0
 	github.com/KETI-Hybrid/hcp-pkg v1.0.0
-	github.com/KETI-Hybrid/hybridctl-v1 v0.0.0-20220927013413-ac2ba417be13
+	github.com/KETI-Hybrid/hybridctl-v1 v1.0.0
 	github.com/aws/aws-sdk-go v1.44.102
 	github.com/gorilla/mux v1.8.0
 	github.com/influxdata/influxdb v1.10.0
@@ -40,7 +40,6 @@ require (
 	github.com/golang-jwt/jwt v3.2.1+incompatible // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
-	github.com/google/gnostic v0.5.7-v3refs // indirect
 	github.com/google/go-cmp v0.5.8 // indirect
 	github.com/google/gofuzz v1.1.0 // indirect
 	github.com/google/uuid v1.3.0 // indirect
@@ -80,10 +79,13 @@ require (
 	k8s.io/kube-openapi v0.0.0-20220803162953-67bda5d908f1 // indirect
 	k8s.io/utils v0.0.0-20220728103510-ee6ede2d64ed // indirect
 	sigs.k8s.io/controller-runtime v0.13.0 // indirect
-	sigs.k8s.io/json v0.0.0-20220713155537-f223a00ba0e2 // indirect
 	sigs.k8s.io/kubefed v0.10.0 // indirect
 	sigs.k8s.io/structured-merge-diff/v4 v4.2.3 // indirect
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
 
-replace k8s.io/client-go => k8s.io/client-go v0.23.12
+replace (
+	k8s.io/apimachinery => k8s.io/apimachinery v0.22.8
+	k8s.io/client-go => k8s.io/client-go v0.22.8
+	k8s.io/kube-openapi => k8s.io/kube-openapi v0.0.0-20211115234752-e816edb12b65
+)
