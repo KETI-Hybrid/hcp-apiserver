@@ -12,9 +12,9 @@ require (
 	github.com/influxdata/influxdb v1.10.0
 	google.golang.org/api v0.96.0
 	google.golang.org/genproto v0.0.0-20220920201722-2b89144ce006
-	hcp-analytic-engine v0.0.0
+	hcp-analytic-engine v1.0.0
 	hcp-pkg v0.0.0
-	hybridctl v0.0.0-00010101000000-000000000000
+	hybridctl v0.0.0
 	k8s.io/api v0.25.1
 	k8s.io/apimachinery v0.25.1
 	k8s.io/autoscaler/vertical-pod-autoscaler v0.12.0
@@ -29,7 +29,6 @@ require (
 	github.com/Azure/azure-sdk-for-go/sdk/internal v1.0.0 // indirect
 	github.com/AzureAD/microsoft-authentication-library-for-go v0.5.1 // indirect
 	github.com/Jeffail/gabs v1.4.0 // indirect
-	github.com/KETI-Hybrid/hcp-apiserver-v1 v0.0.0-20220921080754-59bf5a1498e9 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect

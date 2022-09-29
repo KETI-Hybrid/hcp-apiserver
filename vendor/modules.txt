@@ -62,9 +62,6 @@ github.com/AzureAD/microsoft-authentication-library-for-go/apps/public
 # github.com/Jeffail/gabs v1.4.0
 ## explicit
 github.com/Jeffail/gabs
-# github.com/KETI-Hybrid/hcp-apiserver-v1 v0.0.0-20220921080754-59bf5a1498e9
-## explicit; go 1.18
-github.com/KETI-Hybrid/hcp-apiserver-v1/pkg/util
 # github.com/aws/aws-sdk-go v1.44.102
 ## explicit; go 1.11
 github.com/aws/aws-sdk-go/aws
@@ -443,7 +440,7 @@ gopkg.in/yaml.v2
 # gopkg.in/yaml.v3 v3.0.1
 ## explicit
 gopkg.in/yaml.v3
-# hcp-analytic-engine v0.0.0 => ../hcp-analytic-engine
+# hcp-analytic-engine v1.0.0 => ../hcp-analytic-engine
 ## explicit; go 1.18
 hcp-analytic-engine/influx
 # hcp-pkg v0.0.0 => ../hcp-pkg
@@ -461,7 +458,7 @@ hcp-pkg/client/resource/v1alpha1/clientset/versioned
 hcp-pkg/client/resource/v1alpha1/clientset/versioned/scheme
 hcp-pkg/client/resource/v1alpha1/clientset/versioned/typed/resource/v1alpha1
 hcp-pkg/util/clusterManager
-# hybridctl v0.0.0-00010101000000-000000000000 => ../hybridctl
+# hybridctl v0.0.0 => ../hybridctl
 ## explicit; go 1.18
 hybridctl/util
 # k8s.io/api v0.25.1
