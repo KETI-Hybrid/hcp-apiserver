@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/KETI-Hybrid/hcp-apiserver-v1/pkg/util"
+	"hcp-apiserver/pkg/util"
 
 	"github.com/Jeffail/gabs"
 )
