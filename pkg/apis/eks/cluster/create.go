@@ -7,15 +7,15 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-type CreateReaource struct {
+type CreateResource struct {
 	apis.PostNotSupported
 	apis.PutNotSupported
 	apis.DeleteNotSupported
 }
 
-func (CreateReaource) Uri() string {
-	return "/eks/addon/create"
+func (CreateResource) Uri() string {
+	return "/eks/cluster/create"
 }
-func (CreateReaource) Get(rw http.ResponseWriter, r *http.Request, ps httprouter.Params) apis.Response {
+func (CreateResource) Get(rw http.ResponseWriter, r *http.Request, ps httprouter.Params) apis.Response {
 	return apis.Response{Code: 200, Data: nil}
 }

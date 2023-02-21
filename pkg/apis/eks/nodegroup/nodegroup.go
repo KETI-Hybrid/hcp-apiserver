@@ -1,4 +1,4 @@
-package addon
+package nodegroup
 
 import (
 	"hcp-apiserver/pkg/apis"
@@ -6,12 +6,10 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func AddonResourceAttach(router *httprouter.Router) {
+func NodeGroupResourceAttach(router *httprouter.Router) {
 	apis.AddResource(router, new(CreateResource))
 	apis.AddResource(router, new(DeleteResource))
-	apis.AddResource(router, new(DescribeConfigResource))
-	apis.AddResource(router, new(DescribeVersionResource))
 	apis.AddResource(router, new(DescribeResource))
 	apis.AddResource(router, new(ListResource))
-	apis.AddResource(router, new(UpdateResource))
+	apis.AddResource(router, new(UpgradeResource))
 }
