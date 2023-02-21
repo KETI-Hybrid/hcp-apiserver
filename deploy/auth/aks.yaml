@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: aks-auth
+  namespace: public-auth
+data:
+  client-id: 9bd853b8-04d5-4c24-8d07-f0e7cd0a680e
+  client-secret: gHr8Q~UPgadLULnw8p_hnNzBYFCB~5_blukk1arU
+  tenant-id: c8ea91b5-6aac-4c5c-ae34-9717a872159f
+  subscription-id: ccfc0c6c-d3c6-4de2-9a6c-c09ca498ff73
