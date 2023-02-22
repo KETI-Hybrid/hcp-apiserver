@@ -11,7 +11,12 @@ import (
 	"k8s.io/klog"
 )
 
-func NewEKSClient(k8sclient *kubernetes.Clientset) *session.Session {
+type EKSClient struct {
+	Client *session.Session
+	ARN    string
+}
+
+func NewEKSClient(k8sclient *kubernetes.Clientset) *EKSClient {
 	config, err := k8sclient.CoreV1().ConfigMaps("public-auth").Get(context.Background(), "aws-auth", metav1.GetOptions{})
 	if err != nil {
 		klog.Errorln(err.Error())
@@ -20,6 +25,7 @@ func NewEKSClient(k8sclient *kubernetes.Clientset) *session.Session {
 	region := config.Data["region"]
 	id := config.Data["aws_access_key_id"]
 	secret := config.Data["aws_secret_access_key"]
+	arn := config.Data["defaultARN"]
 	sess, err := session.NewSession(&aws.Config{
 		Region: aws.String(region),
 		Credentials: credentials.NewStaticCredentials(
@@ -31,5 +37,8 @@ func NewEKSClient(k8sclient *kubernetes.Clientset) *session.Session {
 	if err != nil {
 		klog.Errorln(err)
 	}
-	return sess
+	return &EKSClient{
+		Client: sess,
+		ARN:    arn,
+	}
 }
