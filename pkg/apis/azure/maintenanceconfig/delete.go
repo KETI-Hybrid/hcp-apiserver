@@ -1,4 +1,4 @@
-package agentpool
+package maintenanceconfig
 
 import (
 	"context"
@@ -11,8 +11,8 @@ import (
 	"k8s.io/klog"
 )
 
-type UpdateNodeImageVersionResource struct {
-	apis.DeleteNotSupported
+type DeleteResource struct {
+	apis.GetNotSupported
 	apis.PostNotSupported
 	apis.PutNotSupported
 }
@@ -20,35 +20,30 @@ type UpdateNodeImageVersionResource struct {
 // resourceGroupName - The name of the resource group. The name is case insensitive.
 // resourceName - The name of the managed cluster resource.
 // agentPoolName - The name of the agent pool.
-type UpdateNodeImageVersion struct {
+type DeleteMaintenanceConfiguration struct {
 	ResourceGroupName string `json:"resourceGroupName"`
 	ClusterName       string `json:"clusterName"`
-	AgentPoolName     string `json:"agentPoolName"`
+	ConfigName        string `json:"configName"`
 }
 
-func (UpdateNodeImageVersionResource) Uri() string {
-	return "/aks/agentpool/get"
+func (DeleteResource) Uri() string {
+	return "/aks/maintenanceConfigurations/delete"
 }
-func (UpdateNodeImageVersionResource) Get(rw http.ResponseWriter, r *http.Request, ps httprouter.Params) apis.Response {
+func (DeleteResource) Delete(rw http.ResponseWriter, r *http.Request, ps httprouter.Params) apis.Response {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		klog.Errorln(err)
 	}
-	inputRequest := &UpdateNodeImageVersion{}
+	inputRequest := &CreateOrUpdateMaintenanceConfiguration{}
 
 	err = json.Unmarshal(body, inputRequest)
 	if err != nil {
 		klog.Errorln(err)
 	}
 	ctx := context.Background()
-	result, err := AgentPoolsClient.BeginUpgradeNodeImageVersion(ctx, inputRequest.ResourceGroupName, inputRequest.ClusterName, inputRequest.AgentPoolName, nil)
+	result, err := MaintenanceConfigurationsClient.Delete(ctx, inputRequest.ResourceGroupName, inputRequest.ClusterName, inputRequest.ConfigName, nil)
 	if err != nil {
 		klog.Errorln(err)
 	}
-
-	resp, err := result.PollUntilDone(ctx, nil)
-	if err != nil {
-		klog.Errorln(err)
-	}
-	return apis.Response{Code: 200, Data: resp}
+	return apis.Response{Code: 200, Data: result}
 }
