@@ -49,5 +49,5 @@ func (ListResource) Get(rw http.ResponseWriter, r *http.Request, ps httprouter.P
 
 	}
 
-	return apis.Response{Code: 200, Data: result}
+	return apis.Response{Code: 200, Data: result}a
 }
