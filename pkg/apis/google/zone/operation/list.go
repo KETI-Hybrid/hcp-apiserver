@@ -35,7 +35,7 @@ func (ListResource) Get(rw http.ResponseWriter, r *http.Request, ps httprouter.P
 	if err != nil {
 		klog.Errorln(err)
 	}
-	inputRequest := &Cancel{}
+	inputRequest := &List{}
 
 	err = json.Unmarshal(body, inputRequest)
 	if err != nil {

@@ -1,15 +1,12 @@
 package clusterconfig
 
 import (
-	"encoding/json"
 	"hcp-apiserver/pkg/docs"
-	"io/ioutil"
+	"hcp-apiserver/pkg/docs/util"
 	"net/http"
 
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/eks"
 	"github.com/julienschmidt/httprouter"
-	"k8s.io/klog"
 )
 
 type UpdateResource struct {
@@ -43,39 +40,11 @@ func (UpdateResource) Uri() string {
 	return "/eks/cluster-config/update"
 }
 func (UpdateResource) Post(rw http.ResponseWriter, r *http.Request, ps httprouter.Params) docs.Response {
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		klog.Errorln(err)
-	}
-	inputReq := &ClusterConfigUpdateInput{}
-	err = json.Unmarshal(body, inputReq)
-	if err != nil {
-		klog.Errorln(err)
-	}
-	realInput := &eks.UpdateClusterConfigInput{
-		ClientRequestToken: aws.String(inputReq.ClientRequestToken),
-		Logging: &eks.Logging{
-			ClusterLogging: make([]*eks.LogSetup, 0),
-		},
-		Name: aws.String(inputReq.Name),
-		ResourcesVpcConfig: &eks.VpcConfigRequest{
-			EndpointPrivateAccess: aws.Bool(inputReq.ResourcesVpcConfig.EndpointPrivateAccess),
-			EndpointPublicAccess:  aws.Bool(inputReq.ResourcesVpcConfig.EndpointPublicAccess),
-			PublicAccessCidrs:     aws.StringSlice(inputReq.ResourcesVpcConfig.PublicAccessCidrs),
-			SecurityGroupIds:      aws.StringSlice(inputReq.ResourcesVpcConfig.SecurityGroupIds),
-			SubnetIds:             aws.StringSlice(inputReq.ResourcesVpcConfig.SubnetIds),
-		},
-	}
-	for _, clusterLogging := range inputReq.Logging.ClusterLogging {
-		realInput.Logging.ClusterLogging = append(realInput.Logging.ClusterLogging, &eks.LogSetup{
-			Enabled: aws.Bool(clusterLogging.Enabled),
-			Types:   aws.StringSlice(clusterLogging.Types),
-		})
-	}
+	request, response := util.DocWithReq(ClusterConfigUpdateInput{}, eks.UpdateClusterConfigOutput{})
 
-	result, err := ClusterConfigClient.UpdateClusterConfig(realInput)
-	if err != nil {
-		klog.Errorln(err)
+	resp := docs.ForDoc{
+		Req:  request,
+		Resp: response,
 	}
-	return docs.Response{Code: 200, Data: result}
+	return docs.Response{Code: 200, Data: resp}
 }

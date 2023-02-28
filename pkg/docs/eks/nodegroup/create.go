@@ -1,15 +1,12 @@
 package nodegroup
 
 import (
-	"encoding/json"
 	"hcp-apiserver/pkg/docs"
-	"io/ioutil"
+	"hcp-apiserver/pkg/docs/util"
 	"net/http"
 
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/eks"
 	"github.com/julienschmidt/httprouter"
-	"k8s.io/klog"
 )
 
 type CreateResource struct {
@@ -67,59 +64,11 @@ func (CreateResource) Uri() string {
 	return "/eks/nodegroup/create"
 }
 func (CreateResource) Post(rw http.ResponseWriter, r *http.Request, ps httprouter.Params) docs.Response {
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		klog.Errorln(err)
-	}
-	inputReq := &NodeGroupCreateInput{}
-	err = json.Unmarshal(body, inputReq)
-	if err != nil {
-		klog.Errorln(err)
-	}
-	realInput := &eks.CreateNodegroupInput{
-		AmiType:            aws.String(inputReq.AmiType),
-		CapacityType:       aws.String(inputReq.CapacityType),
-		ClientRequestToken: aws.String(inputReq.ClientRequestToken),
-		ClusterName:        aws.String(inputReq.ClusterName),
-		DiskSize:           aws.Int64(inputReq.DiskSize),
-		InstanceTypes:      aws.StringSlice(inputReq.InstanceTypes),
-		Labels:             aws.StringMap(inputReq.Labels),
-		LaunchTemplate: &eks.LaunchTemplateSpecification{
-			Id:      aws.String(inputReq.LaunchTemplate.Id),
-			Name:    aws.String(inputReq.LaunchTemplate.Name),
-			Version: aws.String(inputReq.LaunchTemplate.Version),
-		},
-		NodeRole:       aws.String(inputReq.NodeRole),
-		NodegroupName:  aws.String(inputReq.NodegroupName),
-		ReleaseVersion: aws.String(inputReq.ReleaseVersion),
-		RemoteAccess: &eks.RemoteAccessConfig{
-			Ec2SshKey:            aws.String(inputReq.RemoteAccess.Ec2SshKey),
-			SourceSecurityGroups: aws.StringSlice(inputReq.RemoteAccess.SourceSecurityGroups),
-		},
-		ScalingConfig: &eks.NodegroupScalingConfig{
-			DesiredSize: aws.Int64(inputReq.ScalingConfig.DesiredSize),
-			MaxSize:     aws.Int64(inputReq.ScalingConfig.MaxSize),
-			MinSize:     aws.Int64(inputReq.ScalingConfig.MinSize),
-		},
-		Subnets: aws.StringSlice(inputReq.Subnets),
-		Tags:    aws.StringMap(inputReq.Tags),
-		Taints:  make([]*eks.Taint, 0),
-		UpdateConfig: &eks.NodegroupUpdateConfig{
-			MaxUnavailable:           aws.Int64(inputReq.UpdateConfig.MaxUnavailable),
-			MaxUnavailablePercentage: aws.Int64(inputReq.UpdateConfig.MaxUnavailablePercentage),
-		},
-	}
-	for _, taint := range inputReq.Taints {
-		realInput.Taints = append(realInput.Taints, &eks.Taint{
-			Effect: aws.String(taint.Effect),
-			Key:    aws.String(taint.Key),
-			Value:  aws.String(taint.Value),
-		})
-	}
+	request, response := util.DocWithReq(NodeGroupCreateInput{}, eks.CreateNodegroupOutput{})
 
-	result, err := NodeGroupClient.CreateNodegroup(realInput)
-	if err != nil {
-		klog.Errorln(err)
+	resp := docs.ForDoc{
+		Req:  request,
+		Resp: response,
 	}
-	return docs.Response{Code: 200, Data: result}
+	return docs.Response{Code: 200, Data: resp}
 }

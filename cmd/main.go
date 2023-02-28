@@ -7,6 +7,10 @@ import (
 	"hcp-apiserver/pkg/apis/google"
 	"hcp-apiserver/pkg/apis/naver"
 	"hcp-apiserver/pkg/client/kubernetes"
+	docazure "hcp-apiserver/pkg/docs/azure"
+	doceks "hcp-apiserver/pkg/docs/eks"
+	docgoogle "hcp-apiserver/pkg/docs/google"
+	docnaver "hcp-apiserver/pkg/docs/naver"
 	"net/http"
 	"strings"
 
@@ -26,6 +30,11 @@ func main() {
 		eks.InitEKSEndPoint(router)
 		google.InitGKEEndPoint(router)
 		naver.InitNKSEndPoint(router)
+	} else {
+		docazure.InitAKSEndPoint(router)
+		doceks.InitEKSEndPoint(router)
+		docgoogle.InitGKEEndPoint(router)
+		docnaver.InitNKSEndPoint(router)
 	}
 
 	klog.Fatal(http.ListenAndServe(":30850", router))

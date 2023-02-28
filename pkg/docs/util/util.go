@@ -38,3 +38,12 @@ func DocWithoutReq(resp interface{}) interface{} {
 
 	return typeMap
 }
+
+func OnlyReq(resp interface{}) interface{} {
+	typeMap := make(map[string]interface{})
+
+	t2 := reflect.TypeOf(resp)
+	PrintStructFields(t2, typeMap)
+
+	return typeMap
+}

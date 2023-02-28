@@ -1,15 +1,12 @@
 package encryptionconfig
 
 import (
-	"encoding/json"
 	"hcp-apiserver/pkg/docs"
-	"io/ioutil"
+	"hcp-apiserver/pkg/docs/util"
 	"net/http"
 
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/eks"
 	"github.com/julienschmidt/httprouter"
-	"k8s.io/klog"
 )
 
 type AssociateResource struct {
@@ -35,32 +32,11 @@ func (AssociateResource) Uri() string {
 	return "/eks/encryption-config/associate"
 }
 func (AssociateResource) Get(rw http.ResponseWriter, r *http.Request, ps httprouter.Params) docs.Response {
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		klog.Errorln(err)
-	}
-	inputReq := &EncryptionConfigAssociateInput{}
-	err = json.Unmarshal(body, inputReq)
-	if err != nil {
-		klog.Errorln(err)
-	}
-	realInput := &eks.AssociateEncryptionConfigInput{
-		ClientRequestToken: aws.String(inputReq.ClientRequestToken),
-		ClusterName:        aws.String(inputReq.ClusterName),
-		EncryptionConfig:   make([]*eks.EncryptionConfig, 0),
-	}
-	for _, encryptionConfig := range inputReq.EncryptionConfig {
-		realInput.EncryptionConfig = append(realInput.EncryptionConfig, &eks.EncryptionConfig{
-			Provider: &eks.Provider{
-				KeyArn: aws.String(encryptionConfig.Provider.KeyArn),
-			},
-			Resources: aws.StringSlice(encryptionConfig.Resources),
-		})
-	}
+	request, response := util.DocWithReq(EncryptionConfigAssociateInput{}, eks.AssociateEncryptionConfigOutput{})
 
-	result, err := EncryptionConfigClient.AssociateEncryptionConfig(realInput)
-	if err != nil {
-		klog.Errorln(err)
+	resp := docs.ForDoc{
+		Req:  request,
+		Resp: response,
 	}
-	return docs.Response{Code: 200, Data: result}
+	return docs.Response{Code: 200, Data: resp}
 }

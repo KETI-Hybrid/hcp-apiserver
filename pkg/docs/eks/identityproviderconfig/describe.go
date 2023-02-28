@@ -1,15 +1,12 @@
 package identityproviderconfig
 
 import (
-	"encoding/json"
 	"hcp-apiserver/pkg/docs"
-	"io/ioutil"
+	"hcp-apiserver/pkg/docs/util"
 	"net/http"
 
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/eks"
 	"github.com/julienschmidt/httprouter"
-	"k8s.io/klog"
 )
 
 type DescribeResource struct {
@@ -32,25 +29,11 @@ func (DescribeResource) Uri() string {
 	return "/eks/identity-provider-config/describe"
 }
 func (DescribeResource) Get(rw http.ResponseWriter, r *http.Request, ps httprouter.Params) docs.Response {
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		klog.Errorln(err)
+	request, response := util.DocWithReq(IdentityProviderConfigDescribeInput{}, eks.DescribeIdentityProviderConfigOutput{})
+
+	resp := docs.ForDoc{
+		Req:  request,
+		Resp: response,
 	}
-	inputReq := &IdentityProviderConfigDescribeInput{}
-	err = json.Unmarshal(body, inputReq)
-	if err != nil {
-		klog.Errorln(err)
-	}
-	realInput := &eks.DescribeIdentityProviderConfigInput{
-		ClusterName: aws.String(inputReq.ClusterName),
-		IdentityProviderConfig: &eks.IdentityProviderConfig{
-			Name: aws.String(inputReq.IdentityProviderConfig.Name),
-			Type: aws.String(inputReq.IdentityProviderConfig.Type),
-		},
-	}
-	result, err := IdentityProviderConfigClient.DescribeIdentityProviderConfig(realInput)
-	if err != nil {
-		klog.Errorln(err)
-	}
-	return docs.Response{Code: 200, Data: result}
+	return docs.Response{Code: 200, Data: resp}
 }

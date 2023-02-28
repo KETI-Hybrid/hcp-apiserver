@@ -1,15 +1,12 @@
 package cluster
 
 import (
-	"context"
-	"encoding/json"
 	"hcp-apiserver/pkg/docs"
-	"hcp-apiserver/pkg/types"
-	"io/ioutil"
+	"hcp-apiserver/pkg/docs/util"
 	"net/http"
 
+	"github.com/NaverCloudPlatform/ncloud-sdk-go-v2/services/vnks"
 	"github.com/julienschmidt/httprouter"
-	"k8s.io/klog"
 )
 
 type GetResource struct {
@@ -27,22 +24,11 @@ func (GetResource) Uri() string {
 }
 
 func (GetResource) Get(rw http.ResponseWriter, r *http.Request, ps httprouter.Params) docs.Response {
-	client := types.GetNKSClient()
-	containerService := client.Client.V2Api
-	ctx := context.Background()
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		klog.Errorln(err)
-	}
-	inputRequest := &Get{}
+	request, response := util.DocWithReq(Get{}, vnks.ClusterRes{})
 
-	err = json.Unmarshal(body, inputRequest)
-	if err != nil {
-		klog.Errorln(err)
-	}
-	resp, err := containerService.ClustersUuidGet(ctx, &inputRequest.ClusterUUID)
-	if err != nil {
-		klog.Errorln(err)
+	resp := docs.ForDoc{
+		Req:  request,
+		Resp: response,
 	}
 	return docs.Response{Code: 200, Data: resp}
 }
