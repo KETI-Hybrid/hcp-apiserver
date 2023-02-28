@@ -1,14 +1,12 @@
 package privatelink
 
 import (
-	"context"
-	"encoding/json"
 	"hcp-apiserver/pkg/docs"
-	"io/ioutil"
+	"hcp-apiserver/pkg/docs/util"
 	"net/http"
 
+	armcontainerservice "github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/containerservice/armcontainerservice/v2"
 	"github.com/julienschmidt/httprouter"
-	"k8s.io/klog"
 )
 
 type ListResource struct {
@@ -29,20 +27,11 @@ func (ListResource) Uri() string {
 	return "/aks/privateLink/list"
 }
 func (ListResource) Get(rw http.ResponseWriter, r *http.Request, ps httprouter.Params) docs.Response {
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		klog.Errorln(err)
-	}
-	inputRequest := &ListPrivateLink{}
+	request, response := util.DocWithReq(ListPrivateLink{}, armcontainerservice.PrivateLinkResourcesClientListResponse{})
 
-	err = json.Unmarshal(body, inputRequest)
-	if err != nil {
-		klog.Errorln(err)
+	resp := docs.ForDoc{
+		Req:  request,
+		Resp: response,
 	}
-	ctx := context.Background()
-	result, err := PrivateLinkClient.List(ctx, inputRequest.ResourceGroupName, inputRequest.ClusterName, nil)
-	if err != nil {
-		klog.Errorln(err)
-	}
-	return docs.Response{Code: 200, Data: result}
+	return docs.Response{Code: 200, Data: resp}
 }

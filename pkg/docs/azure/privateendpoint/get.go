@@ -1,14 +1,12 @@
 package privateendpoint
 
 import (
-	"context"
-	"encoding/json"
 	"hcp-apiserver/pkg/docs"
-	"io/ioutil"
+	"hcp-apiserver/pkg/docs/util"
 	"net/http"
 
+	armcontainerservice "github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/containerservice/armcontainerservice/v2"
 	"github.com/julienschmidt/httprouter"
-	"k8s.io/klog"
 )
 
 type GetResource struct {
@@ -30,20 +28,11 @@ func (GetResource) Uri() string {
 	return "/aks/privateEndpointConnection/get"
 }
 func (GetResource) Get(rw http.ResponseWriter, r *http.Request, ps httprouter.Params) docs.Response {
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		klog.Errorln(err)
-	}
-	inputRequest := &GetPrivateEndpointConnection{}
+	request, response := util.DocWithReq(GetPrivateEndpointConnection{}, armcontainerservice.PrivateEndpointConnectionsClientGetResponse{})
 
-	err = json.Unmarshal(body, inputRequest)
-	if err != nil {
-		klog.Errorln(err)
+	resp := docs.ForDoc{
+		Req:  request,
+		Resp: response,
 	}
-	ctx := context.Background()
-	result, err := PrivateEndpointConnectionsClient.Get(ctx, inputRequest.ResourceGroupName, inputRequest.ClusterName, inputRequest.PrivateEndpointConnectionName, nil)
-	if err != nil {
-		klog.Errorln(err)
-	}
-	return docs.Response{Code: 200, Data: result}
+	return docs.Response{Code: 200, Data: resp}
 }

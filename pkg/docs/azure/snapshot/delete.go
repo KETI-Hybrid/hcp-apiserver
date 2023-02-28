@@ -1,14 +1,12 @@
 package snapshot
 
 import (
-	"context"
-	"encoding/json"
 	"hcp-apiserver/pkg/docs"
-	"io/ioutil"
+	"hcp-apiserver/pkg/docs/util"
 	"net/http"
 
+	armcontainerservice "github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/containerservice/armcontainerservice/v2"
 	"github.com/julienschmidt/httprouter"
-	"k8s.io/klog"
 )
 
 type DeleteResource struct {
@@ -29,20 +27,11 @@ func (DeleteResource) Uri() string {
 	return "/aks/snapshot/delete"
 }
 func (DeleteResource) Delete(rw http.ResponseWriter, r *http.Request, ps httprouter.Params) docs.Response {
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		klog.Errorln(err)
-	}
-	inputRequest := &DeleteSnapshot{}
+	request, response := util.DocWithReq(DeleteSnapshot{}, armcontainerservice.SnapshotsClientDeleteResponse{})
 
-	err = json.Unmarshal(body, inputRequest)
-	if err != nil {
-		klog.Errorln(err)
+	resp := docs.ForDoc{
+		Req:  request,
+		Resp: response,
 	}
-	ctx := context.Background()
-	result, err := SnapshotsClient.Delete(ctx, inputRequest.ResourceGroupName, inputRequest.ClusterName, nil)
-	if err != nil {
-		klog.Errorln(err)
-	}
-	return docs.Response{Code: 200, Data: result}
+	return docs.Response{Code: 200, Data: resp}
 }

@@ -1,10 +1,9 @@
 package managedcluster
 
 import (
-	"fmt"
 	"hcp-apiserver/pkg/docs"
+	"hcp-apiserver/pkg/docs/util"
 	"net/http"
-	"reflect"
 
 	armcontainerservice "github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/containerservice/armcontainerservice/v2"
 	"github.com/julienschmidt/httprouter"
@@ -28,19 +27,11 @@ func (StartResource) Uri() string {
 	return "/aks/managedClusters/start"
 }
 func (StartResource) Post(rw http.ResponseWriter, r *http.Request, ps httprouter.Params) docs.Response {
-	t := reflect.TypeOf(Start{})
-	for i := 0; i < t.NumField(); i++ {
-		field := t.Field(i)
-		fmt.Printf("%s: %s\n", field.Name, field.Type)
+	request, response := util.DocWithReq(Start{}, armcontainerservice.ManagedClustersClientStartResponse{})
+
+	resp := docs.ForDoc{
+		Req:  request,
+		Resp: response,
 	}
-
-	typeMap := make(map[string]string)
-
-	t2 := reflect.TypeOf(armcontainerservice.ManagedClustersClientStartResponse{})
-	for i := 0; i < t2.NumField(); i++ {
-		field := t2.Field(i)
-		typeMap[field.Name] = field.Type.String()
-	}
-	return docs.Response{Code: 200, Data: typeMap}
-
+	return docs.Response{Code: 200, Data: resp}
 }

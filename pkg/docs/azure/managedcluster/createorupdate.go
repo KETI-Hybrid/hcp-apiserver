@@ -1,10 +1,9 @@
 package managedcluster
 
 import (
-	"fmt"
 	"hcp-apiserver/pkg/docs"
+	"hcp-apiserver/pkg/docs/util"
 	"net/http"
-	"reflect"
 
 	armcontainerservice "github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/containerservice/armcontainerservice/v2"
 	"github.com/julienschmidt/httprouter"
@@ -29,18 +28,11 @@ func (CreateOrUpdateResource) Uri() string {
 	return "/aks/managedClusters/createorupdate"
 }
 func (CreateOrUpdateResource) Put(rw http.ResponseWriter, r *http.Request, ps httprouter.Params) docs.Response {
-	t := reflect.TypeOf(CreateOrUpdateManagedCluster{})
-	for i := 0; i < t.NumField(); i++ {
-		field := t.Field(i)
-		fmt.Printf("%s: %s\n", field.Name, field.Type)
-	}
+	request, response := util.DocWithReq(CreateOrUpdateManagedCluster{}, armcontainerservice.ManagedClustersClientCreateOrUpdateResponse{})
 
-	typeMap := make(map[string]string)
-
-	t2 := reflect.TypeOf(armcontainerservice.ManagedClustersClientCreateOrUpdateResponse{})
-	for i := 0; i < t2.NumField(); i++ {
-		field := t2.Field(i)
-		typeMap[field.Name] = field.Type.String()
+	resp := docs.ForDoc{
+		Req:  request,
+		Resp: response,
 	}
-	return docs.Response{Code: 200, Data: typeMap}
+	return docs.Response{Code: 200, Data: resp}
 }

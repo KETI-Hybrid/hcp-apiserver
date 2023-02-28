@@ -2,8 +2,8 @@ package operation
 
 import (
 	"hcp-apiserver/pkg/docs"
+	"hcp-apiserver/pkg/docs/util"
 	"net/http"
-	"reflect"
 
 	armcontainerservice "github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/containerservice/armcontainerservice/v2"
 	"github.com/julienschmidt/httprouter"
@@ -19,14 +19,11 @@ func (ListResource) Uri() string {
 	return "/aks/operations/list"
 }
 func (ListResource) Get(rw http.ResponseWriter, r *http.Request, ps httprouter.Params) docs.Response {
+	response := util.DocWithoutReq(armcontainerservice.OperationsClientListResponse{})
 
-	typeMap := make(map[string]string)
-
-	t2 := reflect.TypeOf(armcontainerservice.OperationsClientListResponse{})
-	for i := 0; i < t2.NumField(); i++ {
-		field := t2.Field(i)
-		typeMap[field.Name] = field.Type.String()
+	resp := docs.ForDoc{
+		Req:  nil,
+		Resp: response,
 	}
-	return docs.Response{Code: 200, Data: typeMap}
-
+	return docs.Response{Code: 200, Data: resp}
 }
