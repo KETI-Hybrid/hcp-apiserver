@@ -10,7 +10,7 @@ import (
 
 var OperationsClient *armcontainerservice.OperationsClient
 
-func ManagedClusterResourceAttach(router *httprouter.Router) {
+func OperationsResourceAttach(router *httprouter.Router) {
 	apis.AddResource(router, new(ListResource))
 	operationsClientInit()
 }

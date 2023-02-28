@@ -2,21 +2,21 @@ package gke
 
 import (
 	"context"
-	"io"
-	"net/http"
+	"log"
 
+	"golang.org/x/oauth2/google"
+	"google.golang.org/api/container/v1"
+	"google.golang.org/api/option"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/klog"
 )
 
 type GKEClient struct {
-	Client      *http.Client
-	Request     *http.Request
-	Token       string
-	Zone        string
-	ProjectID   string
-	ClusterName string
+	Token           string
+	ProjectID       string
+	ClusterName     string
+	ContanerService *container.Service
 }
 
 func NewGKEClient(k8sclient *kubernetes.Clientset) *GKEClient {
@@ -28,38 +28,16 @@ func NewGKEClient(k8sclient *kubernetes.Clientset) *GKEClient {
 	client.ProjectID = config.Data["project-id"]
 	client.ClusterName = config.Data["cluster-name"]
 	client.Token = config.Data["key.json"]
-	client.Zone = config.Data["zone"]
-	client.Client = &http.Client{}
+	ctx := context.Background()
+
+	c, err := google.DefaultClient(ctx, container.CloudPlatformScope)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	client.ContanerService, err = container.NewService(ctx, option.WithHTTPClient(c))
+	if err != nil {
+		log.Fatal(err)
+	}
 	return client
-}
-
-func (gclient *GKEClient) SetRequestWithBody(url string, body io.Reader) {
-	var err error
-	gclient.Request, err = http.NewRequest("GET", url, body)
-	if err != nil {
-		klog.Errorln(err)
-	}
-
-	// HTTP 요청에 필요한 인증 정보를 설정합니다.
-	gclient.Request.Header.Set("Authorization", "Bearer "+gclient.Token)
-}
-
-func (gclient *GKEClient) SetRequestWithoutBody(url string) {
-	var err error
-	gclient.Request, err = http.NewRequest("GET", url, nil)
-	if err != nil {
-		klog.Errorln(err)
-	}
-
-	// HTTP 요청에 필요한 인증 정보를 설정합니다.
-	gclient.Request.Header.Set("Authorization", "Bearer "+gclient.Token)
-}
-
-func (gclient *GKEClient) Do() *http.Response {
-	resp, err := gclient.Client.Do(gclient.Request)
-	if err != nil {
-		klog.Errorln(err)
-	}
-	defer resp.Body.Close()
-	return resp
 }

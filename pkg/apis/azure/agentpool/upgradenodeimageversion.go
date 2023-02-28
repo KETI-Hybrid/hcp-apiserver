@@ -27,7 +27,7 @@ type UpdateNodeImageVersion struct {
 }
 
 func (UpdateNodeImageVersionResource) Uri() string {
-	return "/aks/agentpool/get"
+	return "/aks/agentpool/updateNodeImageVersion"
 }
 func (UpdateNodeImageVersionResource) Get(rw http.ResponseWriter, r *http.Request, ps httprouter.Params) apis.Response {
 	body, err := ioutil.ReadAll(r.Body)
