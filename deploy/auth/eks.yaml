@@ -7,3 +7,4 @@ data:
   aws_access_key_id: AKIA2ZKGV557XJOGMK6G
   aws_secret_access_key: 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
   region: ap-northeast-2
+  defaultARN: "arn:aws:eks:ap-northeast-2:741566967679"

@@ -9,6 +9,7 @@ replace (
 )
 
 require (
+	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.3.1
 	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.0.0
 	github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/containerservice/armcontainerservice v1.0.0
 	github.com/aws/aws-sdk-go v1.44.205
@@ -19,7 +20,6 @@ require (
 )
 
 require (
-	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.3.1 // indirect
 	github.com/Azure/azure-sdk-for-go/sdk/internal v1.1.2 // indirect
 	github.com/AzureAD/microsoft-authentication-library-for-go v0.4.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
