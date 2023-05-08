@@ -13,6 +13,12 @@ type ListResource struct {
 	apis.DeleteNotSupported
 }
 
+type NodeGroupListInput struct {
+	ClusterName string `json:"clusterName"`
+	MaxResults  int64  `json:"maxResults"`
+	NextToken   string `json:"nextToken"`
+}
+
 func (ListResource) Uri() string {
 	return "/eks/nodegroup/list"
 }

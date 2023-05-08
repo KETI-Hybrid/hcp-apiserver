@@ -24,8 +24,8 @@ type ClusterRegisterInput struct {
 	Tags               map[string]string      `json:"tags"`
 }
 type ConnectorConfigRequest struct {
-	Provider *string `locationName:"provider"`
-	RoleArn  *string `locationName:"roleArn"`
+	Provider string `json:"provider"`
+	RoleArn  string `json:"roleArn"`
 }
 
 func (RegisterResource) Uri() string {
@@ -36,18 +36,22 @@ func (RegisterResource) Post(rw http.ResponseWriter, r *http.Request, ps httprou
 	if err != nil {
 		klog.Errorln(err)
 	}
-	inputReq := &ClusterListInput{}
+	inputReq := &ClusterRegisterInput{}
 	err = json.Unmarshal(body, inputReq)
 	if err != nil {
 		klog.Errorln(err)
 	}
-	realInput := &eks.ListClustersInput{
-		Include:    aws.StringSlice(inputReq.Include),
-		MaxResults: aws.Int64(inputReq.MaxResults),
-		NextToken:  aws.String(inputReq.NextToken),
+	realInput := &eks.RegisterClusterInput{
+		ClientRequestToken: aws.String(inputReq.ClientRequestToken),
+		ConnectorConfig: &eks.ConnectorConfigRequest{
+			Provider: aws.String(inputReq.ConnectorConfig.Provider),
+			RoleArn:  aws.String(inputReq.ConnectorConfig.RoleArn),
+		},
+		Name: aws.String(inputReq.Name),
+		Tags: aws.StringMap(inputReq.Tags),
 	}
 
-	result, err := ClusterClient.ListClusters(realInput)
+	result, err := ClusterClient.RegisterCluster(realInput)
 	if err != nil {
 		klog.Errorln(err)
 	}
