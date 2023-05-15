@@ -1,18 +1,18 @@
 package types
 
 import (
+	"hcp-apiserver/pkg/client/aks"
 	"hcp-apiserver/pkg/client/eks"
 	"hcp-apiserver/pkg/client/gke"
 	"hcp-apiserver/pkg/client/nks"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/containerservice/armcontainerservice"
 	"k8s.io/client-go/kubernetes"
 )
 
 type HCPClient struct {
 	KubeClient *kubernetes.Clientset
 	EKSClient  *eks.EKSClient
-	AKSClient  *armcontainerservice.ManagedClustersClient
+	AKSClient  *aks.AKSClientSet
 	GKEClient  *gke.GKEClient
 	NKSClient  *nks.NKSClient
 }
@@ -23,7 +23,7 @@ func GetEKSClient() *eks.EKSClient {
 	return GlobalClient.EKSClient
 }
 
-func GetAKSClient() *armcontainerservice.ManagedClustersClient {
+func GetAKSClient() *aks.AKSClientSet {
 	return GlobalClient.AKSClient
 }
 

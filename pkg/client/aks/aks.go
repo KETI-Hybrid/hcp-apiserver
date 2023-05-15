@@ -5,13 +5,24 @@ import (
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/arm/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
-	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/containerservice/armcontainerservice"
+	armcontainerservice "github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/containerservice/armcontainerservice/v2"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/klog"
 )
 
-func NewAKSClient(k8sclient *kubernetes.Clientset) *armcontainerservice.ManagedClustersClient {
+type AKSClientSet struct {
+	AgentPoolClient          *armcontainerservice.AgentPoolsClient
+	MaintenanceConfigClient  *armcontainerservice.MaintenanceConfigurationsClient
+	ManagedClusterClient     *armcontainerservice.ManagedClustersClient
+	OperationClient          *armcontainerservice.OperationsClient
+	PrivateEndpointClient    *armcontainerservice.PrivateEndpointConnectionsClient
+	PrivateLinkClient        *armcontainerservice.PrivateLinkResourcesClient
+	ResolvePrivateLinkClient *armcontainerservice.ResolvePrivateLinkServiceIDClient
+	SnapshotClient           *armcontainerservice.SnapshotsClient
+}
+
+func NewAKSClient(k8sclient *kubernetes.Clientset) *AKSClientSet {
 	config, err := k8sclient.CoreV1().ConfigMaps("public-auth").Get(context.Background(), "aks-auth", metav1.GetOptions{})
 	if err != nil {
 		klog.Errorln(err.Error())
@@ -26,9 +37,40 @@ func NewAKSClient(k8sclient *kubernetes.Clientset) *armcontainerservice.ManagedC
 	if err != nil {
 		klog.Errorln(err.Error())
 	}
-	client, err := armcontainerservice.NewManagedClustersClient(subscriptionID, credention, new(policy.ClientOptions))
+
+	client := &AKSClientSet{}
+	client.AgentPoolClient, err = armcontainerservice.NewAgentPoolsClient(subscriptionID, credention, new(policy.ClientOptions))
 	if err != nil {
 		klog.Errorln(err.Error())
 	}
+	client.MaintenanceConfigClient, err = armcontainerservice.NewMaintenanceConfigurationsClient(subscriptionID, credention, new(policy.ClientOptions))
+	if err != nil {
+		klog.Errorln(err.Error())
+	}
+	client.ManagedClusterClient, err = armcontainerservice.NewManagedClustersClient(subscriptionID, credention, new(policy.ClientOptions))
+	if err != nil {
+		klog.Errorln(err.Error())
+	}
+	client.OperationClient, err = armcontainerservice.NewOperationsClient(credention, new(policy.ClientOptions))
+	if err != nil {
+		klog.Errorln(err.Error())
+	}
+	client.PrivateEndpointClient, err = armcontainerservice.NewPrivateEndpointConnectionsClient(subscriptionID, credention, new(policy.ClientOptions))
+	if err != nil {
+		klog.Errorln(err.Error())
+	}
+	client.PrivateLinkClient, err = armcontainerservice.NewPrivateLinkResourcesClient(subscriptionID, credention, new(policy.ClientOptions))
+	if err != nil {
+		klog.Errorln(err.Error())
+	}
+	client.ResolvePrivateLinkClient, err = armcontainerservice.NewResolvePrivateLinkServiceIDClient(subscriptionID, credention, new(policy.ClientOptions))
+	if err != nil {
+		klog.Errorln(err.Error())
+	}
+	client.SnapshotClient, err = armcontainerservice.NewSnapshotsClient(subscriptionID, credention, new(policy.ClientOptions))
+	if err != nil {
+		klog.Errorln(err.Error())
+	}
+
 	return client
 }
