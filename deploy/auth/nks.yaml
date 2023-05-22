@@ -1,9 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: nks-auth
-  namespace: public-auth
-data:
-  accessKey: 334180B7894D2024F328
-  secretKey: DFB00489E42435ED8EF7D37FE2A66F43AB0202D5
-  cluster-id: 1025f977-b38e-4eca-84fe-f2252c845b21
