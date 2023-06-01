@@ -1,4 +1,4 @@
-package agentpool
+package maintenanceconfig
 
 import (
 	"context"
@@ -7,12 +7,14 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	armcontainerservice "github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/containerservice/armcontainerservice/v2"
 	"github.com/julienschmidt/httprouter"
 	"k8s.io/klog"
 )
 
-type ListResource struct {
+// resourceGroupName - The name of the resource group. The name is case insensitive.
+// resourceName - The name of the managed cluster resource.
+// agentPoolName - The name of the agent pool.
+type GetResource struct {
 	apis.DeleteNotSupported
 	apis.PostNotSupported
 	apis.PutNotSupported
@@ -21,36 +23,30 @@ type ListResource struct {
 // resourceGroupName - The name of the resource group. The name is case insensitive.
 // resourceName - The name of the managed cluster resource.
 // agentPoolName - The name of the agent pool.
-type ListAgentPool struct {
+type GetMaintenanceConfiguration struct {
 	ResourceGroupName string `json:"resourceGroupName"`
 	ClusterName       string `json:"clusterName"`
+	ConfigName        string `json:"configName"`
 }
 
-func (ListResource) Uri() string {
-	return "/aks/agentpool/list"
+func (GetResource) Uri() string {
+	return "/aks/maintenanceConfigurations/get"
 }
-func (ListResource) Get(rw http.ResponseWriter, r *http.Request, ps httprouter.Params) apis.Response {
+func (GetResource) Get(rw http.ResponseWriter, r *http.Request, ps httprouter.Params) apis.Response {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		klog.Errorln(err)
 	}
-	inputRequest := &ListAgentPool{}
+	inputRequest := &GetMaintenanceConfiguration{}
 
 	err = json.Unmarshal(body, inputRequest)
 	if err != nil {
 		klog.Errorln(err)
 	}
-	result := make([]armcontainerservice.AgentPoolsClientListResponse, 0)
-	items := AgentPoolsClient.NewListPager(inputRequest.ResourceGroupName, inputRequest.ClusterName, nil)
 	ctx := context.Background()
-
-	for items.More() {
-		resp, err := items.NextPage(ctx)
-		if err != nil {
-			klog.Errorln(err)
-		}
-		result = append(result, resp)
+	result, err := MaintenanceConfigurationsClient.Get(ctx, inputRequest.ResourceGroupName, inputRequest.ClusterName, inputRequest.ConfigName, nil)
+	if err != nil {
+		klog.Errorln(err)
 	}
-
 	return apis.Response{Code: 200, Data: result}
 }

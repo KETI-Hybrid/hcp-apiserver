@@ -1,4 +1,4 @@
-package agentpool
+package managedcluster
 
 import (
 	"context"
@@ -11,7 +11,7 @@ import (
 	"k8s.io/klog"
 )
 
-type UpdateNodeImageVersionResource struct {
+type GetResource struct {
 	apis.DeleteNotSupported
 	apis.PostNotSupported
 	apis.PutNotSupported
@@ -20,35 +20,29 @@ type UpdateNodeImageVersionResource struct {
 // resourceGroupName - The name of the resource group. The name is case insensitive.
 // resourceName - The name of the managed cluster resource.
 // agentPoolName - The name of the agent pool.
-type UpdateNodeImageVersion struct {
+type GetManagedCluster struct {
 	ResourceGroupName string `json:"resourceGroupName"`
 	ClusterName       string `json:"clusterName"`
-	AgentPoolName     string `json:"agentPoolName"`
 }
 
-func (UpdateNodeImageVersionResource) Uri() string {
-	return "/aks/agentpool/get"
+func (GetResource) Uri() string {
+	return "/aks/managedClusters/get"
 }
-func (UpdateNodeImageVersionResource) Get(rw http.ResponseWriter, r *http.Request, ps httprouter.Params) apis.Response {
+func (GetResource) Get(rw http.ResponseWriter, r *http.Request, ps httprouter.Params) apis.Response {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		klog.Errorln(err)
 	}
-	inputRequest := &UpdateNodeImageVersion{}
+	inputRequest := &GetManagedCluster{}
 
 	err = json.Unmarshal(body, inputRequest)
 	if err != nil {
 		klog.Errorln(err)
 	}
 	ctx := context.Background()
-	result, err := AgentPoolsClient.BeginUpgradeNodeImageVersion(ctx, inputRequest.ResourceGroupName, inputRequest.ClusterName, inputRequest.AgentPoolName, nil)
+	result, err := ManagedClustersClient.Get(ctx, inputRequest.ResourceGroupName, inputRequest.ClusterName, nil)
 	if err != nil {
 		klog.Errorln(err)
 	}
-
-	resp, err := result.PollUntilDone(ctx, nil)
-	if err != nil {
-		klog.Errorln(err)
-	}
-	return apis.Response{Code: 200, Data: resp}
+	return apis.Response{Code: 200, Data: result}
 }
