@@ -23,6 +23,7 @@ func homeDir() string {
 }
 
 func InitHCPClient() {
+	types.GlobalClient = new(types.HCPClient)
 	var kubeconfig string
 	config := new(rest.Config)
 	var err error
@@ -32,7 +33,6 @@ func InitHCPClient() {
 	} else {
 		kubeconfig = ""
 	}
-
 	if len(kubeconfig) == 0 {
 		config, err = rest.InClusterConfig()
 		if err != nil {
