@@ -1,14 +1,12 @@
 package privateendpoint
 
 import (
-	"context"
-	"encoding/json"
 	"hcp-apiserver/pkg/docs"
-	"io/ioutil"
+	"hcp-apiserver/pkg/docs/util"
 	"net/http"
 
+	armcontainerservice "github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/containerservice/armcontainerservice/v2"
 	"github.com/julienschmidt/httprouter"
-	"k8s.io/klog"
 )
 
 type DeleteResource struct {
@@ -30,24 +28,11 @@ func (DeleteResource) Uri() string {
 	return "/aks/privateEndpointConnection/delete"
 }
 func (DeleteResource) Delete(rw http.ResponseWriter, r *http.Request, ps httprouter.Params) docs.Response {
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		klog.Errorln(err)
-	}
-	inputRequest := &DeletePrivateEndpointConnection{}
+	request, response := util.DocWithReq(DeletePrivateEndpointConnection{}, armcontainerservice.PrivateEndpointConnectionsClientDeleteResponse{})
 
-	err = json.Unmarshal(body, inputRequest)
-	if err != nil {
-		klog.Errorln(err)
-	}
-	ctx := context.Background()
-	result, err := PrivateEndpointConnectionsClient.BeginDelete(ctx, inputRequest.ResourceGroupName, inputRequest.ClusterName, inputRequest.PrivateEndpointConnectionName, nil)
-	if err != nil {
-		klog.Errorln(err)
-	}
-	resp, err := result.PollUntilDone(ctx, nil)
-	if err != nil {
-		klog.Errorln(err)
+	resp := docs.ForDoc{
+		Req:  request,
+		Resp: response,
 	}
 	return docs.Response{Code: 200, Data: resp}
 }

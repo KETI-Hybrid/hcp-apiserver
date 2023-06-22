@@ -1,19 +1,18 @@
 package agentpool
 
 import (
-	"fmt"
-	"hcp-apiserver/pkg/apis"
+	"hcp-apiserver/pkg/docs"
+	"hcp-apiserver/pkg/docs/util"
 	"net/http"
-	"reflect"
 
 	armcontainerservice "github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/containerservice/armcontainerservice/v2"
 	"github.com/julienschmidt/httprouter"
 )
 
 type GetUpgradeProfileResource struct {
-	apis.DeleteNotSupported
-	apis.PostNotSupported
-	apis.PutNotSupported
+	docs.DeleteNotSupported
+	docs.PostNotSupported
+	docs.PutNotSupported
 }
 
 // resourceGroupName - The name of the resource group. The name is case insensitive.
@@ -28,20 +27,13 @@ type GetUpgradeProfile struct {
 func (GetUpgradeProfileResource) Uri() string {
 	return "/aks/agentpool/upgradeProfiles"
 }
-func (GetUpgradeProfileResource) Get(rw http.ResponseWriter, r *http.Request, ps httprouter.Params) apis.Response {
-	t := reflect.TypeOf(GetUpgradeProfile{})
-	for i := 0; i < t.NumField(); i++ {
-		field := t.Field(i)
-		fmt.Printf("%s: %s\n", field.Name, field.Type)
-	}
+func (GetUpgradeProfileResource) Get(rw http.ResponseWriter, r *http.Request, ps httprouter.Params) docs.Response {
+	request, response := util.DocWithReq(GetUpgradeProfile{}, armcontainerservice.AgentPoolsClientGetUpgradeProfileResponse{})
 
-	typeMap := make(map[string]string)
-
-	t2 := reflect.TypeOf(armcontainerservice.AgentPoolsClientGetUpgradeProfileResponse{})
-	for i := 0; i < t2.NumField(); i++ {
-		field := t2.Field(i)
-		typeMap[field.Name] = field.Type.String()
+	resp := docs.ForDoc{
+		Req:  request,
+		Resp: response,
 	}
-	return apis.Response{Code: 200, Data: typeMap}
+	return docs.Response{Code: 200, Data: resp}
 
 }

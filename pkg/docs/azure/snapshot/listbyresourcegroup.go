@@ -1,15 +1,12 @@
 package snapshot
 
 import (
-	"context"
-	"encoding/json"
 	"hcp-apiserver/pkg/docs"
-	"io/ioutil"
+	"hcp-apiserver/pkg/docs/util"
 	"net/http"
 
 	armcontainerservice "github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/containerservice/armcontainerservice/v2"
 	"github.com/julienschmidt/httprouter"
-	"k8s.io/klog"
 )
 
 type ListByResourceGroupResource struct {
@@ -29,26 +26,11 @@ func (ListByResourceGroupResource) Uri() string {
 	return "/aks/snapshot/listByResourceGroup"
 }
 func (ListByResourceGroupResource) Get(rw http.ResponseWriter, r *http.Request, ps httprouter.Params) docs.Response {
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		klog.Errorln(err)
-	}
-	inputRequest := &ListByResourceGroupSnapshot{}
+	request, response := util.DocWithReq(ListByResourceGroupSnapshot{}, armcontainerservice.SnapshotsClientListByResourceGroupResponse{})
 
-	err = json.Unmarshal(body, inputRequest)
-	if err != nil {
-		klog.Errorln(err)
+	resp := docs.ForDoc{
+		Req:  request,
+		Resp: response,
 	}
-	ctx := context.Background()
-	items := SnapshotsClient.NewListByResourceGroupPager(inputRequest.ResourceGroupName, nil)
-	result := make([]armcontainerservice.SnapshotsClientListByResourceGroupResponse, 0)
-	for items.More() {
-		tmp, err := items.NextPage(ctx)
-		if err != nil {
-			klog.Errorln(err)
-		}
-
-		result = append(result, tmp)
-	}
-	return docs.Response{Code: 200, Data: result}
+	return docs.Response{Code: 200, Data: resp}
 }

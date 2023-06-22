@@ -1,19 +1,18 @@
 package agentpool
 
 import (
-	"fmt"
-	"hcp-apiserver/pkg/apis"
+	"hcp-apiserver/pkg/docs"
+	"hcp-apiserver/pkg/docs/util"
 	"net/http"
-	"reflect"
 
 	armcontainerservice "github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/containerservice/armcontainerservice/v2"
 	"github.com/julienschmidt/httprouter"
 )
 
 type GetAvailableAgentPoolVersionsResource struct {
-	apis.DeleteNotSupported
-	apis.PostNotSupported
-	apis.PutNotSupported
+	docs.DeleteNotSupported
+	docs.PostNotSupported
+	docs.PutNotSupported
 }
 
 // resourceGroupName - The name of the resource group. The name is case insensitive.
@@ -27,20 +26,13 @@ type GetAvailableAgentPoolVersions struct {
 func (GetAvailableAgentPoolVersionsResource) Uri() string {
 	return "/aks/agentpool/availableAgentPoolVersions"
 }
-func (GetAvailableAgentPoolVersionsResource) Get(rw http.ResponseWriter, r *http.Request, ps httprouter.Params) apis.Response {
-	t := reflect.TypeOf(GetAvailableAgentPoolVersions{})
-	for i := 0; i < t.NumField(); i++ {
-		field := t.Field(i)
-		fmt.Printf("%s: %s\n", field.Name, field.Type)
-	}
+func (GetAvailableAgentPoolVersionsResource) Get(rw http.ResponseWriter, r *http.Request, ps httprouter.Params) docs.Response {
+	request, response := util.DocWithReq(GetAvailableAgentPoolVersions{}, armcontainerservice.AgentPoolsClientGetAvailableAgentPoolVersionsResponse{})
 
-	typeMap := make(map[string]string)
-
-	t2 := reflect.TypeOf(armcontainerservice.AgentPoolsClientGetAvailableAgentPoolVersionsResponse{})
-	for i := 0; i < t2.NumField(); i++ {
-		field := t2.Field(i)
-		typeMap[field.Name] = field.Type.String()
+	resp := docs.ForDoc{
+		Req:  request,
+		Resp: response,
 	}
-	return apis.Response{Code: 200, Data: typeMap}
+	return docs.Response{Code: 200, Data: resp}
 
 }

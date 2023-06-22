@@ -10,7 +10,12 @@ import (
 
 type Response struct {
 	Code int         `json:"code"`
-	Data interface{} `json:"data"`
+	Data interface{} `json:"response"`
+}
+
+type ForDoc struct {
+	Req  interface{} `json:"request"`
+	Resp interface{} `json:"response"`
 }
 
 type Resource interface {
