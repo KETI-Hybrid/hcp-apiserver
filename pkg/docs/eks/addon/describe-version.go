@@ -1,15 +1,12 @@
 package addon
 
 import (
-	"encoding/json"
 	"hcp-apiserver/pkg/docs"
-	"io/ioutil"
+	"hcp-apiserver/pkg/docs/util"
 	"net/http"
 
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/eks"
 	"github.com/julienschmidt/httprouter"
-	"k8s.io/klog"
 )
 
 type DescribeVersionResource struct {
@@ -32,28 +29,11 @@ func (DescribeVersionResource) Uri() string {
 	return "/eks/addon/describe-version"
 }
 func (DescribeVersionResource) Get(rw http.ResponseWriter, r *http.Request, ps httprouter.Params) docs.Response {
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		klog.Errorln(err)
-	}
-	inputReq := &AddonDescribeVersionsInput{}
-	err = json.Unmarshal(body, inputReq)
-	if err != nil {
-		klog.Errorln(err)
-	}
-	realInput := &eks.DescribeAddonVersionsInput{
-		AddonName:         aws.String(inputReq.AddonName),
-		KubernetesVersion: aws.String(inputReq.KubernetesVersion),
-		MaxResults:        aws.Int64(inputReq.MaxResults),
-		NextToken:         aws.String(inputReq.NextToken),
-		Owners:            aws.StringSlice(inputReq.Owners),
-		Publishers:        aws.StringSlice(inputReq.Publishers),
-		Types:             aws.StringSlice(inputReq.Types),
-	}
+	request, response := util.DocWithReq(AddonDescribeVersionsInput{}, eks.DescribeAddonVersionsOutput{})
 
-	result, err := AddonClient.DescribeAddonVersions(realInput)
-	if err != nil {
-		klog.Errorln(err)
+	resp := docs.ForDoc{
+		Req:  request,
+		Resp: response,
 	}
-	return docs.Response{Code: 200, Data: result}
+	return docs.Response{Code: 200, Data: resp}
 }

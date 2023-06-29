@@ -1,15 +1,12 @@
 package identityproviderconfig
 
 import (
-	"encoding/json"
 	"hcp-apiserver/pkg/docs"
-	"io/ioutil"
+	"hcp-apiserver/pkg/docs/util"
 	"net/http"
 
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/eks"
 	"github.com/julienschmidt/httprouter"
-	"k8s.io/klog"
 )
 
 type AssociateResource struct {
@@ -40,34 +37,11 @@ func (AssociateResource) Uri() string {
 	return "/eks/identity-provider-config/associate"
 }
 func (AssociateResource) Post(rw http.ResponseWriter, r *http.Request, ps httprouter.Params) docs.Response {
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		klog.Errorln(err)
-	}
-	inputReq := &IdentityProviderConfigAssociateInput{}
-	err = json.Unmarshal(body, inputReq)
-	if err != nil {
-		klog.Errorln(err)
-	}
-	realInput := &eks.AssociateIdentityProviderConfigInput{
-		ClientRequestToken: aws.String(inputReq.ClientRequestToken),
-		ClusterName:        aws.String(inputReq.ClusterName),
-		Oidc: &eks.OidcIdentityProviderConfigRequest{
-			ClientId:                   aws.String(inputReq.Oidc.ClientId),
-			GroupsClaim:                aws.String(inputReq.Oidc.GroupsClaim),
-			GroupsPrefix:               aws.String(inputReq.Oidc.GroupsPrefix),
-			IdentityProviderConfigName: aws.String(inputReq.Oidc.IdentityProviderConfigName),
-			IssuerUrl:                  aws.String(inputReq.Oidc.IssuerUrl),
-			RequiredClaims:             aws.StringMap(inputReq.Oidc.RequiredClaims),
-			UsernameClaim:              aws.String(inputReq.Oidc.UsernameClaim),
-			UsernamePrefix:             aws.String(inputReq.Oidc.UsernamePrefix),
-		},
-		Tags: aws.StringMap(inputReq.Tags),
-	}
+	request, response := util.DocWithReq(IdentityProviderConfigAssociateInput{}, eks.AssociateIdentityProviderConfigOutput{})
 
-	result, err := IdentityProviderConfigClient.AssociateIdentityProviderConfig(realInput)
-	if err != nil {
-		klog.Errorln(err)
+	resp := docs.ForDoc{
+		Req:  request,
+		Resp: response,
 	}
-	return docs.Response{Code: 200, Data: result}
+	return docs.Response{Code: 200, Data: resp}
 }

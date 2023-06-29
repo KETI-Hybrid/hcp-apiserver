@@ -1,15 +1,12 @@
 package cluster
 
 import (
-	"encoding/json"
 	"hcp-apiserver/pkg/docs"
-	"io/ioutil"
+	"hcp-apiserver/pkg/docs/util"
 	"net/http"
 
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/eks"
 	"github.com/julienschmidt/httprouter"
-	"k8s.io/klog"
 )
 
 type RegisterResource struct {
@@ -32,28 +29,11 @@ func (RegisterResource) Uri() string {
 	return "/eks/cluster/register"
 }
 func (RegisterResource) Post(rw http.ResponseWriter, r *http.Request, ps httprouter.Params) docs.Response {
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		klog.Errorln(err)
-	}
-	inputReq := &ClusterRegisterInput{}
-	err = json.Unmarshal(body, inputReq)
-	if err != nil {
-		klog.Errorln(err)
-	}
-	realInput := &eks.RegisterClusterInput{
-		ClientRequestToken: aws.String(inputReq.ClientRequestToken),
-		ConnectorConfig: &eks.ConnectorConfigRequest{
-			Provider: aws.String(inputReq.ConnectorConfig.Provider),
-			RoleArn:  aws.String(inputReq.ConnectorConfig.RoleArn),
-		},
-		Name: aws.String(inputReq.Name),
-		Tags: aws.StringMap(inputReq.Tags),
-	}
+	request, response := util.DocWithReq(ClusterRegisterInput{}, eks.RegisterClusterOutput{})
 
-	result, err := ClusterClient.RegisterCluster(realInput)
-	if err != nil {
-		klog.Errorln(err)
+	resp := docs.ForDoc{
+		Req:  request,
+		Resp: response,
 	}
-	return docs.Response{Code: 200, Data: result}
+	return docs.Response{Code: 200, Data: resp}
 }

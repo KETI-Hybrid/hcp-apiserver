@@ -1,17 +1,12 @@
 package cluster
 
 import (
-	"context"
-	"encoding/json"
-	"fmt"
 	"hcp-apiserver/pkg/docs"
-	"hcp-apiserver/pkg/types"
-	"io/ioutil"
+	"hcp-apiserver/pkg/docs/util"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
 	"google.golang.org/api/container/v1"
-	"k8s.io/klog"
 )
 
 type SetMaintenancePolicyResource struct {
@@ -32,28 +27,11 @@ func (SetMaintenancePolicyResource) Uri() string {
 }
 
 func (SetMaintenancePolicyResource) Post(rw http.ResponseWriter, r *http.Request, ps httprouter.Params) docs.Response {
-	client := types.GetGKEClient()
-	containerService := client.ContanerService
-	ctx := context.Background()
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		klog.Errorln(err)
-	}
-	inputRequest := &SetMaintenancePolicy{}
+	request, response := util.DocWithReq(SetMaintenancePolicy{}, container.Operation{})
 
-	err = json.Unmarshal(body, inputRequest)
-	if err != nil {
-		klog.Errorln(err)
-	}
-	// The name (project, location, cluster id) of the cluster to complete IP
-	// rotation. Specified in the format 'projects/*/locations/*/clusters/*'.
-	name := fmt.Sprintf("projects/%s/locations/%s/clusters/%s", inputRequest.ProjectName, inputRequest.LocationName, inputRequest.ClusterName) // TODO: Update placeholder value.
-	realRequest := &container.SetMaintenancePolicyRequest{
-		MaintenancePolicy: inputRequest.MaintenancePolicy,
-	}
-	resp, err := containerService.Projects.Locations.Clusters.SetMaintenancePolicy(name, realRequest).Context(ctx).Do()
-	if err != nil {
-		klog.Errorln(err)
+	resp := docs.ForDoc{
+		Req:  request,
+		Resp: response,
 	}
 	return docs.Response{Code: 200, Data: resp}
 }

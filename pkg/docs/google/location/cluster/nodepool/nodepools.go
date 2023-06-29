@@ -1,20 +1,20 @@
 package nodepool
 
 import (
-	"hcp-apiserver/pkg/apis"
+	"hcp-apiserver/pkg/docs"
 
 	"github.com/julienschmidt/httprouter"
 )
 
 func LocationClusterNodepoolResourceAttach(router *httprouter.Router) {
-	apis.AddResource(router, new(CompleteUpgradeResource))
-	apis.AddResource(router, new(CreateResource))
-	apis.AddResource(router, new(DeleteResource))
-	apis.AddResource(router, new(GetResource))
-	apis.AddResource(router, new(ListResource))
-	apis.AddResource(router, new(RollbackResource))
-	apis.AddResource(router, new(SetAutoscalingResource))
-	apis.AddResource(router, new(SetManagementResource))
-	apis.AddResource(router, new(SetSizeResource))
-	apis.AddResource(router, new(UpdateResource))
+	docs.AddResource(router, new(CompleteUpgradeResource))
+	docs.AddResource(router, new(CreateResource))
+	docs.AddResource(router, new(DeleteResource))
+	docs.AddResource(router, new(GetResource))
+	docs.AddResource(router, new(ListResource))
+	docs.AddResource(router, new(RollbackResource))
+	docs.AddResource(router, new(SetAutoscalingResource))
+	docs.AddResource(router, new(SetManagementResource))
+	docs.AddResource(router, new(SetSizeResource))
+	docs.AddResource(router, new(UpdateResource))
 }

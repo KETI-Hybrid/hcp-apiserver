@@ -1,15 +1,12 @@
 package cluster
 
 import (
-	"encoding/json"
 	"hcp-apiserver/pkg/docs"
-	"io/ioutil"
+	"hcp-apiserver/pkg/docs/util"
 	"net/http"
 
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/eks"
 	"github.com/julienschmidt/httprouter"
-	"k8s.io/klog"
 )
 
 type DeregisterResource struct {
@@ -26,22 +23,11 @@ func (DeregisterResource) Uri() string {
 	return "/eks/cluster/deregister"
 }
 func (DeregisterResource) Post(rw http.ResponseWriter, r *http.Request, ps httprouter.Params) docs.Response {
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		klog.Errorln(err)
-	}
-	inputReq := &ClusterDeregisterInput{}
-	err = json.Unmarshal(body, inputReq)
-	if err != nil {
-		klog.Errorln(err)
-	}
-	realInput := &eks.DeregisterClusterInput{
-		Name: aws.String(inputReq.Name),
-	}
+	request, response := util.DocWithReq(ClusterDeregisterInput{}, eks.DeregisterClusterOutput{})
 
-	result, err := ClusterClient.DeregisterCluster(realInput)
-	if err != nil {
-		klog.Errorln(err)
+	resp := docs.ForDoc{
+		Req:  request,
+		Resp: response,
 	}
-	return docs.Response{Code: 200, Data: result}
+	return docs.Response{Code: 200, Data: resp}
 }

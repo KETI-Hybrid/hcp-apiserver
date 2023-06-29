@@ -1,15 +1,12 @@
 package cluster
 
 import (
-	"encoding/json"
 	"hcp-apiserver/pkg/docs"
-	"io/ioutil"
+	"hcp-apiserver/pkg/docs/util"
 	"net/http"
 
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/eks"
 	"github.com/julienschmidt/httprouter"
-	"k8s.io/klog"
 )
 
 type ListResource struct {
@@ -28,24 +25,11 @@ func (ListResource) Uri() string {
 	return "/eks/cluster/list"
 }
 func (ListResource) Get(rw http.ResponseWriter, r *http.Request, ps httprouter.Params) docs.Response {
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		klog.Errorln(err)
-	}
-	inputReq := &ClusterListInput{}
-	err = json.Unmarshal(body, inputReq)
-	if err != nil {
-		klog.Errorln(err)
-	}
-	realInput := &eks.ListClustersInput{
-		Include:    aws.StringSlice(inputReq.Include),
-		MaxResults: aws.Int64(inputReq.MaxResults),
-		NextToken:  aws.String(inputReq.NextToken),
-	}
+	request, response := util.DocWithReq(ClusterListInput{}, eks.ListClustersOutput{})
 
-	result, err := ClusterClient.ListClusters(realInput)
-	if err != nil {
-		klog.Errorln(err)
+	resp := docs.ForDoc{
+		Req:  request,
+		Resp: response,
 	}
-	return docs.Response{Code: 200, Data: result}
+	return docs.Response{Code: 200, Data: resp}
 }

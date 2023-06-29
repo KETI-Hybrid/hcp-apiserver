@@ -1,15 +1,12 @@
 package cluster
 
 import (
-	"encoding/json"
 	"hcp-apiserver/pkg/docs"
-	"io/ioutil"
+	"hcp-apiserver/pkg/docs/util"
 	"net/http"
 
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/eks"
 	"github.com/julienschmidt/httprouter"
-	"k8s.io/klog"
 )
 
 type DescribeResource struct {
@@ -26,22 +23,11 @@ func (DescribeResource) Uri() string {
 	return "/eks/cluster/describe"
 }
 func (DescribeResource) Get(rw http.ResponseWriter, r *http.Request, ps httprouter.Params) docs.Response {
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		klog.Errorln(err)
-	}
-	inputReq := &ClusterDescribeInput{}
-	err = json.Unmarshal(body, inputReq)
-	if err != nil {
-		klog.Errorln(err)
-	}
-	realInput := &eks.DescribeClusterInput{
-		Name: aws.String(inputReq.Name),
-	}
+	request, response := util.DocWithReq(ClusterDescribeInput{}, eks.DescribeClusterOutput{})
 
-	result, err := ClusterClient.DescribeCluster(realInput)
-	if err != nil {
-		klog.Errorln(err)
+	resp := docs.ForDoc{
+		Req:  request,
+		Resp: response,
 	}
-	return docs.Response{Code: 200, Data: result}
+	return docs.Response{Code: 200, Data: resp}
 }

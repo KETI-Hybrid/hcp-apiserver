@@ -36,7 +36,7 @@ func (GetResource) Get(rw http.ResponseWriter, r *http.Request, ps httprouter.Pa
 	if err != nil {
 		klog.Errorln(err)
 	}
-	inputRequest := &Cancel{}
+	inputRequest := &Get{}
 
 	err = json.Unmarshal(body, inputRequest)
 	if err != nil {

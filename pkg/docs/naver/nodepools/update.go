@@ -1,16 +1,12 @@
 package nodepools
 
 import (
-	"context"
-	"encoding/json"
 	"hcp-apiserver/pkg/docs"
-	"hcp-apiserver/pkg/types"
-	"io/ioutil"
+	"hcp-apiserver/pkg/docs/util"
 	"net/http"
 
 	"github.com/NaverCloudPlatform/ncloud-sdk-go-v2/services/vnks"
 	"github.com/julienschmidt/httprouter"
-	"k8s.io/klog"
 )
 
 type UpdateResource struct {
@@ -36,25 +32,11 @@ func (UpdateResource) Uri() string {
 }
 
 func (UpdateResource) Put(rw http.ResponseWriter, r *http.Request, ps httprouter.Params) docs.Response {
-	client := types.GetNKSClient()
-	containerService := client.Client.V2Api
-	ctx := context.Background()
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		klog.Errorln(err)
+	request, response := util.DocWithReq(Update{}, UpdateResp{})
+
+	resp := docs.ForDoc{
+		Req:  request,
+		Resp: response,
 	}
-	inputRequest := &Update{}
-	resp := &UpdateResp{}
-	err = json.Unmarshal(body, inputRequest)
-	if err != nil {
-		klog.Errorln(err)
-	}
-	err = containerService.ClustersUuidNodePoolInstanceNoPatch(ctx, inputRequest.UpdateBody, &inputRequest.ClusterUUID, &inputRequest.NodeNumber)
-	if err != nil {
-		klog.Errorln(err)
-	}
-	resp.ClusterUUID = inputRequest.ClusterUUID
-	resp.NodeNumber = inputRequest.NodeNumber
-	resp.Status = true
 	return docs.Response{Code: 200, Data: resp}
 }

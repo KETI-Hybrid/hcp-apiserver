@@ -1,15 +1,12 @@
 package cluster
 
 import (
-	"encoding/json"
 	"hcp-apiserver/pkg/docs"
-	"io/ioutil"
+	"hcp-apiserver/pkg/docs/util"
 	"net/http"
 
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/eks"
 	"github.com/julienschmidt/httprouter"
-	"k8s.io/klog"
 )
 
 type CreateResource struct {
@@ -68,62 +65,11 @@ func (CreateResource) Uri() string {
 	return "/eks/cluster/create"
 }
 func (CreateResource) Post(rw http.ResponseWriter, r *http.Request, ps httprouter.Params) docs.Response {
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		klog.Errorln(err)
-	}
-	inputReq := &ClusterCreateInput{}
-	err = json.Unmarshal(body, inputReq)
-	if err != nil {
-		klog.Errorln(err)
-	}
-	realInput := &eks.CreateClusterInput{
-		ClientRequestToken: aws.String(inputReq.ClientRequestToken),
-		EncryptionConfig:   make([]*eks.EncryptionConfig, 0),
-		KubernetesNetworkConfig: &eks.KubernetesNetworkConfigRequest{
-			IpFamily:        aws.String(inputReq.KubernetesNetworkConfig.IpFamily),
-			ServiceIpv4Cidr: aws.String(inputReq.KubernetesNetworkConfig.ServiceIpv4Cidr),
-		},
-		Logging: &eks.Logging{
-			ClusterLogging: make([]*eks.LogSetup, 0),
-		},
-		Name: aws.String(inputReq.Name),
-		OutpostConfig: &eks.OutpostConfigRequest{
-			ControlPlaneInstanceType: aws.String(inputReq.OutpostConfig.ControlPlaneInstanceType),
-			ControlPlanePlacement: &eks.ControlPlanePlacementRequest{
-				GroupName: aws.String(inputReq.OutpostConfig.ControlPlanePlacement.GroupName),
-			},
-			OutpostArns: aws.StringSlice(inputReq.OutpostConfig.OutpostArns),
-		},
-		ResourcesVpcConfig: &eks.VpcConfigRequest{
-			EndpointPrivateAccess: aws.Bool(inputReq.ResourcesVpcConfig.EndpointPrivateAccess),
-			EndpointPublicAccess:  aws.Bool(inputReq.ResourcesVpcConfig.EndpointPublicAccess),
-			PublicAccessCidrs:     aws.StringSlice(inputReq.ResourcesVpcConfig.PublicAccessCidrs),
-			SecurityGroupIds:      aws.StringSlice(inputReq.ResourcesVpcConfig.SecurityGroupIds),
-			SubnetIds:             aws.StringSlice(inputReq.ResourcesVpcConfig.SubnetIds),
-		},
-		RoleArn: aws.String(inputReq.RoleArn),
-		Tags:    aws.StringMap(inputReq.Tags),
-		Version: aws.String(inputReq.Version),
-	}
-	for _, encryptionConfig := range inputReq.EncryptionConfig {
-		realInput.EncryptionConfig = append(realInput.EncryptionConfig, &eks.EncryptionConfig{
-			Provider: &eks.Provider{
-				KeyArn: aws.String(encryptionConfig.Provider.KeyArn),
-			},
-			Resources: aws.StringSlice(encryptionConfig.Resources),
-		})
-	}
-	for _, clusterLogging := range inputReq.Logging.ClusterLogging {
-		realInput.Logging.ClusterLogging = append(realInput.Logging.ClusterLogging, &eks.LogSetup{
-			Enabled: aws.Bool(clusterLogging.Enabled),
-			Types:   aws.StringSlice(clusterLogging.Types),
-		})
-	}
+	request, response := util.DocWithReq(ClusterCreateInput{}, eks.CreateClusterOutput{})
 
-	result, err := ClusterClient.CreateCluster(realInput)
-	if err != nil {
-		klog.Errorln(err)
+	resp := docs.ForDoc{
+		Req:  request,
+		Resp: response,
 	}
-	return docs.Response{Code: 200, Data: result}
+	return docs.Response{Code: 200, Data: resp}
 }
