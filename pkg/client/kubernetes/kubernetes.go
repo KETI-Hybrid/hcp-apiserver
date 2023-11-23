@@ -54,4 +54,5 @@ func InitHCPClient() {
 	types.GlobalClient.AKSClient = aks.NewAKSClient(clientset)
 	types.GlobalClient.GKEClient = gke.NewGKEClient(clientset)
 	types.GlobalClient.NKSClient = nks.NewNKSClient(clientset)
+	
 }
