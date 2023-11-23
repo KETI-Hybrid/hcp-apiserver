@@ -25,6 +25,7 @@ func NewGKEClient(k8sclient *kubernetes.Clientset) *GKEClient {
 	if err != nil {
 		klog.Errorln(err.Error())
 	}
+	
 	client.ProjectID = config.Data["project-id"]
 	client.ClusterName = config.Data["cluster-name"]
 	client.Token = config.Data["key.json"]
@@ -39,5 +40,6 @@ func NewGKEClient(k8sclient *kubernetes.Clientset) *GKEClient {
 	if err != nil {
 		log.Fatal(err)
 	}
+	
 	return client
 }
